@@ -1,0 +1,324 @@
+Sub GenerateDailyReport()
+    ' Software Version 1.2
+    ' developed by DSU11425
+    
+    Dim wsData As Worksheet, wsReport As Worksheet
+    Dim lastRow As Long, reportRow As Long, lastReportRow As Long
+    Dim pickerDict As Object
+    Dim pickerName As Variant
+    Dim tableRange As Range
+    Dim rawDate As String, formattedDate As String
+    Dim summaryRow As Long, modifiedRow As Long
+    Dim i As Long, startDataRow As Long
+    Dim amtDiff As Double
+    Dim cellI As Variant, cellJ As Variant
+    Dim numI As Double, numJ As Double
+    
+    Dim currentSuccess As Long
+    Dim maxTGSuccess As Long, maxTGRow As Long
+    Dim maxNonTGSuccess As Long, maxNonTGRow As Long
+    
+    Set wsData = ActiveSheet
+    
+    lastRow = wsData.Cells(wsData.Rows.Count, "A").End(xlUp).Row
+    If lastRow <= 1 Then
+        MsgBox "The active sheet seems to be empty or has no data rows. Please open the correct file first!", vbCritical, "Error"
+        Exit Sub
+    End If
+    
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    
+    For i = 2 To lastRow
+        cellI = wsData.Cells(i, 9).Value
+        If Not IsNumeric(cellI) And cellI <> "" Then
+            cellI = Replace(cellI, "AED", "")
+            cellI = Trim(cellI)
+            If IsNumeric(cellI) Then
+                wsData.Cells(i, 9).Value = CDbl(cellI)
+            End If
+        End If
+        wsData.Cells(i, 9).NumberFormat = "0.00"
+        
+        cellJ = wsData.Cells(i, 10).Value
+        If Not IsNumeric(cellJ) And cellJ <> "" Then
+            cellJ = Replace(cellJ, "AED", "")
+            cellJ = Trim(cellJ)
+            If IsNumeric(cellJ) Then
+                wsData.Cells(i, 10).Value = CDbl(cellJ)
+            End If
+        End If
+        wsData.Cells(i, 10).NumberFormat = "0.00"
+    Next i
+    
+    rawDate = wsData.Range("D2").Value
+    If InStr(rawDate, " ") > 0 Then
+        formattedDate = Split(rawDate, " ")(0)
+    Else
+        formattedDate = rawDate
+    End If
+    
+    On Error Resume Next
+    Set wsReport = Sheets("Daily Report")
+    If Not wsReport Is Nothing Then wsReport.Delete
+    On Error GoTo 0
+    
+    Set wsReport = Worksheets.Add(Before:=Worksheets(1))
+    wsReport.Name = "Daily Report"
+    
+    ActiveWindow.DisplayGridlines = False
+    
+    With wsReport
+        .Columns("A").ColumnWidth = 1
+        .Rows("1").RowHeight = 7.5
+        
+        .Range("B2").Value = "PICKER"
+        .Range("C2").Value = "CANCELLED"
+        .Range("D2").Value = "SUCCESS"
+        .Range("E2").Value = "PICKED UP"
+        
+        .Range("B2:E2").Interior.Color = RGB(214, 227, 242)
+        .Range("B2:E2").Font.Bold = True
+        .Range("B2:E2").Font.Name = "Calibri"
+        .Range("B2:E2").Font.Size = 11
+        
+        Set pickerDict = CreateObject("Scripting.Dictionary")
+        For reportRow = 2 To lastRow
+            pickerName = wsData.Cells(reportRow, 7).Value
+            If pickerName <> "" And pickerName <> "Picker" And pickerName <> "PICKER" And Not pickerDict.Exists(pickerName) Then
+                pickerDict.Add pickerName, ""
+            End If
+        Next reportRow
+        
+        reportRow = 3
+        For Each pickerName In pickerDict.Keys
+            .Cells(reportRow, 2).Value = pickerName
+            .Cells(reportRow, 3).Formula = "=COUNTIFS('" & wsData.Name & "'!G:G, """ & pickerName & """, '" & wsData.Name & "'!C:C, ""CANCELLED"")"
+            .Cells(reportRow, 4).Formula = "=COUNTIFS('" & wsData.Name & "'!G:G, """ & pickerName & """, '" & wsData.Name & "'!C:C, ""PICKED_UP"")"
+            .Cells(reportRow, 5).Formula = "=SUM(C" & reportRow & ":D" & reportRow & ")"
+            reportRow = reportRow + 1
+        Next pickerName
+        
+        lastReportRow = reportRow - 1
+        Set tableRange = .Range("B3:E" & lastReportRow)
+        
+        .Sort.SortFields.Clear
+        .Sort.SortFields.Add Key:=wsReport.Range("E3:E" & lastReportRow), _
+            SortOn:=xlSortOnValues, Order:=xlDescending, DataOption:=xlSortNormal
+        With .Sort
+            .SetRange tableRange
+            .Header = xlNo
+            .MatchCase = False
+            .Orientation = xlTopToBottom
+            .SortMethod = xlPinYin
+            .Apply
+        End With
+        
+        maxTGSuccess = -1: maxTGRow = 0
+        maxNonTGSuccess = -1: maxNonTGRow = 0
+        
+        For reportRow = 3 To lastReportRow
+            pickerName = .Cells(reportRow, 2).Value
+            currentSuccess = .Cells(reportRow, 4).Value
+            
+            If Left(Trim(pickerName), 2) = "TG" Then
+                If currentSuccess > maxTGSuccess Then
+                    maxTGSuccess = currentSuccess
+                    maxTGRow = reportRow
+                End If
+            Else
+                If currentSuccess > maxNonTGSuccess Then
+                    maxNonTGSuccess = currentSuccess
+                    maxNonTGRow = reportRow
+                End If
+            End If
+            
+            If .Cells(reportRow, 3).Value = 0 Then .Cells(reportRow, 3).Value = ""
+            If .Cells(reportRow, 4).Value = 0 Then .Cells(reportRow, 4).Value = ""
+            .Range(.Cells(reportRow, 2), .Cells(reportRow, 5)).Font.Name = "Calibri"
+            .Range(.Cells(reportRow, 2), .Cells(reportRow, 5)).Font.Size = 11
+        Next reportRow
+        
+        If maxTGRow > 0 Then
+            .Range(.Cells(maxTGRow, 2), .Cells(maxTGRow, 5)).Interior.Color = RGB(204, 229, 255)
+        End If
+        If maxNonTGRow > 0 Then
+            .Range(.Cells(maxNonTGRow, 2), .Cells(maxNonTGRow, 5)).Interior.Color = RGB(255, 224, 178)
+        End If
+        
+        With .Range("B2:E" & lastReportRow + 1)
+            .Borders(xlInsideHorizontal).LineStyle = xlContinuous
+            .Borders(xlInsideHorizontal).Weight = xlThin
+            .Borders(xlInsideHorizontal).Color = RGB(180, 180, 180)
+            
+            .Borders(xlInsideVertical).LineStyle = xlContinuous
+            .Borders(xlInsideVertical).Weight = xlThin
+            .Borders(xlInsideVertical).Color = RGB(180, 180, 180)
+            
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeLeft).Weight = xlThin
+            .Borders(xlEdgeLeft).Color = RGB(120, 120, 120)
+            
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).Weight = xlThin
+            .Borders(xlEdgeRight).Color = RGB(120, 120, 120)
+            
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeTop).Weight = xlThin
+            .Borders(xlEdgeTop).Color = RGB(120, 120, 120)
+            
+            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+            .Borders(xlEdgeBottom).Weight = xlThin
+            .Borders(xlEdgeBottom).Color = RGB(120, 120, 120)
+        End With
+        
+        reportRow = lastReportRow + 1
+        .Cells(reportRow, 2).Value = "Grand Total"
+        .Cells(reportRow, 3).Formula = "=SUM(C3:C" & reportRow - 1 & ")"
+        .Cells(reportRow, 4).Formula = "=SUM(D3:D" & reportRow - 1 & ")"
+        .Cells(reportRow, 5).Formula = "=SUM(E3:E" & reportRow - 1 & ")"
+        
+        With .Range(.Cells(reportRow, 2), .Cells(reportRow, 5))
+            .Font.Bold = True
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+            .Interior.Color = RGB(214, 227, 242)
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeTop).Weight = xlThin
+            .Borders(xlEdgeBottom).LineStyle = xlDouble
+        End With
+        
+        modifiedRow = reportRow + 3
+        
+        .Cells(modifiedRow, 2).Value = "Modified Orders List"
+        .Cells(modifiedRow, 2).Font.Bold = True
+        .Cells(modifiedRow, 2).Font.Size = 12
+        .Cells(modifiedRow, 2).Font.Name = "Calibri"
+        
+        modifiedRow = modifiedRow + 1
+        .Cells(modifiedRow, 2).Value = "PICKER"
+        .Cells(modifiedRow, 3).Value = "ORDER ID"
+        
+        .Range(.Cells(modifiedRow, 4), .Cells(modifiedRow, 5)).Merge
+        .Cells(modifiedRow, 4).Value = "REASON"
+        
+        With .Range(.Cells(modifiedRow, 2), .Cells(modifiedRow, 5))
+            .Font.Bold = True
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+            .Interior.Color = RGB(230, 240, 250)
+            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+            .Borders(xlEdgeBottom).Weight = xlThin
+        End With
+        
+        startDataRow = modifiedRow + 1
+        
+        For i = 2 To lastRow
+            If wsData.Cells(i, 3).Value = "PICKED_UP" Then
+                numI = wsData.Cells(i, 9).Value
+                numJ = wsData.Cells(i, 10).Value
+                amtDiff = Abs(numJ - numI)
+                
+                If amtDiff >= 1# Then
+                    modifiedRow = modifiedRow + 1
+                    .Cells(modifiedRow, 2).Value = wsData.Cells(i, 7).Value
+                    .Cells(modifiedRow, 3).Value = "'" & wsData.Cells(i, 1).Value
+                    
+                    .Range(.Cells(modifiedRow, 4), .Cells(modifiedRow, 5)).Merge
+                    
+                    With .Range(.Cells(modifiedRow, 2), .Cells(modifiedRow, 5))
+                        .Font.Name = "Calibri"
+                        .Font.Size = 10
+                        .Borders(xlEdgeBottom).LineStyle = xlContinuous
+                        .Borders(xlEdgeBottom).Weight = xlThin
+                        .Borders(xlEdgeBottom).Color = RGB(220, 220, 220)
+                    End With
+                    With .Range(.Cells(modifiedRow, 4), .Cells(modifiedRow, 5)).Font
+                        .Bold = True
+                        .Color = RGB(255, 0, 0)
+                    End With
+                End If
+            End If
+        Next i
+        
+        If modifiedRow > startDataRow - 1 Then
+            With .Range(.Cells(startDataRow - 1, 2), .Cells(modifiedRow, 5))
+                .Borders(xlEdgeLeft).LineStyle = xlContinuous
+                .Borders(xlEdgeLeft).Weight = xlThin
+                .Borders(xlEdgeLeft).Color = RGB(140, 140, 140)
+                
+                .Borders(xlEdgeTop).LineStyle = xlContinuous
+                .Borders(xlEdgeTop).Weight = xlThin
+                .Borders(xlEdgeTop).Color = RGB(140, 140, 140)
+                
+                .Borders(xlEdgeRight).LineStyle = xlContinuous
+                .Borders(xlEdgeRight).Weight = xlThin
+                .Borders(xlEdgeRight).Color = RGB(140, 140, 140)
+                
+                .Borders(xlEdgeBottom).LineStyle = xlContinuous
+                .Borders(xlEdgeBottom).Weight = xlThin
+                .Borders(xlEdgeBottom).Color = RGB(140, 140, 140)
+                
+                .Borders(xlInsideVertical).LineStyle = xlContinuous
+                .Borders(xlInsideVertical).Weight = xlThin
+                .Borders(xlInsideVertical).Color = RGB(200, 200, 200)
+                
+                .Borders(xlInsideHorizontal).LineStyle = xlContinuous
+                .Borders(xlInsideHorizontal).Weight = xlThin
+                .Borders(xlInsideHorizontal).Color = RGB(220, 220, 220)
+            End With
+        Else
+            .Range(.Cells(startDataRow, 2), .Cells(startDataRow, 5)).Merge
+            .Cells(startDataRow, 2).Value = "No modifications recorded today."
+            .Cells(startDataRow, 2).Font.Italic = True
+            modifiedRow = startDataRow
+        End If
+        
+        summaryRow = modifiedRow + 3
+        
+        .Cells(summaryRow, 2).Value = "Good morning team,"
+        .Cells(summaryRow + 2, 2).Value = "Daily sales report " & formattedDate
+        
+        .Cells(summaryRow + 3, 2).Value = "Orders:"
+        .Cells(summaryRow + 3, 3).Formula = "=SUM(D3:D" & reportRow - 1 & ")"
+        
+        .Cells(summaryRow + 4, 2).Value = "Cancelled:"
+        .Cells(summaryRow + 4, 3).Formula = "=SUM(C3:C" & reportRow - 1 & ")"
+        
+        .Cells(summaryRow + 5, 2).Value = "Sales :"
+        .Cells(summaryRow + 5, 3).Formula = "=SUMIFS('" & wsData.Name & "'!J:J, '" & wsData.Name & "'!C:C, ""PICKED_UP"")"
+        .Cells(summaryRow + 5, 3).NumberFormat = "0.00"
+        
+        .Cells(summaryRow + 6, 2).Value = "Average:"
+        .Cells(summaryRow + 6, 3).Formula = "=AVERAGEIFS('" & wsData.Name & "'!J:J, '" & wsData.Name & "'!C:C, ""PICKED_UP"")"
+        .Cells(summaryRow + 6, 3).NumberFormat = "0.00"
+        
+        .Cells(summaryRow + 7, 2).Value = "Modification:"
+        .Cells(summaryRow + 7, 3).Formula = "=SUMPRODUCT(--('" & wsData.Name & "'!C2:C" & lastRow & "=""PICKED_UP""), --(ABS('" & wsData.Name & "'!J2:J" & lastRow & "-'" & wsData.Name & "'!I2:I" & lastRow & ")>=1.0))"
+        
+        With .Range(.Cells(summaryRow, 2), .Cells(summaryRow + 7, 3)).Font
+            .Name = "Calibri"
+            .Size = 11
+            .Bold = False
+        End With
+        .Cells(summaryRow + 2, 2).Font.Bold = True
+        
+        .Columns("B:E").HorizontalAlignment = xlCenter
+        
+        .Range(.Cells(summaryRow, 2), .Cells(summaryRow + 7, 2)).HorizontalAlignment = xlLeft
+        .Range(.Cells(summaryRow + 3, 3), .Cells(summaryRow + 7, 3)).HorizontalAlignment = xlLeft
+        
+        .Columns("B").AutoFit
+        .Columns("B").ColumnWidth = .Columns("B").ColumnWidth + 3
+        
+        .Columns("C").ColumnWidth = 12
+        .Columns("D").ColumnWidth = 12
+        .Columns("E").ColumnWidth = 12
+        
+        .Columns("F").ColumnWidth = .Columns("A").ColumnWidth
+    End With
+    
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+End Sub
+

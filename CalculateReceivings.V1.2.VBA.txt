@@ -1,0 +1,104 @@
+Sub CalculateReceivings()
+    Dim wsMain As Worksheet
+    Dim wsData As Worksheet
+    Dim lastRow As Long
+    Dim finalSum As Double
+    Dim skuCell As Range
+    Dim skuRow As Long, skuCol As Long
+    Dim skuColLetter As String, pColLetter As String, qColLetter As String
+    Dim prodNameColLetter As String
+    Dim retryCount As Integer
+    Dim i As Long, r As Long
+    
+    ' developed by DSU11425
+    ' Software Version 1.2.1
+    
+    On Error Resume Next
+    Set wsMain = ActiveWorkbook.Sheets("Sheet1")
+    Set wsData = ActiveWorkbook.Sheets(1)
+    On Error GoTo 0
+    
+    If wsMain Is Nothing Then
+        MsgBox "Error: Please make sure there is a sheet named 'Sheet1' in this workbook!", vbCritical, "Sheet Missing"
+        Exit Sub
+    End If
+
+FindSKULabel:
+    
+    Set skuCell = wsMain.Cells.Find(What:="SKU", LookIn:=xlValues, LookAt:=xlWhole, MatchCase:=False)
+    
+    If skuCell Is Nothing Then
+        MsgBox "Error: Could not find the 'SKU' column header in Sheet1!", vbCritical, "Header Missing"
+        Exit Sub
+    End If
+    
+    skuRow = skuCell.Row
+    skuCol = skuCell.Column
+    
+    If skuRow > 1 Then
+        For r = skuRow - 1 To 1 Step -1
+            If Application.WorksheetFunction.CountA(wsMain.Rows(r)) = 0 Then
+                wsMain.Rows(r).Delete Shift:=xlUp
+            End If
+        Next r
+        
+        Set skuCell = wsMain.Cells.Find(What:="SKU", LookIn:=xlValues, LookAt:=xlWhole, MatchCase:=False)
+        skuRow = skuCell.Row
+        skuCol = skuCell.Column
+    End If
+    
+    If skuCol > 1 Then
+        For i = skuCol - 1 To 1 Step -1
+            If Application.WorksheetFunction.CountA(wsMain.Columns(i)) = 0 Then
+                wsMain.Columns(i).Delete Shift:=xlToLeft
+            End If
+        Next i
+        
+        Set skuCell = wsMain.Cells.Find(What:="SKU", LookIn:=xlValues, LookAt:=xlWhole, MatchCase:=False)
+        skuRow = skuCell.Row
+        skuCol = skuCell.Column
+    End If
+    
+    skuColLetter = Split(wsMain.Cells(1, skuCol).Address, "$")(1)
+    
+    lastRow = wsMain.Cells(wsMain.Rows.Count, skuColLetter).End(xlUp).Row
+    
+    If lastRow <= skuRow Then
+        If retryCount = 0 Then
+            wsMain.Cells(skuRow, skuCol).Insert Shift:=xlToRight
+            retryCount = 1
+            GoTo FindSKULabel
+        Else
+            MsgBox "Warning: No data found under the SKU column even after adjustment!", vbExclamation, "No Data"
+            Exit Sub
+        End If
+    End If
+    
+    wsMain.Range(wsMain.Cells(1, skuCol + 1), wsMain.Cells(1, skuCol + 13)).ColumnWidth = 2.5
+    
+    prodNameColLetter = Split(wsMain.Cells(1, skuCol + 1).Address, "$")(1)
+    wsMain.Columns(prodNameColLetter).AutoFit
+    
+    pColLetter = Split(wsMain.Cells(1, skuCol + 14).Address, "$")(1)
+    qColLetter = Split(wsMain.Cells(1, skuCol + 15).Address, "$")(1)
+    
+    wsMain.Range(qColLetter & (skuRow + 1) & ":" & qColLetter & lastRow).Formula = _
+        "=1.05 * " & pColLetter & (skuRow + 1) & " * VLOOKUP(" & skuColLetter & (skuRow + 1) & ", '" & wsData.Name & "'!$K:$AA, 17, 0)"
+    
+    With wsMain.Range(qColLetter & (skuRow + 1) & ":" & qColLetter & lastRow)
+        .Value = .Value
+    End With
+    
+    wsMain.Cells(lastRow + 2, pColLetter).Value = "Total SUM:"
+    wsMain.Cells(lastRow + 2, qColLetter).Formula = "=SUM(" & qColLetter & (skuRow + 1) & ":" & qColLetter & lastRow & ")"
+    
+    finalSum = wsMain.Cells(lastRow + 2, qColLetter).Value
+    
+    wsMain.Columns(qColLetter).AutoFit
+    
+    MsgBox "Process completed successfully!" & vbCrLf & vbCrLf & _
+           "==============================" & vbCrLf & _
+           " FINAL TOTAL AMOUNT: " & Format(finalSum, "#,##0.00") & vbCrLf & _
+           "==============================", vbInformation, "Success"
+End Sub
+

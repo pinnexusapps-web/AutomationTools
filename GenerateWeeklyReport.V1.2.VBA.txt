@@ -1,0 +1,223 @@
+Sub GenerateWeeklyReport()
+    ' Software Version 1.2
+    ' developed by DSU11425
+
+    Dim srcBook As Workbook
+    Dim srcSheet As Worksheet
+    Dim destBook As Workbook
+    Dim destSheet As Worksheet
+    
+    Dim lastRow As Long, lastCol As Long
+    Dim r As Long, c As Long, i As Long
+    Dim destRow As Long
+    
+    Dim rosterRow As Long, startCol As Long
+    Dim foundRoster As Boolean
+    
+    Dim empID As String
+    Dim shiftVal As String
+    Dim tempShift As String
+    Dim currentShiftGroup As String
+    
+    Dim colDates(1 To 30) As Date
+    Dim currentDate As Date
+    Dim groupStartDate As Date
+    
+    Set srcBook = ThisWorkbook
+    Set srcSheet = ActiveSheet
+    
+    lastRow = srcSheet.Cells(srcSheet.Rows.Count, 1).End(xlUp).Row
+    lastCol = srcSheet.Cells(17, srcSheet.Columns.Count).End(xlToLeft).Column
+    If lastCol < 5 Then lastCol = 15
+    
+    foundRoster = False
+    For r = 1 To lastRow
+        For c = 1 To lastCol
+            If InStr(UCase(CStr(srcSheet.Cells(r, c).Value)), "MONDAY") > 0 Then
+                rosterRow = r
+                startCol = c
+                foundRoster = True
+                Exit For
+            End If
+        Next c
+        If foundRoster Then Exit For
+    Next r
+    
+    If Not foundRoster Then
+        MsgBox "Could not find 'Monday' column automatically! Please check your sheet structure.", vbCritical
+        Exit Sub
+    End If
+    
+    On Error GoTo DateError
+    For i = 0 To 6
+        Dim cellVal As Variant
+        cellVal = srcSheet.Cells(rosterRow - 1, startCol + i).Value
+        If IsDate(cellVal) Then
+            colDates(startCol + i) = CDate(cellVal)
+        Else
+            cellVal = srcSheet.Cells(rosterRow, startCol + i).Value
+            If IsDate(cellVal) Then
+                colDates(startCol + i) = CDate(cellVal)
+            Else
+                colDates(startCol + i) = DateAdd("d", i, Date)
+            End If
+        End If
+    Next i
+    On Error GoTo 0
+    
+    Set destBook = Workbooks.Add
+    Set destSheet = destBook.Sheets(1)
+    
+    destSheet.Cells(1, 1).Value = "Employee ID"
+    destSheet.Cells(1, 2).Value = "Shift"
+    destSheet.Cells(1, 3).Value = "Start Date"
+    destSheet.Cells(1, 4).Value = "End Date"
+    destRow = 2
+    
+    For r = (rosterRow + 1) To lastRow
+        empID = Trim(CStr(srcSheet.Cells(r, 1).Value))
+        
+        If empID <> "" And _
+           UCase(empID) <> "EMPLOYEE ID" And _
+           UCase(empID) <> "EMPLPYEE ID" And _
+           UCase(empID) <> "EMPLOYEE" And _
+           InStr(UCase(empID), "TOTAL") = 0 Then
+            
+            For c = startCol To (startCol + 6)
+                currentDate = colDates(c)
+                shiftVal = WorksheetFunction.Trim(CStr(srcSheet.Cells(r, c).Text))
+                
+                tempShift = AdvancedShiftParser(shiftVal)
+                
+                If c = startCol Then
+                    currentShiftGroup = tempShift
+                    groupStartDate = currentDate
+                ElseIf tempShift <> currentShiftGroup Then
+                    destSheet.Cells(destRow, 1).Value = empID
+                    destSheet.Cells(destRow, 2).Value = currentShiftGroup
+                    destSheet.Cells(destRow, 3).Value = groupStartDate
+                    destSheet.Cells(destRow, 4).Value = colDates(c - 1)
+                    destRow = destRow + 1
+                    
+                    currentShiftGroup = tempShift
+                    groupStartDate = currentDate
+                End If
+                
+                If c = (startCol + 6) Then
+                    destSheet.Cells(destRow, 1).Value = empID
+                    destSheet.Cells(destRow, 2).Value = currentShiftGroup
+                    destSheet.Cells(destRow, 3).Value = groupStartDate
+                    destSheet.Cells(destRow, 4).Value = currentDate
+                    destRow = destRow + 1
+                End If
+            Next c
+            
+        End If
+    Next r
+    
+    destSheet.Columns("C:D").NumberFormat = "m/d/yyyy"
+    destSheet.Columns("A:D").AutoFit
+    
+    destBook.Activate
+    MsgBox "Data Successfully Converted!", vbInformation, "Done!"
+    Exit Sub
+
+DateError:
+    MsgBox "Error reading roster date headers.", vbCritical
+End Sub
+
+Function AdvancedShiftParser(ByVal rawShift As String) As String
+    rawShift = UCase(WorksheetFunction.Trim(rawShift))
+    rawShift = Replace(rawShift, Chr(160), " ")
+    rawShift = WorksheetFunction.Trim(rawShift)
+    
+    If rawShift = "OFF" Or rawShift = "" Or _
+       rawShift = "MONDAY" Or rawShift = "TUESDAY" Or rawShift = "TUESADY" Or _
+       rawShift = "WEDNESDAY" Or rawShift = "THURSDAY" Or rawShift = "FRIDAY" Or _
+       rawShift = "SATURDAY" Or rawShift = "SUNDAY" Then
+        AdvancedShiftParser = "OFF"
+        Exit Function
+    End If
+    
+    On Error GoTo ParserFallback
+    
+    Dim cleanStr As String
+    Dim idx As Integer, ch As String
+    For idx = 1 To Len(rawShift)
+        ch = Mid(rawShift, idx, 1)
+        If InStr("0123456789AMPM- ", ch) > 0 Then
+            cleanStr = cleanStr & ch
+        End If
+    Next idx
+    cleanStr = WorksheetFunction.Trim(cleanStr)
+    
+    cleanStr = Replace(cleanStr, " - ", "-")
+    cleanStr = Replace(cleanStr, " -", "-")
+    cleanStr = Replace(cleanStr, "- ", "-")
+    
+    If InStr(cleanStr, "-") = 0 Then
+        Dim p1 As Long, p2 As Long, a1 As Long, a2 As Long
+        Dim cutPos As Long
+        
+        p1 = InStr(1, cleanStr, "PM")
+        p2 = InStr(p1 + 2, cleanStr, "PM")
+        a1 = InStr(1, cleanStr, "AM")
+        a2 = InStr(a1 + 2, cleanStr, "AM")
+        
+        If p1 > 0 And a1 > 0 Then
+            If p1 < a1 Then cutPos = p1 + 1 Else cutPos = a1 + 1
+        ElseIf p1 > 0 And p2 > 0 Then
+            cutPos = p1 + 1
+        ElseIf a1 > 0 And a2 > 0 Then
+            cutPos = a1 + 1
+        End If
+        
+        If cutPos > 1 And cutPos < Len(cleanStr) Then
+            cleanStr = WorksheetFunction.Trim(Left(cleanStr, cutPos)) & "-" & WorksheetFunction.Trim(Mid(cleanStr, cutPos + 1))
+        End If
+    End If
+    
+    Dim parts() As String
+    parts = Split(cleanStr, "-")
+    
+    Dim startStr As String, endStr As String
+    startStr = WorksheetFunction.Trim(parts(0))
+    endStr = WorksheetFunction.Trim(parts(1))
+    
+    If InStr(startStr, "AM") > 0 And InStr(startStr, " AM") = 0 Then startStr = Replace(startStr, "AM", " AM")
+    If InStr(startStr, "PM") > 0 And InStr(startStr, " PM") = 0 Then startStr = Replace(startStr, "PM", " PM")
+    If InStr(endStr, "AM") > 0 And InStr(endStr, " AM") = 0 Then endStr = Replace(endStr, "AM", " AM")
+    If InStr(endStr, "PM") > 0 And InStr(endStr, " PM") = 0 Then endStr = Replace(endStr, "PM", " PM")
+    
+    Dim startTime As Date, endTime As Date
+    startTime = CDate(startStr)
+    endTime = CDate(endStr)
+    
+    Dim startHour As Integer, endHour As Integer
+    startHour = Hour(startTime)
+    endHour = Hour(endTime)
+    
+    Dim prefix As String
+    If startHour >= 12 Then
+        prefix = "PM"
+    Else
+        prefix = "AM"
+    End If
+    
+    Dim duration As Double
+    If endTime >= startTime Then
+        duration = DateDiff("n", startTime, endTime) / 60
+    Else
+        duration = (DateDiff("n", startTime, CDate("23:59:00")) + DateDiff("n", CDate("00:00:00"), endTime) + 1) / 60
+    End If
+    
+    Dim displayHour As Integer
+    displayHour = startHour
+    If displayHour = 0 Then displayHour = 12
+    
+    AdvancedShiftParser = prefix & " " & Format(displayHour, "00") & " (" & Format(duration, "00") & ")"
+    Exit Function
+
+ParserFallback:
+    AdvancedShiftParser = rawShift
+End Function
