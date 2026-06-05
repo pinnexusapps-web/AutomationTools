@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Pinnexus · Codes by DSU11425</title>
+<!-- Google Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+<!-- GSAP + ScrollTrigger + Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a;
+    --white: #f8f8f6;
+    --gray: #e5e5e3;
+    --gray-mid: #888884;
+    --gray-dark: #333331;
+    --accent: #1a1a1a;
+    --green: #2d6a4f;
+    --green-light: #d8f3dc;
+    --border: #e0e0dd;
+    --radius: 12px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body { font-family: var(--font); background: #fff; color: var(--black); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+
+  /* 3D canvas background (hero only) */
+  #hero-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.38;
+  }
+  .hero {
+    position: relative;
+    background: var(--black);
+    color: var(--white);
+    padding: 7rem 2.5rem 5rem;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 56px;
+  }
+  .nav-logo { font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--black); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--black); display: inline-block; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 13px; color: var(--gray-mid); text-decoration: none; font-weight: 400; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--black); }
+  .nav-cta { font-size: 13px; background: var(--black); color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: opacity 0.2s; }
+  .nav-cta:hover { opacity: 0.8; }
+
+  h1 { font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 300; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+  h1 span { font-weight: 600; background: linear-gradient(120deg, #fff, #b0b0b0); background-clip: text; -webkit-background-clip: text; color: transparent; }
+  .hero-sub { font-size: 16px; color: rgba(255,255,255,0.5); max-width: 480px; line-height: 1.7; margin-bottom: 2.5rem; }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-white { background: #fff; color: #000; padding: 11px 22px; border-radius: 7px; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+  .btn-white:hover { opacity: 0.88; transform: translateY(-2px); }
+  .btn-ghost { border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); padding: 11px 22px; border-radius: 7px; text-decoration: none; font-size: 13px; transition: border-color 0.2s, color 0.2s; }
+  .hero-stats { display: flex; gap: 3rem; margin-top: 4rem; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .stat-num { font-size: 28px; font-weight: 600; color: #fff; }
+  .stat-lbl { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+  section { padding: 5rem 2.5rem; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-mid); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+  .section-label::before { content: ''; display: block; width: 16px; height: 1px; background: var(--gray-mid); }
+  h2 { font-size: 2rem; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  h2 strong { font-weight: 600; }
+
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .tool-card { background: #fff; padding: 1.75rem; transition: all 0.25s; cursor: pointer; }
+  .tool-card:hover { background: #fafaf9; transform: translateY(-3px); }
+  .tool-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--black); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+  .tool-icon svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 1.5; fill: none; }
+
+  .code-section { background: var(--black); color: var(--white); }
+  .code-window { background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 0 0 10px 10px; }
+  pre { font-family: var(--mono); font-size: 12px; line-height: 1.8; color: rgba(255,255,255,0.75); white-space: pre-wrap; word-break: break-word; }
+  .kw { color: #c792ea; } .fn { color: #82aaff; } .str { color: #c3e88d; } .cm { color: rgba(255,255,255,0.35); } .num { color: #f78c6c; } .var { color: #eeffff; }
+  .code-tab { padding: 10px 18px; font-size: 12px; font-family: var(--mono); color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; display: inline-block; transition: all 0.2s; }
+  .code-tab.active { color: #fff; border-bottom-color: #fff; }
+  .code-tab:hover:not(.active) { color: rgba(255,255,255,0.6); }
+
+  /* download button inside code header */
+  .code-download-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(4px);
+  }
+  .code-download-btn:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.5);
+    transform: translateY(-1px);
+  }
+  .code-download-btn i { font-size: 13px; }
+
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem; }
+  .step { display: flex; flex-direction: column; gap: 0.5rem; }
+  .step-num { font-size: 11px; font-family: var(--mono); color: var(--gray-mid); }
+  .step-title { font-size: 14px; font-weight: 600; }
+  .step-text { font-size: 13px; color: var(--gray-mid); line-height: 1.65; }
+
+  /* QR Forge styles */
+  .app-main-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 2rem; display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; justify-content: space-between; margin-top: 2rem; }
+  .app-info { flex: 2; min-width: 240px; }
+  .app-visual { flex: 1; min-width: 160px; background: var(--black); border-radius: 20px; padding: 1.5rem; text-align: center; }
+  .qr-demo { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; max-width: 140px; margin: 0 auto; background: #fff; padding: 8px; border-radius: 12px; }
+  .qr-cell { aspect-ratio: 1; border-radius: 2px; }
+  .qr-on { background: #0a0a0a; }
+  .qr-off { background: #f0f0f0; }
+  .app-badge-row { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .app-badge { font-size: 10px; letter-spacing: 0.08em; background: var(--green-light); color: var(--green); padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+  .dl-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--black); color: #fff; padding: 12px 22px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 500; transition: 0.2s; border: none; cursor: pointer; }
+  .dl-btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--gray-mid); }
+  .dl-btn-ghost:hover { border-color: #aaa; color: #000; background: #f5f5f5; }
+  .features-masonry { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin: 1.5rem 0; border: 1px solid var(--border); }
+  .feat-item { background: #fff; padding: 1.2rem 1rem; display: flex; gap: 10px; align-items: flex-start; }
+  .feat-item i { font-size: 22px; color: var(--green); flex-shrink: 0; }
+  .feat-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .feat-text p { font-size: 12px; color: var(--gray-mid); line-height: 1.4; }
+  .format-row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1rem 0 2rem; }
+  .format-card { flex: 1; background: #f9f9f8; border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; }
+  .format-code { font-family: var(--mono); font-size: 20px; font-weight: 600; background: var(--black); color: #fff; display: inline-block; padding: 4px 12px; border-radius: 40px; margin: 10px 0; letter-spacing: 1px; }
+  .flow-steps { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin: 2rem 0; background: #f4f4f2; border-radius: 48px; padding: 1rem 1.5rem; }
+  .flow-step { flex: 1; text-align: center; min-width: 80px; }
+  .flow-dot { width: 36px; height: 36px; background: var(--black); color: white; border-radius: 60px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: bold; margin-bottom: 8px; }
+  .flow-dot.accent { background: var(--green); }
+  .print-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .print-card { background: #fefefe; border: 1px solid var(--border); border-radius: 16px; padding: 1rem; transition: 0.2s; }
+  .tech-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0; }
+  .tech-pill { background: #eef2ff; border-radius: 40px; padding: 5px 14px; font-size: 11px; font-family: var(--mono); font-weight: 500; color: #1e293b; }
+
+  footer { background: var(--black); color: rgba(255,255,255,0.3); padding: 2rem 2.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .badge-vba { background: #eef2ff; color: #3730a3; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: inline-block; margin-top: 8px; }
+  .badge-android { background: var(--green-light); color: var(--green); padding: 3px 8px; border-radius: 4px; font-size: 10px; display: inline-block; margin-left: 5px; }
+  .personal-guide { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 1.8rem; margin-top: 2rem; }
+  .personal-guide h3 { font-size: 1.2rem; margin-bottom: 1rem; font-weight: 600; color: #166534; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .hero { padding: 4rem 1.25rem 3rem; }
+    section { padding: 3rem 1.25rem; }
+    h2 { font-size: 1.7rem; }
+    .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+    .steps-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+    .tools-grid { grid-template-columns: 1fr; }
+    .app-main-card { flex-direction: column; text-align: center; }
+    .app-visual { width: 100%; }
+    .features-masonry { grid-template-columns: 1fr; }
+    .format-row { flex-direction: column; }
+    .flow-steps { flex-direction: column; align-items: flex-start; background: transparent; padding: 0; gap: 1rem; border-radius: 0; }
+    .flow-step { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; }
+    .flow-dot { margin-bottom: 0; }
+    footer { flex-direction: column; align-items: flex-start; }
+    .code-body { max-height: 400px; }
+  }
+  @media (max-width: 480px) {
+    .hero-actions { flex-direction: column; }
+    .btn-white, .btn-ghost { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo"><span class="logo-dot"></span> Pinnexus</a>
+  <ul class="nav-links">
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#showcase">Code</a></li>
+    <li><a href="#guide">Guide</a></li>
+    <li><a href="#app">QR Forge</a></li>
+  </ul>
+  <a href="#app" class="nav-cta">Get the App</a>
+</nav>
+
+<!-- HERO with 3D canvas -->
+<section class="hero" id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-inner">
+    <div class="hero-tag" style="font-size:11px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:1rem;">Codes by Pinnexus</div>
+    <h1>Automation tools<br>built for <span>real work</span></h1>
+    <p class="hero-sub">Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.</p>
+    <div class="hero-actions">
+      <a href="#tools" class="btn-white">Explore tools</a>
+      <a href="#guide" class="btn-ghost">Setup guide</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">3</div><div class="stat-lbl">VBA Scripts</div></div>
+      <div><div class="stat-num">1</div><div class="stat-lbl">Android App</div></div>
+      <div><div class="stat-num">v2.0</div><div class="stat-lbl">QR Forge</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS SECTION -->
+<section id="tools">
+  <div class="section-inner">
+    <div class="section-label">What's included</div>
+    <h2>Four tools,<br><strong>one workflow.</strong></h2>
+    <p class="section-desc" style="color: var(--gray-mid); max-width: 480px;">From receivings calculation to shift scheduling — each tool is purpose-built for warehouse and dispatch operations.</p>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-icon"><svg viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/><path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/><path d="m16 5 3 3"/></svg></div><div class="tool-name">CalculateReceivings</div><div class="tool-desc">VLOOKUP cost calc + 1.05× multiplier, auto-clean columns, final total.</div><span class="badge-vba">VBA · Excel</span></div>
+      <div class="tool-card"><div class="tool-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></div><div class="tool-name">GenerateDailyReport</div><div class="tool-desc">Picker success/cancel counts, top TG/non-TG, modified orders flag, summary block.</div><span class="badge-vba">VBA · Excel</span></div>
+      <div class="tool-card"><div class="tool-icon"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/><path d="M14 17h7M17 14v7"/></svg></div><div class="tool-name">GenerateWeeklyReport</div><div class="tool-desc">Groups consecutive identical shifts, exports clean employee schedule with date ranges.</div><span class="badge-vba">VBA · Excel</span></div>
+      <div class="tool-card"><div class="tool-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div><div class="tool-name">QR Forge</div><div class="tool-desc">Generate QR codes for shelves/dispatch — offline, autocomplete, batch print.</div><span class="badge-android">Android</span><span class="badge-android" style="margin-left:4px;">iOS soon</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE SHOWCASE with DOWNLOAD BUTTON (saves as .txt) -->
+<section class="code-section" id="showcase">
+  <div class="section-inner">
+    <div class="section-label">Code showcase</div>
+    <h2 style="color:#fff;">Browse the <strong>scripts</strong></h2>
+    <div style="display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:0; flex-wrap:wrap;" id="codeTabs">
+      <div class="code-tab active" data-tab="0">CalculateReceivings</div>
+      <div class="code-tab" data-tab="1">GenerateDailyReport</div>
+      <div class="code-tab" data-tab="2">GenerateWeeklyReport</div>
+    </div>
+    <div class="code-window">
+      <div class="code-header" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; gap:6px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:#28c840;"></div>
+        </div>
+        <div class="code-filename" style="font-size:11px; font-family:var(--mono); color:rgba(255,255,255,0.5);" id="codeFilename">CalculateReceivings_V1_2.txt</div>
+        <button id="downloadCodeBtn" class="code-download-btn"><i class="ti ti-download"></i> Download .txt</button>
+      </div>
+      <div class="code-body" style="padding:1.25rem 1.5rem; overflow-x:auto;">
+        <pre id="codeContent"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GUIDE SECTION with PERSONAL.XLSB instructions -->
+<section id="guide">
+  <div class="section-inner">
+    <div class="section-label">Setup guide</div>
+    <h2>Up and running<br><strong>in four steps.</strong></h2>
+    <div class="steps-grid">
+      <div class="step"><div class="step-num">01</div><div class="step-title">Open workbook</div><div class="step-text">Open Excel file with source data. Ensure sheet names match script expectations.</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-title">Alt+F11 → Module</div><div class="step-text">Insert → Module, paste the full macro code.</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-title">Save as .xlsm</div><div class="step-text">Enable macros when prompted.</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-title">Alt+F8 → Run</div><div class="step-text">Select macro name → Run.</div></div>
+    </div>
+
+    <!-- PERSONAL.XLSB Global Macro Guide -->
+    <div class="personal-guide">
+      <h3>📁 Make macros global (PERSONAL.XLSB)</h3>
+      <p style="margin-bottom: 12px; font-size: 14px;">Want these scripts available in <strong>any</strong> Excel file without copying every time? Add them to your Personal Macro Workbook.</p>
+      <ol style="margin-left: 1.2rem; font-size: 13px; color: #14532d; line-height: 1.7;">
+        <li>Open any Excel file. Press <code style="background:#e6f7e6; padding:2px 6px; border-radius:6px;">Alt + F11</code> to open VBA editor.</li>
+        <li>If <strong>PERSONAL.XLSB</strong> does not exist: close VBA editor, go to <strong>View → Macros</strong>, type any name (e.g. "CreatePersonal"), click <strong>Create</strong>. Then close Excel and save when prompted. Reopen Excel → PERSONAL.XLSB is created.</li>
+        <li>In VBA editor (<kbd>Alt+F11</kbd>), locate <strong>VBAProject (PERSONAL.XLSB)</strong> in the Project Explorer.</li>
+        <li>Right-click → <strong>Insert → Module</strong>. Paste the full script (e.g., CalculateReceivings).</li>
+        <li>Repeat for each macro: GenerateDailyReport, GenerateWeeklyReport (each in separate module or same).</li>
+        <li>Press <kbd>Ctrl+S</kbd> to save PERSONAL.XLSB. (If protected: enable trust access to VBA project under Macro Settings).</li>
+        <li>Now you can run <strong>CalculateReceivings</strong>, <strong>GenerateDailyReport</strong>, <strong>GenerateWeeklyReport</strong> from <kbd>Alt+F8</kbd> in any Excel workbook!</li>
+      </ol>
+      <div style="margin-top: 12px; background:#fff; border-radius: 12px; padding: 12px; font-size: 12px; border-left: 4px solid #2d6a4f;">
+        💡 <strong>Pro tip:</strong> Assign shortcut keys by opening Macro dialog → Options → set Ctrl+Shift+letter. Your global macros become instant productivity boosters.
+      </div>
+    </div>
+
+    <div style="margin-top:1rem; background:#f9f9f8; border-radius:12px; padding:1.2rem;"><span style="font-weight:600;">⚠️ Enable macros</span> — only for trusted files.</div>
+  </div>
+</section>
+
+<!-- QR FORGE SECTION -->
+<section id="app" style="background:#fdfdfc;">
+  <div class="section-inner">
+    <div class="section-label">Mobile app · v2.0.0</div>
+    <h2>QR Forge: <strong>Smart QR generator</strong> for warehouse ops</h2>
+    <p class="section-desc" style="max-width:600px;">Flutter-powered app with auto-formatting, instant preview, offline & batch printing.</p>
+
+    <div class="app-main-card">
+      <div class="app-info">
+        <div class="app-badge-row"><span class="app-badge">Android 8+</span><span class="app-badge">iOS beta soon</span></div>
+        <div style="font-size: 1.8rem; font-weight: 600;">QR Forge</div>
+        <div style="margin: 0.5rem 0 1rem;">Auto-dash formatting · History autocomplete · Multi-select print · PDF export</div>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1rem;">
+          <li>✔️ Smart keyboard (alpha→numpad)</li><li>✔️ Live QR rendering on last char</li><li>✔️ 200-item history + autocomplete</li><li>✔️ WiFi printing & PDF batch layouts</li>
+        </ul>
+        <div><button class="dl-btn" id="apkDownload"><i class="ti ti-device-mobile"></i> Download APK</button> <button class="dl-btn dl-btn-ghost" id="githubBtn" style="margin-left:6px;"><i class="ti ti-brand-github"></i> GitHub</button></div>
+        <div style="font-size:11px; margin-top:8px;">~4 MB · Flutter 3 · DSU11425</div>
+      </div>
+      <div class="app-visual">
+        <div class="qr-demo" id="qrDemo"></div>
+        <div style="margin-top:12px; font-size:10px; color:rgba(255,255,255,0.5);">sample QR preview</div>
+      </div>
+    </div>
+
+    <div class="features-masonry">
+      <div class="feat-item"><i class="ti ti-keyboard"></i><div class="feat-text"><h4>Smart keyboard</h4><p>Auto-switches from letters to numbers at correct position</p></div></div>
+      <div class="feat-item"><i class="ti ti-separator"></i><div class="feat-text"><h4>Auto-dash formatting</h4><p>AA0-00-000 / A-00 inserted automatically</p></div></div>
+      <div class="feat-item"><i class="ti ti-qrcode"></i><div class="feat-text"><h4>Instant QR preview</h4><p>Updates the moment code is complete</p></div></div>
+      <div class="feat-item"><i class="ti ti-history"></i><div class="feat-text"><h4>Autocomplete</h4><p>Dropdown from previous entries while typing</p></div></div>
+      <div class="feat-item"><i class="ti ti-select"></i><div class="feat-text"><h4>Multi-select print</h4><p>Long-press to batch print multiple QR codes</p></div></div>
+      <div class="feat-item"><i class="ti ti-printer"></i><div class="feat-text"><h4>WiFi printing</h4><p>Native system dialog → any network printer</p></div></div>
+      <div class="feat-item"><i class="ti ti-file-type-pdf"></i><div class="feat-text"><h4>PDF export</h4><p>A4 layout with adjustable QR size (0.6″–3.0″)</p></div></div>
+      <div class="feat-item"><i class="ti ti-share"></i><div class="feat-text"><h4>Share & save</h4><p>Export PNG to gallery or share via apps</p></div></div>
+    </div>
+
+    <div class="format-row">
+      <div class="format-card"><div style="font-weight:600;">📦 Shelves</div><div class="format-code">AA0-00-000</div><div>8 chars → 2 letters + 6 digits, dashes inserted automatically</div></div>
+      <div class="format-card"><div style="font-weight:600;">🚚 Dispatch</div><div class="format-code">A-00</div><div>Letter + 2 digits, auto dash after first char</div></div>
+    </div>
+
+    <div class="flow-steps">
+      <div class="flow-step"><div class="flow-dot">1</div><div>Select type</div><small>Shelf/Dispatch</small></div>
+      <div class="flow-step"><div class="flow-dot">2</div><div>Type code</div><small>Auto-format + suggestions</small></div>
+      <div class="flow-step"><div class="flow-dot accent">3</div><div>QR appears</div><small>Instant preview</small></div>
+      <div class="flow-step"><div class="flow-dot">4</div><div>Save/print</div><small>PNG, PDF or WiFi</small></div>
+      <div class="flow-step"><div class="flow-dot">5</div><div>History</div><small>Up to 200 records</small></div>
+    </div>
+
+    <div style="background:#f8f8f6; border-radius:20px; padding:1.5rem; margin-top:0.5rem;">
+      <div class="print-grid">
+        <div class="print-card"><i class="ti ti-adjustments-horizontal"></i><strong>Adjustable QR size</strong><br>0.6″ to 3.0″ slider</div>
+        <div class="print-card"><i class="ti ti-eye"></i><strong>Live PDF preview</strong><br>See exact layout before print</div>
+        <div class="print-card"><i class="ti ti-layout-grid"></i><strong>Auto-layout grid</strong><br>Multiple QRs arranged on A4</div>
+        <div class="print-card"><i class="ti ti-wifi"></i><strong>WiFi printer</strong><br>Works with any network printer</div>
+      </div>
+    </div>
+
+    <div class="tech-pills">
+      <span class="tech-pill">Flutter 3</span><span class="tech-pill">Dart</span><span class="tech-pill">Material 3</span><span class="tech-pill">qr_flutter</span>
+      <span class="tech-pill">pdf / printing</span><span class="tech-pill">shared_preferences</span><span class="tech-pill">gal</span><span class="tech-pill">share_plus</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">Codes by Pinnexus</div>
+  <div class="footer-copy">Built by DSU11425 · v2.0 · 2025</div>
+  <div class="footer-links"><a href="#tools">Tools</a><a href="#guide">Guide</a><a href="#app">App</a></div>
+</footer>
+
+<script>
+  // FULL VBA CODE (same as before, but download will save as .txt)
+  const fullCalculate = `<span class="kw">Sub</span> <span class="fn">CalculateReceivings</span>()
+    <span class="kw">Dim</span> <span class="var">wsMain</span> <span class="kw">As</span> <span class="kw">Worksheet</span>
+    <span class="kw">Dim</span> <span class="var">wsData</span> <span class="kw">As</span> <span class="kw">Worksheet</span>
+    <span class="kw">Dim</span> <span class="var">lastRow</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">finalSum</span> <span class="kw">As</span> <span class="kw">Double</span>
+    <span class="kw">Dim</span> <span class="var">skuCell</span> <span class="kw">As</span> <span class="kw">Range</span>
+    <span class="kw">Dim</span> <span class="var">skuRow</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">skuCol</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">skuColLetter</span> <span class="kw">As</span> <span class="kw">String</span>, <span class="var">pColLetter</span> <span class="kw">As</span> <span class="kw">String</span>, <span class="var">qColLetter</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">Dim</span> <span class="var">prodNameColLetter</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">Dim</span> <span class="var">retryCount</span> <span class="kw">As</span> <span class="kw">Integer</span>
+    <span class="kw">Dim</span> <span class="var">i</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">r</span> <span class="kw">As</span> <span class="kw">Long</span>
+    
+    <span class="cm">&#x27; developed by DSU11425</span>
+    <span class="cm">&#x27; Software Version 1.2.1</span>
+    
+    <span class="kw">On</span> <span class="kw">Error</span> <span class="kw">Resume</span> <span class="kw">Next</span>
+    <span class="kw">Set</span> <span class="var">wsMain</span> = <span class="kw">ActiveWorkbook</span><span class="kw">Sheets</span>(<span class="str">&quot;Sheet1&quot;</span>)
+    <span class="kw">Set</span> <span class="var">wsData</span> = <span class="kw">ActiveWorkbook</span><span class="kw">Sheets</span>(<span class="num">1</span>)
+    <span class="kw">On</span> <span class="kw">Error</span> <span class="kw">GoTo</span> <span class="num">0</span>
+    
+    <span class="kw">If</span> <span class="var">wsMain</span> <span class="kw">Is</span> <span class="kw">Nothing</span> <span class="kw">Then</span>
+        <span class="kw">MsgBox</span> <span class="str">&quot;Error: Please make sure there is a sheet named &#x27;Sheet1&#x27; in this workbook!&quot;</span>, <span class="kw">vbCritical</span>, <span class="str">&quot;Sheet Missing&quot;</span>
+        <span class="kw">Exit</span> <span class="kw">Sub</span>
+    <span class="fn">End</span> <span class="kw">If</span>
+
+<span class="fn">FindSKULabel:</span>
+    
+    <span class="kw">Set</span> <span class="var">skuCell</span> = <span class="var">wsMain</span><span class="kw">Cells</span><span class="var">Find</span>(<span class="fn">What:</span>=<span class="str">&quot;SKU&quot;</span>, <span class="fn">LookIn:</span>=<span class="kw">xlValues</span>, <span class="fn">LookAt:</span>=<span class="kw">xlWhole</span>, <span class="fn">MatchCase:</span>=<span class="var">False</span>)
+    
+    <span class="kw">If</span> <span class="var">skuCell</span> <span class="kw">Is</span> <span class="kw">Nothing</span> <span class="kw">Then</span>
+        <span class="kw">MsgBox</span> <span class="str">&quot;Error: Could not find the &#x27;SKU&#x27; column header in Sheet1!&quot;</span>, <span class="kw">vbCritical</span>, <span class="str">&quot;Header Missing&quot;</span>
+        <span class="kw">Exit</span> <span class="kw">Sub</span>
+    <span class="fn">End</span> <span class="kw">If</span>
+    
+    <span class="var">skuRow</span> = <span class="var">skuCell</span><span class="var">Row</span>
+    <span class="var">skuCol</span> = <span class="var">skuCell</span><span class="var">Column</span>
+    
+    <span class="kw">If</span> <span class="var">skuRow</span> &gt; <span class="num">1</span> <span class="kw">Then</span>
+        <span class="kw">For</span> <span class="var">r</span> = <span class="var">skuRow</span> - <span class="num">1</span> <span class="kw">To</span> <span class="num">1</span> <span class="kw">Step</span> -<span class="num">1</span>
+            <span class="kw">If</span> <span class="var">Application</span><span class="var">WorksheetFunction</span><span class="var">CountA</span>(<span class="var">wsMain</span><span class="kw">Rows</span>(<span class="var">r</span>)) = <span class="num">0</span> <span class="kw">Then</span>
+                <span class="var">wsMain</span><span class="kw">Rows</span>(<span class="var">r</span>)<span class="var">Delete</span> <span class="fn">Shift:</span>=<span class="kw">xlUp</span>
+            <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">Next</span> <span class="var">r</span>
+        
+        <span class="kw">Set</span> <span class="var">skuCell</span> = <span class="var">wsMain</span><span class="kw">Cells</span><span class="var">Find</span>(<span class="fn">What:</span>=<span class="str">&quot;SKU&quot;</span>, <span class="fn">LookIn:</span>=<span class="kw">xlValues</span>, <span class="fn">LookAt:</span>=<span class="kw">xlWhole</span>, <span class="fn">MatchCase:</span>=<span class="var">False</span>)
+        <span class="var">skuRow</span> = <span class="var">skuCell</span><span class="var">Row</span>
+        <span class="var">skuCol</span> = <span class="var">skuCell</span><span class="var">Column</span>
+    <span class="kw">End</span> <span class="kw">If</span>
+    
+    <span class="kw">If</span> <span class="var">skuCol</span> &gt; <span class="num">1</span> <span class="kw">Then</span>
+        <span class="kw">For</span> <span class="var">i</span> = <span class="var">skuCol</span> - <span class="num">1</span> <span class="kw">To</span> <span class="num">1</span> <span class="kw">Step</span> -<span class="num">1</span>
+            <span class="kw">If</span> <span class="var">Application</span><span class="var">WorksheetFunction</span><span class="var">CountA</span>(<span class="var">wsMain</span><span class="var">Columns</span>(<span class="var">i</span>)) = <span class="num">0</span> <span class="kw">Then</span>
+                <span class="var">wsMain</span><span class="var">Columns</span>(<span class="var">i</span>)<span class="var">Delete</span> <span class="fn">Shift:</span>=<span class="var">xlToLeft</span>
+            <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">Next</span> <span class="var">i</span>
+        
+        <span class="kw">Set</span> <span class="var">skuCell</span> = <span class="var">wsMain</span><span class="kw">Cells</span><span class="var">Find</span>(<span class="fn">What:</span>=<span class="str">&quot;SKU&quot;</span>, <span class="fn">LookIn:</span>=<span class="kw">xlValues</span>, <span class="fn">LookAt:</span>=<span class="kw">xlWhole</span>, <span class="fn">MatchCase:</span>=<span class="var">False</span>)
+        <span class="var">skuRow</span> = <span class="var">skuCell</span><span class="var">Row</span>
+        <span class="var">skuCol</span> = <span class="var">skuCell</span><span class="var">Column</span>
+    <span class="kw">End</span> <span class="kw">If</span>
+    
+    <span class="var">skuColLetter</span> = <span class="kw">Split</span>(<span class="var">wsMain</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="var">skuCol</span>)<span class="kw">Address</span>, <span class="str">&quot;$&quot;</span>)(<span class="num">1</span>)
+    
+    <span class="var">lastRow</span> = <span class="var">wsMain</span><span class="kw">Cells</span>(<span class="var">wsMain</span><span class="kw">Rows</span><span class="kw">Count</span>, <span class="var">skuColLetter</span>)<span class="kw">End</span>(<span class="kw">xlUp</span>)<span class="var">Row</span>
+    
+    <span class="kw">If</span> <span class="var">lastRow</span> &lt;= <span class="var">skuRow</span> <span class="kw">Then</span>
+        <span class="kw">If</span> <span class="var">retryCount</span> = <span class="num">0</span> <span class="kw">Then</span>
+            <span class="var">wsMain</span><span class="kw">Cells</span>(<span class="var">skuRow</span>, <span class="var">skuCol</span>)<span class="var">Insert</span> <span class="fn">Shift:</span>=<span class="var">xlToRight</span>
+            <span class="var">retryCount</span> = <span class="num">1</span>
+            <span class="kw">GoTo</span> <span class="var">FindSKULabel</span>
+        <span class="kw">Else</span>
+            <span class="kw">MsgBox</span> <span class="str">&quot;Warning: No data found under the SKU column even after adjustment!&quot;</span>, <span class="var">vbExclamation</span>, <span class="str">&quot;No Data&quot;</span>
+            <span class="kw">Exit</span> <span class="kw">Sub</span>
+        <span class="fn">End</span> <span class="kw">If</span>
+    <span class="kw">End</span> <span class="kw">If</span>
+    
+    <span class="var">wsMain</span><span class="kw">Range</span>(<span class="var">wsMain</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="var">skuCol</span> + <span class="num">1</span>), <span class="var">wsMain</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="var">skuCol</span> + <span class="num">13</span>))<span class="var">ColumnWidth</span> = <span class="num">2.5</span>
+    
+    <span class="var">prodNameColLetter</span> = <span class="kw">Split</span>(<span class="var">wsMain</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="var">skuCol</span> + <span class="num">1</span>)<span class="kw">Address</span>, <span class="str">&quot;$&quot;</span>)(<span class="num">1</span>)
+    <span class="var">wsMain</span><span class="var">Columns</span>(<span class="var">prodNameColLetter</span>)<span class="var">AutoFit</span>
+    
+    <span class="var">pColLetter</span> = <span class="kw">Split</span>(<span class="var">wsMain</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="var">skuCol</span> + <span class="num">14</span>)<span class="kw">Address</span>, <span class="str">&quot;$&quot;</span>)(<span class="num">1</span>)
+    <span class="var">qColLetter</span> = <span class="kw">Split</span>(<span class="var">wsMain</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="var">skuCol</span> + <span class="num">15</span>)<span class="kw">Address</span>, <span class="str">&quot;$&quot;</span>)(<span class="num">1</span>)
+    
+    <span class="var">wsMain</span><span class="kw">Range</span>(<span class="var">qColLetter</span> &amp; (<span class="var">skuRow</span> + <span class="num">1</span>) &amp; <span class="str">&quot;:&quot;</span> &amp; <span class="var">qColLetter</span> &amp; <span class="var">lastRow</span>)<span class="var">Formula</span> = <span class="var">_</span>
+        <span class="str">&quot;=1.05 * &quot;</span> &amp; <span class="var">pColLetter</span> &amp; (<span class="var">skuRow</span> + <span class="num">1</span>) &amp; <span class="str">&quot; * VLOOKUP(&quot;</span> &amp; <span class="var">skuColLetter</span> &amp; (<span class="var">skuRow</span> + <span class="num">1</span>) &amp; <span class="str">&quot;, &#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!$K:$AA, 17, 0)&quot;</span>
+    
+    <span class="kw">With</span> <span class="var">wsMain</span><span class="kw">Range</span>(<span class="var">qColLetter</span> &amp; (<span class="var">skuRow</span> + <span class="num">1</span>) &amp; <span class="str">&quot;:&quot;</span> &amp; <span class="var">qColLetter</span> &amp; <span class="var">lastRow</span>)
+        <span class="kw">Value</span> = <span class="kw">Value</span>
+    <span class="kw">End</span> <span class="kw">With</span>
+    
+    <span class="var">wsMain</span><span class="kw">Cells</span>(<span class="var">lastRow</span> + <span class="num">2</span>, <span class="var">pColLetter</span>)<span class="kw">Value</span> = <span class="str">&quot;Total SUM:&quot;</span>
+    <span class="var">wsMain</span><span class="kw">Cells</span>(<span class="var">lastRow</span> + <span class="num">2</span>, <span class="var">qColLetter</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUM(&quot;</span> &amp; <span class="var">qColLetter</span> &amp; (<span class="var">skuRow</span> + <span class="num">1</span>) &amp; <span class="str">&quot;:&quot;</span> &amp; <span class="var">qColLetter</span> &amp; <span class="var">lastRow</span> &amp; <span class="str">&quot;)&quot;</span>
+    
+    <span class="var">finalSum</span> = <span class="var">wsMain</span><span class="kw">Cells</span>(<span class="var">lastRow</span> + <span class="num">2</span>, <span class="var">qColLetter</span>)<span class="kw">Value</span>
+    
+    <span class="var">wsMain</span><span class="var">Columns</span>(<span class="var">qColLetter</span>)<span class="var">AutoFit</span>
+    
+    <span class="kw">MsgBox</span> <span class="str">&quot;Process completed successfully!&quot;</span> &amp; <span class="kw">vbCrLf</span> &amp; <span class="kw">vbCrLf</span> &amp; <span class="var">_</span>
+           <span class="str">&quot;==============================&quot;</span> &amp; <span class="kw">vbCrLf</span> &amp; <span class="var">_</span>
+           <span class="str">&quot; FINAL TOTAL AMOUNT: &quot;</span> &amp; <span class="kw">Format</span>(<span class="var">finalSum</span>, <span class="str">&quot;#,##0.00&quot;</span>) &amp; <span class="kw">vbCrLf</span> &amp; <span class="var">_</span>
+           <span class="str">&quot;==============================&quot;</span>, <span class="kw">vbInformation</span>, <span class="str">&quot;Success&quot;</span>
+<span class="kw">End</span> <span class="kw">Sub</span>`;
+
+  const fullDaily = `<span class="kw">Sub</span> <span class="fn">GenerateDailyReport</span>()
+    <span class="cm">&#x27; Software Version 1.2</span>
+    <span class="cm">&#x27; developed by DSU11425</span>
+    
+    <span class="kw">Dim</span> <span class="var">wsData</span> <span class="kw">As</span> <span class="kw">Worksheet</span>, <span class="var">wsReport</span> <span class="kw">As</span> <span class="kw">Worksheet</span>
+    <span class="kw">Dim</span> <span class="var">lastRow</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">reportRow</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">lastReportRow</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">pickerDict</span> <span class="kw">As</span> <span class="kw">Object</span>
+    <span class="kw">Dim</span> <span class="var">pickerName</span> <span class="kw">As</span> <span class="kw">Variant</span>
+    <span class="kw">Dim</span> <span class="var">tableRange</span> <span class="kw">As</span> <span class="kw">Range</span>
+    <span class="kw">Dim</span> <span class="var">rawDate</span> <span class="kw">As</span> <span class="kw">String</span>, <span class="var">formattedDate</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">Dim</span> <span class="var">summaryRow</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">modifiedRow</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">i</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">startDataRow</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">amtDiff</span> <span class="kw">As</span> <span class="kw">Double</span>
+    <span class="kw">Dim</span> <span class="var">cellI</span> <span class="kw">As</span> <span class="kw">Variant</span>, <span class="var">cellJ</span> <span class="kw">As</span> <span class="kw">Variant</span>
+    <span class="kw">Dim</span> <span class="var">numI</span> <span class="kw">As</span> <span class="kw">Double</span>, <span class="var">numJ</span> <span class="kw">As</span> <span class="kw">Double</span>
+    
+    <span class="kw">Dim</span> <span class="var">currentSuccess</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">maxTGSuccess</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">maxTGRow</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">maxNonTGSuccess</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">maxNonTGRow</span> <span class="kw">As</span> <span class="kw">Long</span>
+    
+    <span class="kw">Set</span> <span class="var">wsData</span> = <span class="var">ActiveSheet</span>
+    
+    <span class="var">lastRow</span> = <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">wsData</span><span class="kw">Rows</span><span class="kw">Count</span>, <span class="str">&quot;A&quot;</span>)<span class="kw">End</span>(<span class="kw">xlUp</span>)<span class="var">Row</span>
+    <span class="kw">If</span> <span class="var">lastRow</span> &lt;= <span class="num">1</span> <span class="kw">Then</span>
+        <span class="kw">MsgBox</span> <span class="str">&quot;The active sheet seems to be empty or has no data rows. Please open the correct file first!&quot;</span>, <span class="kw">vbCritical</span>, <span class="str">&quot;Error&quot;</span>
+        <span class="kw">Exit</span> <span class="kw">Sub</span>
+    <span class="fn">End</span> <span class="kw">If</span>
+    
+    <span class="var">Application</span><span class="var">ScreenUpdating</span> = <span class="var">False</span>
+    <span class="var">Application</span><span class="var">DisplayAlerts</span> = <span class="var">False</span>
+    
+    <span class="kw">For</span> <span class="var">i</span> = <span class="num">2</span> <span class="kw">To</span> <span class="var">lastRow</span>
+        <span class="var">cellI</span> = <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">9</span>)<span class="kw">Value</span>
+        <span class="kw">If</span> <span class="kw">Not</span> <span class="var">IsNumeric</span>(<span class="var">cellI</span>) <span class="kw">And</span> <span class="var">cellI</span> &lt;&gt; <span class="str">&quot;&quot;</span> <span class="kw">Then</span>
+            <span class="var">cellI</span> = <span class="var">Replace</span>(<span class="var">cellI</span>, <span class="str">&quot;AED&quot;</span>, <span class="str">&quot;&quot;</span>)
+            <span class="var">cellI</span> = <span class="var">Trim</span>(<span class="var">cellI</span>)
+            <span class="kw">If</span> <span class="var">IsNumeric</span>(<span class="var">cellI</span>) <span class="kw">Then</span>
+                <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">9</span>)<span class="kw">Value</span> = <span class="var">CDbl</span>(<span class="var">cellI</span>)
+            <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">End</span> <span class="kw">If</span>
+        <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">9</span>)<span class="var">NumberFormat</span> = <span class="str">&quot;0.00&quot;</span>
+        
+        <span class="var">cellJ</span> = <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">10</span>)<span class="kw">Value</span>
+        <span class="kw">If</span> <span class="kw">Not</span> <span class="var">IsNumeric</span>(<span class="var">cellJ</span>) <span class="kw">And</span> <span class="var">cellJ</span> &lt;&gt; <span class="str">&quot;&quot;</span> <span class="kw">Then</span>
+            <span class="var">cellJ</span> = <span class="var">Replace</span>(<span class="var">cellJ</span>, <span class="str">&quot;AED&quot;</span>, <span class="str">&quot;&quot;</span>)
+            <span class="var">cellJ</span> = <span class="var">Trim</span>(<span class="var">cellJ</span>)
+            <span class="kw">If</span> <span class="var">IsNumeric</span>(<span class="var">cellJ</span>) <span class="kw">Then</span>
+                <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">10</span>)<span class="kw">Value</span> = <span class="var">CDbl</span>(<span class="var">cellJ</span>)
+            <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">End</span> <span class="kw">If</span>
+        <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">10</span>)<span class="var">NumberFormat</span> = <span class="str">&quot;0.00&quot;</span>
+    <span class="kw">Next</span> <span class="var">i</span>
+    
+    <span class="var">rawDate</span> = <span class="var">wsData</span><span class="kw">Range</span>(<span class="str">&quot;D2&quot;</span>)<span class="kw">Value</span>
+    <span class="kw">If</span> <span class="var">InStr</span>(<span class="var">rawDate</span>, <span class="str">&quot; &quot;</span>) &gt; <span class="num">0</span> <span class="kw">Then</span>
+        <span class="var">formattedDate</span> = <span class="kw">Split</span>(<span class="var">rawDate</span>, <span class="str">&quot; &quot;</span>)(<span class="num">0</span>)
+    <span class="kw">Else</span>
+        <span class="var">formattedDate</span> = <span class="var">rawDate</span>
+    <span class="kw">End</span> <span class="kw">If</span>
+    
+    <span class="kw">On</span> <span class="kw">Error</span> <span class="kw">Resume</span> <span class="kw">Next</span>
+    <span class="kw">Set</span> <span class="var">wsReport</span> = <span class="kw">Sheets</span>(<span class="str">&quot;Daily Report&quot;</span>)
+    <span class="kw">If</span> <span class="kw">Not</span> <span class="var">wsReport</span> <span class="kw">Is</span> <span class="kw">Nothing</span> <span class="kw">Then</span> <span class="var">wsReport</span><span class="var">Delete</span>
+    <span class="kw">On</span> <span class="kw">Error</span> <span class="kw">GoTo</span> <span class="num">0</span>
+    
+    <span class="kw">Set</span> <span class="var">wsReport</span> = <span class="var">Worksheets</span><span class="var">Add</span>(<span class="fn">Before:</span>=<span class="var">Worksheets</span>(<span class="num">1</span>))
+    <span class="var">wsReport</span><span class="var">Name</span> = <span class="str">&quot;Daily Report&quot;</span>
+    
+    <span class="var">ActiveWindow</span><span class="var">DisplayGridlines</span> = <span class="var">False</span>
+    
+    <span class="kw">With</span> <span class="var">wsReport</span>
+        <span class="var">Columns</span>(<span class="str">&quot;A&quot;</span>)<span class="var">ColumnWidth</span> = <span class="num">1</span>
+        <span class="kw">Rows</span>(<span class="str">&quot;1&quot;</span>)<span class="var">RowHeight</span> = <span class="num">7.5</span>
+        
+        <span class="kw">Range</span>(<span class="str">&quot;B2&quot;</span>)<span class="kw">Value</span> = <span class="str">&quot;PICKER&quot;</span>
+        <span class="kw">Range</span>(<span class="str">&quot;C2&quot;</span>)<span class="kw">Value</span> = <span class="str">&quot;CANCELLED&quot;</span>
+        <span class="kw">Range</span>(<span class="str">&quot;D2&quot;</span>)<span class="kw">Value</span> = <span class="str">&quot;SUCCESS&quot;</span>
+        <span class="kw">Range</span>(<span class="str">&quot;E2&quot;</span>)<span class="kw">Value</span> = <span class="str">&quot;PICKED UP&quot;</span>
+        
+        <span class="kw">Range</span>(<span class="str">&quot;B2:E2&quot;</span>)<span class="var">Interior</span><span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">214</span>, <span class="num">227</span>, <span class="num">242</span>)
+        <span class="kw">Range</span>(<span class="str">&quot;B2:E2&quot;</span>)<span class="var">Font</span><span class="var">Bold</span> = <span class="var">True</span>
+        <span class="kw">Range</span>(<span class="str">&quot;B2:E2&quot;</span>)<span class="var">Font</span><span class="var">Name</span> = <span class="str">&quot;Calibri&quot;</span>
+        <span class="kw">Range</span>(<span class="str">&quot;B2:E2&quot;</span>)<span class="var">Font</span><span class="var">Size</span> = <span class="num">11</span>
+        
+        <span class="kw">Set</span> <span class="var">pickerDict</span> = <span class="var">CreateObject</span>(<span class="str">&quot;Scripting.Dictionary&quot;</span>)
+        <span class="kw">For</span> <span class="var">reportRow</span> = <span class="num">2</span> <span class="kw">To</span> <span class="var">lastRow</span>
+            <span class="var">pickerName</span> = <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">7</span>)<span class="kw">Value</span>
+            <span class="kw">If</span> <span class="var">pickerName</span> &lt;&gt; <span class="str">&quot;&quot;</span> <span class="kw">And</span> <span class="var">pickerName</span> &lt;&gt; <span class="str">&quot;Picker&quot;</span> <span class="kw">And</span> <span class="var">pickerName</span> &lt;&gt; <span class="str">&quot;PICKER&quot;</span> <span class="kw">And</span> <span class="kw">Not</span> <span class="var">pickerDict</span><span class="var">Exists</span>(<span class="var">pickerName</span>) <span class="kw">Then</span>
+                <span class="var">pickerDict</span><span class="var">Add</span> <span class="var">pickerName</span>, <span class="str">&quot;&quot;</span>
+            <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">Next</span> <span class="var">reportRow</span>
+        
+        <span class="var">reportRow</span> = <span class="num">3</span>
+        <span class="kw">For</span> <span class="var">Each</span> <span class="var">pickerName</span> <span class="var">In</span> <span class="var">pickerDict</span><span class="var">Keys</span>
+            <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="var">pickerName</span>
+            <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">3</span>)<span class="var">Formula</span> = <span class="str">&quot;=COUNTIFS(&#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!G:G, &quot;&quot;&quot;</span> &amp; <span class="var">pickerName</span> &amp; <span class="str">&quot;&quot;&quot;, &#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!C:C, &quot;&quot;CANCELLED&quot;&quot;)&quot;</span>
+            <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">4</span>)<span class="var">Formula</span> = <span class="str">&quot;=COUNTIFS(&#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!G:G, &quot;&quot;&quot;</span> &amp; <span class="var">pickerName</span> &amp; <span class="str">&quot;&quot;&quot;, &#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!C:C, &quot;&quot;PICKED_UP&quot;&quot;)&quot;</span>
+            <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">5</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUM(C&quot;</span> &amp; <span class="var">reportRow</span> &amp; <span class="str">&quot;:D&quot;</span> &amp; <span class="var">reportRow</span> &amp; <span class="str">&quot;)&quot;</span>
+            <span class="var">reportRow</span> = <span class="var">reportRow</span> + <span class="num">1</span>
+        <span class="kw">Next</span> <span class="var">pickerName</span>
+        
+        <span class="var">lastReportRow</span> = <span class="var">reportRow</span> - <span class="num">1</span>
+        <span class="kw">Set</span> <span class="var">tableRange</span> = <span class="kw">Range</span>(<span class="str">&quot;B3:E&quot;</span> &amp; <span class="var">lastReportRow</span>)
+        
+        <span class="var">Sort</span><span class="var">SortFields</span><span class="var">Clear</span>
+        <span class="var">Sort</span><span class="var">SortFields</span><span class="var">Add</span> <span class="fn">Key:</span>=<span class="var">wsReport</span><span class="kw">Range</span>(<span class="str">&quot;E3:E&quot;</span> &amp; <span class="var">lastReportRow</span>), <span class="var">_</span>
+            <span class="fn">SortOn:</span>=<span class="var">xlSortOnValues</span>, <span class="fn">Order:</span>=<span class="var">xlDescending</span>, <span class="fn">DataOption:</span>=<span class="var">xlSortNormal</span>
+        <span class="kw">With</span> <span class="var">Sort</span>
+            <span class="var">SetRange</span> <span class="var">tableRange</span>
+            <span class="var">Header</span> = <span class="var">xlNo</span>
+            <span class="var">MatchCase</span> = <span class="var">False</span>
+            <span class="var">Orientation</span> = <span class="var">xlTopToBottom</span>
+            <span class="var">SortMethod</span> = <span class="var">xlPinYin</span>
+            <span class="var">Apply</span>
+        <span class="kw">End</span> <span class="kw">With</span>
+        
+        <span class="var">maxTGSuccess</span> = -<span class="num">1</span>: <span class="var">maxTGRow</span> = <span class="num">0</span>
+        <span class="var">maxNonTGSuccess</span> = -<span class="num">1</span>: <span class="var">maxNonTGRow</span> = <span class="num">0</span>
+        
+        <span class="kw">For</span> <span class="var">reportRow</span> = <span class="num">3</span> <span class="kw">To</span> <span class="var">lastReportRow</span>
+            <span class="var">pickerName</span> = <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">2</span>)<span class="kw">Value</span>
+            <span class="var">currentSuccess</span> = <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">4</span>)<span class="kw">Value</span>
+            
+            <span class="kw">If</span> <span class="var">Left</span>(<span class="var">Trim</span>(<span class="var">pickerName</span>), <span class="num">2</span>) = <span class="str">&quot;TG&quot;</span> <span class="kw">Then</span>
+                <span class="kw">If</span> <span class="var">currentSuccess</span> &gt; <span class="var">maxTGSuccess</span> <span class="kw">Then</span>
+                    <span class="var">maxTGSuccess</span> = <span class="var">currentSuccess</span>
+                    <span class="var">maxTGRow</span> = <span class="var">reportRow</span>
+                <span class="kw">End</span> <span class="kw">If</span>
+            <span class="kw">Else</span>
+                <span class="kw">If</span> <span class="var">currentSuccess</span> &gt; <span class="var">maxNonTGSuccess</span> <span class="kw">Then</span>
+                    <span class="var">maxNonTGSuccess</span> = <span class="var">currentSuccess</span>
+                    <span class="var">maxNonTGRow</span> = <span class="var">reportRow</span>
+                <span class="kw">End</span> <span class="kw">If</span>
+            <span class="kw">End</span> <span class="kw">If</span>
+            
+            <span class="kw">If</span> <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">3</span>)<span class="kw">Value</span> = <span class="num">0</span> <span class="kw">Then</span> <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">3</span>)<span class="kw">Value</span> = <span class="str">&quot;&quot;</span>
+            <span class="kw">If</span> <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">4</span>)<span class="kw">Value</span> = <span class="num">0</span> <span class="kw">Then</span> <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">4</span>)<span class="kw">Value</span> = <span class="str">&quot;&quot;</span>
+            <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">5</span>))<span class="var">Font</span><span class="var">Name</span> = <span class="str">&quot;Calibri&quot;</span>
+            <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">5</span>))<span class="var">Font</span><span class="var">Size</span> = <span class="num">11</span>
+        <span class="kw">Next</span> <span class="var">reportRow</span>
+        
+        <span class="kw">If</span> <span class="var">maxTGRow</span> &gt; <span class="num">0</span> <span class="kw">Then</span>
+            <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">maxTGRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">maxTGRow</span>, <span class="num">5</span>))<span class="var">Interior</span><span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">204</span>, <span class="num">229</span>, <span class="num">255</span>)
+        <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">If</span> <span class="var">maxNonTGRow</span> &gt; <span class="num">0</span> <span class="kw">Then</span>
+            <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">maxNonTGRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">maxNonTGRow</span>, <span class="num">5</span>))<span class="var">Interior</span><span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">255</span>, <span class="num">224</span>, <span class="num">178</span>)
+        <span class="kw">End</span> <span class="kw">If</span>
+        
+        <span class="kw">With</span> <span class="kw">Range</span>(<span class="str">&quot;B2:E&quot;</span> &amp; <span class="var">lastReportRow</span> + <span class="num">1</span>)
+            <span class="var">Borders</span>(<span class="var">xlInsideHorizontal</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+            <span class="var">Borders</span>(<span class="var">xlInsideHorizontal</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+            <span class="var">Borders</span>(<span class="var">xlInsideHorizontal</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">180</span>, <span class="num">180</span>, <span class="num">180</span>)
+            
+            <span class="var">Borders</span>(<span class="var">xlInsideVertical</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+            <span class="var">Borders</span>(<span class="var">xlInsideVertical</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+            <span class="var">Borders</span>(<span class="var">xlInsideVertical</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">180</span>, <span class="num">180</span>, <span class="num">180</span>)
+            
+            <span class="var">Borders</span>(<span class="var">xlEdgeLeft</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeLeft</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeLeft</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">120</span>, <span class="num">120</span>, <span class="num">120</span>)
+            
+            <span class="var">Borders</span>(<span class="var">xlEdgeRight</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeRight</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeRight</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">120</span>, <span class="num">120</span>, <span class="num">120</span>)
+            
+            <span class="var">Borders</span>(<span class="var">xlEdgeTop</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeTop</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeTop</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">120</span>, <span class="num">120</span>, <span class="num">120</span>)
+            
+            <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">120</span>, <span class="num">120</span>, <span class="num">120</span>)
+        <span class="kw">End</span> <span class="kw">With</span>
+        
+        <span class="var">reportRow</span> = <span class="var">lastReportRow</span> + <span class="num">1</span>
+        <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Grand Total&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">3</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUM(C3:C&quot;</span> &amp; <span class="var">reportRow</span> - <span class="num">1</span> &amp; <span class="str">&quot;)&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">4</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUM(D3:D&quot;</span> &amp; <span class="var">reportRow</span> - <span class="num">1</span> &amp; <span class="str">&quot;)&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">5</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUM(E3:E&quot;</span> &amp; <span class="var">reportRow</span> - <span class="num">1</span> &amp; <span class="str">&quot;)&quot;</span>
+        
+        <span class="kw">With</span> <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">reportRow</span>, <span class="num">5</span>))
+            <span class="var">Font</span><span class="var">Bold</span> = <span class="var">True</span>
+            <span class="var">Font</span><span class="var">Name</span> = <span class="str">&quot;Calibri&quot;</span>
+            <span class="var">Font</span><span class="var">Size</span> = <span class="num">11</span>
+            <span class="var">Interior</span><span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">214</span>, <span class="num">227</span>, <span class="num">242</span>)
+            <span class="var">Borders</span>(<span class="var">xlEdgeTop</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeTop</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">LineStyle</span> = <span class="var">xlDouble</span>
+        <span class="kw">End</span> <span class="kw">With</span>
+        
+        <span class="var">modifiedRow</span> = <span class="var">reportRow</span> + <span class="num">3</span>
+        
+        <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Modified Orders List&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">2</span>)<span class="var">Font</span><span class="var">Bold</span> = <span class="var">True</span>
+        <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">2</span>)<span class="var">Font</span><span class="var">Size</span> = <span class="num">12</span>
+        <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">2</span>)<span class="var">Font</span><span class="var">Name</span> = <span class="str">&quot;Calibri&quot;</span>
+        
+        <span class="var">modifiedRow</span> = <span class="var">modifiedRow</span> + <span class="num">1</span>
+        <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;PICKER&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">3</span>)<span class="kw">Value</span> = <span class="str">&quot;ORDER ID&quot;</span>
+        
+        <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">4</span>), <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">5</span>))<span class="var">Merge</span>
+        <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">4</span>)<span class="kw">Value</span> = <span class="str">&quot;REASON&quot;</span>
+        
+        <span class="kw">With</span> <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">5</span>))
+            <span class="var">Font</span><span class="var">Bold</span> = <span class="var">True</span>
+            <span class="var">Font</span><span class="var">Name</span> = <span class="str">&quot;Calibri&quot;</span>
+            <span class="var">Font</span><span class="var">Size</span> = <span class="num">11</span>
+            <span class="var">Interior</span><span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">230</span>, <span class="num">240</span>, <span class="num">250</span>)
+            <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+            <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+        <span class="kw">End</span> <span class="kw">With</span>
+        
+        <span class="var">startDataRow</span> = <span class="var">modifiedRow</span> + <span class="num">1</span>
+        
+        <span class="kw">For</span> <span class="var">i</span> = <span class="num">2</span> <span class="kw">To</span> <span class="var">lastRow</span>
+            <span class="kw">If</span> <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">3</span>)<span class="kw">Value</span> = <span class="str">&quot;PICKED_UP&quot;</span> <span class="kw">Then</span>
+                <span class="var">numI</span> = <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">9</span>)<span class="kw">Value</span>
+                <span class="var">numJ</span> = <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">10</span>)<span class="kw">Value</span>
+                <span class="var">amtDiff</span> = <span class="var">Abs</span>(<span class="var">numJ</span> - <span class="var">numI</span>)
+                
+                <span class="kw">If</span> <span class="var">amtDiff</span> &gt;= <span class="num">1</span> <span class="kw">Then</span>
+                    <span class="var">modifiedRow</span> = <span class="var">modifiedRow</span> + <span class="num">1</span>
+                    <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">7</span>)<span class="kw">Value</span>
+                    <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">3</span>)<span class="kw">Value</span> = <span class="str">&quot;&#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="kw">Cells</span>(<span class="var">i</span>, <span class="num">1</span>)<span class="kw">Value</span>
+                    
+                    <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">4</span>), <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">5</span>))<span class="var">Merge</span>
+                    
+                    <span class="kw">With</span> <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">5</span>))
+                        <span class="var">Font</span><span class="var">Name</span> = <span class="str">&quot;Calibri&quot;</span>
+                        <span class="var">Font</span><span class="var">Size</span> = <span class="num">10</span>
+                        <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+                        <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+                        <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">220</span>, <span class="num">220</span>, <span class="num">220</span>)
+                    <span class="kw">End</span> <span class="kw">With</span>
+                    <span class="kw">With</span> <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">4</span>), <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">5</span>))<span class="var">Font</span>
+                        <span class="var">Bold</span> = <span class="var">True</span>
+                        <span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">255</span>, <span class="num">0</span>, <span class="num">0</span>)
+                    <span class="kw">End</span> <span class="kw">With</span>
+                <span class="kw">End</span> <span class="kw">If</span>
+            <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">Next</span> <span class="var">i</span>
+        
+        <span class="kw">If</span> <span class="var">modifiedRow</span> &gt; <span class="var">startDataRow</span> - <span class="num">1</span> <span class="kw">Then</span>
+            <span class="kw">With</span> <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">startDataRow</span> - <span class="num">1</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">modifiedRow</span>, <span class="num">5</span>))
+                <span class="var">Borders</span>(<span class="var">xlEdgeLeft</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+                <span class="var">Borders</span>(<span class="var">xlEdgeLeft</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+                <span class="var">Borders</span>(<span class="var">xlEdgeLeft</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">140</span>, <span class="num">140</span>, <span class="num">140</span>)
+                
+                <span class="var">Borders</span>(<span class="var">xlEdgeTop</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+                <span class="var">Borders</span>(<span class="var">xlEdgeTop</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+                <span class="var">Borders</span>(<span class="var">xlEdgeTop</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">140</span>, <span class="num">140</span>, <span class="num">140</span>)
+                
+                <span class="var">Borders</span>(<span class="var">xlEdgeRight</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+                <span class="var">Borders</span>(<span class="var">xlEdgeRight</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+                <span class="var">Borders</span>(<span class="var">xlEdgeRight</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">140</span>, <span class="num">140</span>, <span class="num">140</span>)
+                
+                <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+                <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+                <span class="var">Borders</span>(<span class="var">xlEdgeBottom</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">140</span>, <span class="num">140</span>, <span class="num">140</span>)
+                
+                <span class="var">Borders</span>(<span class="var">xlInsideVertical</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+                <span class="var">Borders</span>(<span class="var">xlInsideVertical</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+                <span class="var">Borders</span>(<span class="var">xlInsideVertical</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">200</span>, <span class="num">200</span>, <span class="num">200</span>)
+                
+                <span class="var">Borders</span>(<span class="var">xlInsideHorizontal</span>)<span class="var">LineStyle</span> = <span class="var">xlContinuous</span>
+                <span class="var">Borders</span>(<span class="var">xlInsideHorizontal</span>)<span class="var">Weight</span> = <span class="var">xlThin</span>
+                <span class="var">Borders</span>(<span class="var">xlInsideHorizontal</span>)<span class="var">Color</span> = <span class="var">RGB</span>(<span class="num">220</span>, <span class="num">220</span>, <span class="num">220</span>)
+            <span class="kw">End</span> <span class="kw">With</span>
+        <span class="kw">Else</span>
+            <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">startDataRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">startDataRow</span>, <span class="num">5</span>))<span class="var">Merge</span>
+            <span class="kw">Cells</span>(<span class="var">startDataRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;No modifications recorded today.&quot;</span>
+            <span class="kw">Cells</span>(<span class="var">startDataRow</span>, <span class="num">2</span>)<span class="var">Font</span><span class="var">Italic</span> = <span class="var">True</span>
+            <span class="var">modifiedRow</span> = <span class="var">startDataRow</span>
+        <span class="kw">End</span> <span class="kw">If</span>
+        
+        <span class="var">summaryRow</span> = <span class="var">modifiedRow</span> + <span class="num">3</span>
+        
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Good morning team,&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">2</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Daily sales report &quot;</span> &amp; <span class="var">formattedDate</span>
+        
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">3</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Orders:&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">3</span>, <span class="num">3</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUM(D3:D&quot;</span> &amp; <span class="var">reportRow</span> - <span class="num">1</span> &amp; <span class="str">&quot;)&quot;</span>
+        
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">4</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Cancelled:&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">4</span>, <span class="num">3</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUM(C3:C&quot;</span> &amp; <span class="var">reportRow</span> - <span class="num">1</span> &amp; <span class="str">&quot;)&quot;</span>
+        
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">5</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Sales :&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">5</span>, <span class="num">3</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUMIFS(&#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!J:J, &#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!C:C, &quot;&quot;PICKED_UP&quot;&quot;)&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">5</span>, <span class="num">3</span>)<span class="var">NumberFormat</span> = <span class="str">&quot;0.00&quot;</span>
+        
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">6</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Average:&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">6</span>, <span class="num">3</span>)<span class="var">Formula</span> = <span class="str">&quot;=AVERAGEIFS(&#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!J:J, &#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!C:C, &quot;&quot;PICKED_UP&quot;&quot;)&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">6</span>, <span class="num">3</span>)<span class="var">NumberFormat</span> = <span class="str">&quot;0.00&quot;</span>
+        
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">7</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Modification:&quot;</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">7</span>, <span class="num">3</span>)<span class="var">Formula</span> = <span class="str">&quot;=SUMPRODUCT(--(&#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!C2:C&quot;</span> &amp; <span class="var">lastRow</span> &amp; <span class="str">&quot;=&quot;&quot;PICKED_UP&quot;&quot;), --(ABS(&#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!J2:J&quot;</span> &amp; <span class="var">lastRow</span> &amp; <span class="str">&quot;-&#x27;&quot;</span> &amp; <span class="var">wsData</span><span class="var">Name</span> &amp; <span class="str">&quot;&#x27;!I2:I&quot;</span> &amp; <span class="var">lastRow</span> &amp; <span class="str">&quot;)&gt;=1.0))&quot;</span>
+        
+        <span class="kw">With</span> <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">summaryRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">7</span>, <span class="num">3</span>))<span class="var">Font</span>
+            <span class="var">Name</span> = <span class="str">&quot;Calibri&quot;</span>
+            <span class="var">Size</span> = <span class="num">11</span>
+            <span class="var">Bold</span> = <span class="var">False</span>
+        <span class="kw">End</span> <span class="kw">With</span>
+        <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">2</span>, <span class="num">2</span>)<span class="var">Font</span><span class="var">Bold</span> = <span class="var">True</span>
+        
+        <span class="var">Columns</span>(<span class="str">&quot;B:E&quot;</span>)<span class="var">HorizontalAlignment</span> = <span class="var">xlCenter</span>
+        
+        <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">summaryRow</span>, <span class="num">2</span>), <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">7</span>, <span class="num">2</span>))<span class="var">HorizontalAlignment</span> = <span class="var">xlLeft</span>
+        <span class="kw">Range</span>(<span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">3</span>, <span class="num">3</span>), <span class="kw">Cells</span>(<span class="var">summaryRow</span> + <span class="num">7</span>, <span class="num">3</span>))<span class="var">HorizontalAlignment</span> = <span class="var">xlLeft</span>
+        
+        <span class="var">Columns</span>(<span class="str">&quot;B&quot;</span>)<span class="var">AutoFit</span>
+        <span class="var">Columns</span>(<span class="str">&quot;B&quot;</span>)<span class="var">ColumnWidth</span> = <span class="var">Columns</span>(<span class="str">&quot;B&quot;</span>)<span class="var">ColumnWidth</span> + <span class="num">3</span>
+        
+        <span class="var">Columns</span>(<span class="str">&quot;C&quot;</span>)<span class="var">ColumnWidth</span> = <span class="num">12</span>
+        <span class="var">Columns</span>(<span class="str">&quot;D&quot;</span>)<span class="var">ColumnWidth</span> = <span class="num">12</span>
+        <span class="var">Columns</span>(<span class="str">&quot;E&quot;</span>)<span class="var">ColumnWidth</span> = <span class="num">12</span>
+        
+        <span class="var">Columns</span>(<span class="str">&quot;F&quot;</span>)<span class="var">ColumnWidth</span> = <span class="var">Columns</span>(<span class="str">&quot;A&quot;</span>)<span class="var">ColumnWidth</span>
+    <span class="kw">End</span> <span class="kw">With</span>
+    
+    <span class="var">Application</span><span class="var">ScreenUpdating</span> = <span class="var">True</span>
+    <span class="var">Application</span><span class="var">DisplayAlerts</span> = <span class="var">True</span>
+<span class="kw">End</span> <span class="kw">Sub</span>`;
+
+  const fullWeekly = `<span class="kw">Sub</span> <span class="fn">GenerateWeeklyReport</span>()
+    <span class="cm">&#x27; Software Version 1.2</span>
+    <span class="cm">&#x27; developed by DSU11425</span>
+
+    <span class="kw">Dim</span> <span class="var">srcBook</span> <span class="kw">As</span> <span class="var">Workbook</span>
+    <span class="kw">Dim</span> <span class="var">srcSheet</span> <span class="kw">As</span> <span class="kw">Worksheet</span>
+    <span class="kw">Dim</span> <span class="var">destBook</span> <span class="kw">As</span> <span class="var">Workbook</span>
+    <span class="kw">Dim</span> <span class="var">destSheet</span> <span class="kw">As</span> <span class="kw">Worksheet</span>
+    
+    <span class="kw">Dim</span> <span class="var">lastRow</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">lastCol</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">r</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">c</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">i</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">destRow</span> <span class="kw">As</span> <span class="kw">Long</span>
+    
+    <span class="kw">Dim</span> <span class="var">rosterRow</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">startCol</span> <span class="kw">As</span> <span class="kw">Long</span>
+    <span class="kw">Dim</span> <span class="var">foundRoster</span> <span class="kw">As</span> <span class="kw">Boolean</span>
+    
+    <span class="kw">Dim</span> <span class="var">empID</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">Dim</span> <span class="var">shiftVal</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">Dim</span> <span class="var">tempShift</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">Dim</span> <span class="var">currentShiftGroup</span> <span class="kw">As</span> <span class="kw">String</span>
+    
+    <span class="kw">Dim</span> <span class="var">colDates</span>(<span class="num">1</span> <span class="kw">To</span> <span class="num">30</span>) <span class="kw">As</span> <span class="kw">Date</span>
+    <span class="kw">Dim</span> <span class="var">currentDate</span> <span class="kw">As</span> <span class="kw">Date</span>
+    <span class="kw">Dim</span> <span class="var">groupStartDate</span> <span class="kw">As</span> <span class="kw">Date</span>
+    
+    <span class="kw">Set</span> <span class="var">srcBook</span> = <span class="var">ThisWorkbook</span>
+    <span class="kw">Set</span> <span class="var">srcSheet</span> = <span class="var">ActiveSheet</span>
+    
+    <span class="var">lastRow</span> = <span class="var">srcSheet</span><span class="kw">Cells</span>(<span class="var">srcSheet</span><span class="kw">Rows</span><span class="kw">Count</span>, <span class="num">1</span>)<span class="kw">End</span>(<span class="kw">xlUp</span>)<span class="var">Row</span>
+    <span class="var">lastCol</span> = <span class="var">srcSheet</span><span class="kw">Cells</span>(<span class="num">17</span>, <span class="var">srcSheet</span><span class="var">Columns</span><span class="kw">Count</span>)<span class="kw">End</span>(<span class="var">xlToLeft</span>)<span class="var">Column</span>
+    <span class="kw">If</span> <span class="var">lastCol</span> &lt; <span class="num">5</span> <span class="kw">Then</span> <span class="var">lastCol</span> = <span class="num">15</span>
+    
+    <span class="var">foundRoster</span> = <span class="var">False</span>
+    <span class="kw">For</span> <span class="var">r</span> = <span class="num">1</span> <span class="kw">To</span> <span class="var">lastRow</span>
+        <span class="kw">For</span> <span class="var">c</span> = <span class="num">1</span> <span class="kw">To</span> <span class="var">lastCol</span>
+            <span class="kw">If</span> <span class="var">InStr</span>(<span class="var">UCase</span>(<span class="var">CStr</span>(<span class="var">srcSheet</span><span class="kw">Cells</span>(<span class="var">r</span>, <span class="var">c</span>)<span class="kw">Value</span>)), <span class="str">&quot;MONDAY&quot;</span>) &gt; <span class="num">0</span> <span class="kw">Then</span>
+                <span class="var">rosterRow</span> = <span class="var">r</span>
+                <span class="var">startCol</span> = <span class="var">c</span>
+                <span class="var">foundRoster</span> = <span class="var">True</span>
+                <span class="kw">Exit</span> <span class="kw">For</span>
+            <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">Next</span> <span class="var">c</span>
+        <span class="kw">If</span> <span class="var">foundRoster</span> <span class="kw">Then</span> <span class="kw">Exit</span> <span class="kw">For</span>
+    <span class="kw">Next</span> <span class="var">r</span>
+    
+    <span class="kw">If</span> <span class="kw">Not</span> <span class="var">foundRoster</span> <span class="kw">Then</span>
+        <span class="kw">MsgBox</span> <span class="str">&quot;Could not find &#x27;Monday&#x27; column automatically! Please check your sheet structure.&quot;</span>, <span class="kw">vbCritical</span>
+        <span class="kw">Exit</span> <span class="kw">Sub</span>
+    <span class="fn">End</span> <span class="kw">If</span>
+    
+    <span class="kw">On</span> <span class="kw">Error</span> <span class="kw">GoTo</span> <span class="var">DateError</span>
+    <span class="kw">For</span> <span class="var">i</span> = <span class="num">0</span> <span class="kw">To</span> <span class="num">6</span>
+        <span class="kw">Dim</span> <span class="var">cellVal</span> <span class="kw">As</span> <span class="kw">Variant</span>
+        <span class="var">cellVal</span> = <span class="var">srcSheet</span><span class="kw">Cells</span>(<span class="var">rosterRow</span> - <span class="num">1</span>, <span class="var">startCol</span> + <span class="var">i</span>)<span class="kw">Value</span>
+        <span class="kw">If</span> <span class="var">IsDate</span>(<span class="var">cellVal</span>) <span class="kw">Then</span>
+            <span class="var">colDates</span>(<span class="var">startCol</span> + <span class="var">i</span>) = <span class="var">CDate</span>(<span class="var">cellVal</span>)
+        <span class="kw">Else</span>
+            <span class="var">cellVal</span> = <span class="var">srcSheet</span><span class="kw">Cells</span>(<span class="var">rosterRow</span>, <span class="var">startCol</span> + <span class="var">i</span>)<span class="kw">Value</span>
+            <span class="kw">If</span> <span class="var">IsDate</span>(<span class="var">cellVal</span>) <span class="kw">Then</span>
+                <span class="var">colDates</span>(<span class="var">startCol</span> + <span class="var">i</span>) = <span class="var">CDate</span>(<span class="var">cellVal</span>)
+            <span class="kw">Else</span>
+                <span class="var">colDates</span>(<span class="var">startCol</span> + <span class="var">i</span>) = <span class="var">DateAdd</span>(<span class="str">&quot;d&quot;</span>, <span class="var">i</span>, <span class="kw">Date</span>)
+            <span class="kw">End</span> <span class="kw">If</span>
+        <span class="kw">End</span> <span class="kw">If</span>
+    <span class="kw">Next</span> <span class="var">i</span>
+    <span class="kw">On</span> <span class="kw">Error</span> <span class="kw">GoTo</span> <span class="num">0</span>
+    
+    <span class="kw">Set</span> <span class="var">destBook</span> = <span class="var">Workbooks</span><span class="var">Add</span>
+    <span class="kw">Set</span> <span class="var">destSheet</span> = <span class="var">destBook</span><span class="kw">Sheets</span>(<span class="num">1</span>)
+    
+    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="num">1</span>)<span class="kw">Value</span> = <span class="str">&quot;Employee ID&quot;</span>
+    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="str">&quot;Shift&quot;</span>
+    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="num">3</span>)<span class="kw">Value</span> = <span class="str">&quot;Start Date&quot;</span>
+    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="num">1</span>, <span class="num">4</span>)<span class="kw">Value</span> = <span class="str">&quot;End Date&quot;</span>
+    <span class="var">destRow</span> = <span class="num">2</span>
+    
+    <span class="kw">For</span> <span class="var">r</span> = (<span class="var">rosterRow</span> + <span class="num">1</span>) <span class="kw">To</span> <span class="var">lastRow</span>
+        <span class="var">empID</span> = <span class="var">Trim</span>(<span class="var">CStr</span>(<span class="var">srcSheet</span><span class="kw">Cells</span>(<span class="var">r</span>, <span class="num">1</span>)<span class="kw">Value</span>))
+        
+        <span class="kw">If</span> <span class="var">empID</span> &lt;&gt; <span class="str">&quot;&quot;</span> <span class="kw">And</span> <span class="var">_</span>
+           <span class="var">UCase</span>(<span class="var">empID</span>) &lt;&gt; <span class="str">&quot;EMPLOYEE ID&quot;</span> <span class="kw">And</span> <span class="var">_</span>
+           <span class="var">UCase</span>(<span class="var">empID</span>) &lt;&gt; <span class="str">&quot;EMPLPYEE ID&quot;</span> <span class="kw">And</span> <span class="var">_</span>
+           <span class="var">UCase</span>(<span class="var">empID</span>) &lt;&gt; <span class="str">&quot;EMPLOYEE&quot;</span> <span class="kw">And</span> <span class="var">_</span>
+           <span class="var">InStr</span>(<span class="var">UCase</span>(<span class="var">empID</span>), <span class="str">&quot;TOTAL&quot;</span>) = <span class="num">0</span> <span class="kw">Then</span>
+            
+            <span class="kw">For</span> <span class="var">c</span> = <span class="var">startCol</span> <span class="kw">To</span> (<span class="var">startCol</span> + <span class="num">6</span>)
+                <span class="var">currentDate</span> = <span class="var">colDates</span>(<span class="var">c</span>)
+                <span class="var">shiftVal</span> = <span class="var">WorksheetFunction</span><span class="var">Trim</span>(<span class="var">CStr</span>(<span class="var">srcSheet</span><span class="kw">Cells</span>(<span class="var">r</span>, <span class="var">c</span>)<span class="var">Text</span>))
+                
+                <span class="var">tempShift</span> = <span class="var">AdvancedShiftParser</span>(<span class="var">shiftVal</span>)
+                
+                <span class="kw">If</span> <span class="var">c</span> = <span class="var">startCol</span> <span class="kw">Then</span>
+                    <span class="var">currentShiftGroup</span> = <span class="var">tempShift</span>
+                    <span class="var">groupStartDate</span> = <span class="var">currentDate</span>
+                <span class="kw">ElseIf</span> <span class="var">tempShift</span> &lt;&gt; <span class="var">currentShiftGroup</span> <span class="kw">Then</span>
+                    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="var">destRow</span>, <span class="num">1</span>)<span class="kw">Value</span> = <span class="var">empID</span>
+                    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="var">destRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="var">currentShiftGroup</span>
+                    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="var">destRow</span>, <span class="num">3</span>)<span class="kw">Value</span> = <span class="var">groupStartDate</span>
+                    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="var">destRow</span>, <span class="num">4</span>)<span class="kw">Value</span> = <span class="var">colDates</span>(<span class="var">c</span> - <span class="num">1</span>)
+                    <span class="var">destRow</span> = <span class="var">destRow</span> + <span class="num">1</span>
+                    
+                    <span class="var">currentShiftGroup</span> = <span class="var">tempShift</span>
+                    <span class="var">groupStartDate</span> = <span class="var">currentDate</span>
+                <span class="kw">End</span> <span class="kw">If</span>
+                
+                <span class="kw">If</span> <span class="var">c</span> = (<span class="var">startCol</span> + <span class="num">6</span>) <span class="kw">Then</span>
+                    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="var">destRow</span>, <span class="num">1</span>)<span class="kw">Value</span> = <span class="var">empID</span>
+                    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="var">destRow</span>, <span class="num">2</span>)<span class="kw">Value</span> = <span class="var">currentShiftGroup</span>
+                    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="var">destRow</span>, <span class="num">3</span>)<span class="kw">Value</span> = <span class="var">groupStartDate</span>
+                    <span class="var">destSheet</span><span class="kw">Cells</span>(<span class="var">destRow</span>, <span class="num">4</span>)<span class="kw">Value</span> = <span class="var">currentDate</span>
+                    <span class="var">destRow</span> = <span class="var">destRow</span> + <span class="num">1</span>
+                <span class="kw">End</span> <span class="kw">If</span>
+            <span class="kw">Next</span> <span class="var">c</span>
+            
+        <span class="kw">End</span> <span class="kw">If</span>
+    <span class="kw">Next</span> <span class="var">r</span>
+    
+    <span class="var">destSheet</span><span class="var">Columns</span>(<span class="str">&quot;C:D&quot;</span>)<span class="var">NumberFormat</span> = <span class="str">&quot;m/d/yyyy&quot;</span>
+    <span class="var">destSheet</span><span class="var">Columns</span>(<span class="str">&quot;A:D&quot;</span>)<span class="var">AutoFit</span>
+    
+    <span class="var">destBook</span><span class="var">Activate</span>
+    <span class="kw">MsgBox</span> <span class="str">&quot;Data Successfully Converted!&quot;</span>, <span class="kw">vbInformation</span>, <span class="str">&quot;Done!&quot;</span>
+    <span class="kw">Exit</span> <span class="kw">Sub</span>
+
+<span class="fn">DateError:</span>
+    <span class="fn">MsgBox</span> <span class="str">&quot;Error reading roster date headers.&quot;</span>, <span class="kw">vbCritical</span>
+<span class="kw">End</span> <span class="kw">Sub</span>
+
+<span class="fn">Function</span> <span class="var">AdvancedShiftParser</span>(<span class="kw">ByVal</span> <span class="var">rawShift</span> <span class="kw">As</span> <span class="kw">String</span>) <span class="kw">As</span> <span class="kw">String</span>
+    <span class="var">rawShift</span> = <span class="var">UCase</span>(<span class="var">WorksheetFunction</span><span class="var">Trim</span>(<span class="var">rawShift</span>))
+    <span class="var">rawShift</span> = <span class="var">Replace</span>(<span class="var">rawShift</span>, <span class="var">Chr</span>(<span class="num">160</span>), <span class="str">&quot; &quot;</span>)
+    <span class="var">rawShift</span> = <span class="var">WorksheetFunction</span><span class="var">Trim</span>(<span class="var">rawShift</span>)
+    
+    <span class="kw">If</span> <span class="var">rawShift</span> = <span class="str">&quot;OFF&quot;</span> <span class="kw">Or</span> <span class="var">rawShift</span> = <span class="str">&quot;&quot;</span> <span class="kw">Or</span> <span class="var">_</span>
+       <span class="var">rawShift</span> = <span class="str">&quot;MONDAY&quot;</span> <span class="kw">Or</span> <span class="var">rawShift</span> = <span class="str">&quot;TUESDAY&quot;</span> <span class="kw">Or</span> <span class="var">rawShift</span> = <span class="str">&quot;TUESADY&quot;</span> <span class="kw">Or</span> <span class="var">_</span>
+       <span class="var">rawShift</span> = <span class="str">&quot;WEDNESDAY&quot;</span> <span class="kw">Or</span> <span class="var">rawShift</span> = <span class="str">&quot;THURSDAY&quot;</span> <span class="kw">Or</span> <span class="var">rawShift</span> = <span class="str">&quot;FRIDAY&quot;</span> <span class="kw">Or</span> <span class="var">_</span>
+       <span class="var">rawShift</span> = <span class="str">&quot;SATURDAY&quot;</span> <span class="kw">Or</span> <span class="var">rawShift</span> = <span class="str">&quot;SUNDAY&quot;</span> <span class="kw">Then</span>
+        <span class="var">AdvancedShiftParser</span> = <span class="str">&quot;OFF&quot;</span>
+        <span class="kw">Exit</span> <span class="kw">Function</span>
+    <span class="fn">End</span> <span class="kw">If</span>
+    
+    <span class="kw">On</span> <span class="kw">Error</span> <span class="kw">GoTo</span> <span class="var">ParserFallback</span>
+    
+    <span class="kw">Dim</span> <span class="var">cleanStr</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">Dim</span> <span class="var">idx</span> <span class="kw">As</span> <span class="kw">Integer</span>, <span class="var">ch</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">For</span> <span class="var">idx</span> = <span class="num">1</span> <span class="kw">To</span> <span class="var">Len</span>(<span class="var">rawShift</span>)
+        <span class="var">ch</span> = <span class="var">Mid</span>(<span class="var">rawShift</span>, <span class="var">idx</span>, <span class="num">1</span>)
+        <span class="kw">If</span> <span class="var">InStr</span>(<span class="str">&quot;0123456789AMPM- &quot;</span>, <span class="var">ch</span>) &gt; <span class="num">0</span> <span class="kw">Then</span>
+            <span class="var">cleanStr</span> = <span class="var">cleanStr</span> &amp; <span class="var">ch</span>
+        <span class="kw">End</span> <span class="kw">If</span>
+    <span class="kw">Next</span> <span class="var">idx</span>
+    <span class="var">cleanStr</span> = <span class="var">WorksheetFunction</span><span class="var">Trim</span>(<span class="var">cleanStr</span>)
+    
+    <span class="var">cleanStr</span> = <span class="var">Replace</span>(<span class="var">cleanStr</span>, <span class="str">&quot; - &quot;</span>, <span class="str">&quot;-&quot;</span>)
+    <span class="var">cleanStr</span> = <span class="var">Replace</span>(<span class="var">cleanStr</span>, <span class="str">&quot; -&quot;</span>, <span class="str">&quot;-&quot;</span>)
+    <span class="var">cleanStr</span> = <span class="var">Replace</span>(<span class="var">cleanStr</span>, <span class="str">&quot;- &quot;</span>, <span class="str">&quot;-&quot;</span>)
+    
+    <span class="kw">If</span> <span class="var">InStr</span>(<span class="var">cleanStr</span>, <span class="str">&quot;-&quot;</span>) = <span class="num">0</span> <span class="kw">Then</span>
+        <span class="kw">Dim</span> <span class="var">p1</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">p2</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">a1</span> <span class="kw">As</span> <span class="kw">Long</span>, <span class="var">a2</span> <span class="kw">As</span> <span class="kw">Long</span>
+        <span class="kw">Dim</span> <span class="var">cutPos</span> <span class="kw">As</span> <span class="kw">Long</span>
+        
+        <span class="var">p1</span> = <span class="var">InStr</span>(<span class="num">1</span>, <span class="var">cleanStr</span>, <span class="str">&quot;PM&quot;</span>)
+        <span class="var">p2</span> = <span class="var">InStr</span>(<span class="var">p1</span> + <span class="num">2</span>, <span class="var">cleanStr</span>, <span class="str">&quot;PM&quot;</span>)
+        <span class="var">a1</span> = <span class="var">InStr</span>(<span class="num">1</span>, <span class="var">cleanStr</span>, <span class="str">&quot;AM&quot;</span>)
+        <span class="var">a2</span> = <span class="var">InStr</span>(<span class="var">a1</span> + <span class="num">2</span>, <span class="var">cleanStr</span>, <span class="str">&quot;AM&quot;</span>)
+        
+        <span class="kw">If</span> <span class="var">p1</span> &gt; <span class="num">0</span> <span class="kw">And</span> <span class="var">a1</span> &gt; <span class="num">0</span> <span class="kw">Then</span>
+            <span class="kw">If</span> <span class="var">p1</span> &lt; <span class="var">a1</span> <span class="kw">Then</span> <span class="var">cutPos</span> = <span class="var">p1</span> + <span class="num">1</span> <span class="kw">Else</span> <span class="var">cutPos</span> = <span class="var">a1</span> + <span class="num">1</span>
+        <span class="kw">ElseIf</span> <span class="var">p1</span> &gt; <span class="num">0</span> <span class="kw">And</span> <span class="var">p2</span> &gt; <span class="num">0</span> <span class="kw">Then</span>
+            <span class="var">cutPos</span> = <span class="var">p1</span> + <span class="num">1</span>
+        <span class="kw">ElseIf</span> <span class="var">a1</span> &gt; <span class="num">0</span> <span class="kw">And</span> <span class="var">a2</span> &gt; <span class="num">0</span> <span class="kw">Then</span>
+            <span class="var">cutPos</span> = <span class="var">a1</span> + <span class="num">1</span>
+        <span class="kw">End</span> <span class="kw">If</span>
+        
+        <span class="kw">If</span> <span class="var">cutPos</span> &gt; <span class="num">1</span> <span class="kw">And</span> <span class="var">cutPos</span> &lt; <span class="var">Len</span>(<span class="var">cleanStr</span>) <span class="kw">Then</span>
+            <span class="var">cleanStr</span> = <span class="var">WorksheetFunction</span><span class="var">Trim</span>(<span class="var">Left</span>(<span class="var">cleanStr</span>, <span class="var">cutPos</span>)) &amp; <span class="str">&quot;-&quot;</span> &amp; <span class="var">WorksheetFunction</span><span class="var">Trim</span>(<span class="var">Mid</span>(<span class="var">cleanStr</span>, <span class="var">cutPos</span> + <span class="num">1</span>))
+        <span class="kw">End</span> <span class="kw">If</span>
+    <span class="kw">End</span> <span class="kw">If</span>
+    
+    <span class="kw">Dim</span> <span class="var">parts</span>() <span class="kw">As</span> <span class="kw">String</span>
+    <span class="var">parts</span> = <span class="kw">Split</span>(<span class="var">cleanStr</span>, <span class="str">&quot;-&quot;</span>)
+    
+    <span class="kw">Dim</span> <span class="var">startStr</span> <span class="kw">As</span> <span class="kw">String</span>, <span class="var">endStr</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="var">startStr</span> = <span class="var">WorksheetFunction</span><span class="var">Trim</span>(<span class="var">parts</span>(<span class="num">0</span>))
+    <span class="var">endStr</span> = <span class="var">WorksheetFunction</span><span class="var">Trim</span>(<span class="var">parts</span>(<span class="num">1</span>))
+    
+    <span class="kw">If</span> <span class="var">InStr</span>(<span class="var">startStr</span>, <span class="str">&quot;AM&quot;</span>) &gt; <span class="num">0</span> <span class="kw">And</span> <span class="var">InStr</span>(<span class="var">startStr</span>, <span class="str">&quot; AM&quot;</span>) = <span class="num">0</span> <span class="kw">Then</span> <span class="var">startStr</span> = <span class="var">Replace</span>(<span class="var">startStr</span>, <span class="str">&quot;AM&quot;</span>, <span class="str">&quot; AM&quot;</span>)
+    <span class="kw">If</span> <span class="var">InStr</span>(<span class="var">startStr</span>, <span class="str">&quot;PM&quot;</span>) &gt; <span class="num">0</span> <span class="kw">And</span> <span class="var">InStr</span>(<span class="var">startStr</span>, <span class="str">&quot; PM&quot;</span>) = <span class="num">0</span> <span class="kw">Then</span> <span class="var">startStr</span> = <span class="var">Replace</span>(<span class="var">startStr</span>, <span class="str">&quot;PM&quot;</span>, <span class="str">&quot; PM&quot;</span>)
+    <span class="kw">If</span> <span class="var">InStr</span>(<span class="var">endStr</span>, <span class="str">&quot;AM&quot;</span>) &gt; <span class="num">0</span> <span class="kw">And</span> <span class="var">InStr</span>(<span class="var">endStr</span>, <span class="str">&quot; AM&quot;</span>) = <span class="num">0</span> <span class="kw">Then</span> <span class="var">endStr</span> = <span class="var">Replace</span>(<span class="var">endStr</span>, <span class="str">&quot;AM&quot;</span>, <span class="str">&quot; AM&quot;</span>)
+    <span class="kw">If</span> <span class="var">InStr</span>(<span class="var">endStr</span>, <span class="str">&quot;PM&quot;</span>) &gt; <span class="num">0</span> <span class="kw">And</span> <span class="var">InStr</span>(<span class="var">endStr</span>, <span class="str">&quot; PM&quot;</span>) = <span class="num">0</span> <span class="kw">Then</span> <span class="var">endStr</span> = <span class="var">Replace</span>(<span class="var">endStr</span>, <span class="str">&quot;PM&quot;</span>, <span class="str">&quot; PM&quot;</span>)
+    
+    <span class="kw">Dim</span> <span class="var">startTime</span> <span class="kw">As</span> <span class="kw">Date</span>, <span class="var">endTime</span> <span class="kw">As</span> <span class="kw">Date</span>
+    <span class="var">startTime</span> = <span class="var">CDate</span>(<span class="var">startStr</span>)
+    <span class="var">endTime</span> = <span class="var">CDate</span>(<span class="var">endStr</span>)
+    
+    <span class="kw">Dim</span> <span class="var">startHour</span> <span class="kw">As</span> <span class="kw">Integer</span>, <span class="var">endHour</span> <span class="kw">As</span> <span class="kw">Integer</span>
+    <span class="var">startHour</span> = <span class="var">Hour</span>(<span class="var">startTime</span>)
+    <span class="var">endHour</span> = <span class="var">Hour</span>(<span class="var">endTime</span>)
+    
+    <span class="kw">Dim</span> <span class="var">prefix</span> <span class="kw">As</span> <span class="kw">String</span>
+    <span class="kw">If</span> <span class="var">startHour</span> &gt;= <span class="num">12</span> <span class="kw">Then</span>
+        <span class="var">prefix</span> = <span class="str">&quot;PM&quot;</span>
+    <span class="kw">Else</span>
+        <span class="var">prefix</span> = <span class="str">&quot;AM&quot;</span>
+    <span class="kw">End</span> <span class="kw">If</span>
+    
+    <span class="kw">Dim</span> <span class="var">duration</span> <span class="kw">As</span> <span class="kw">Double</span>
+    <span class="kw">If</span> <span class="var">endTime</span> &gt;= <span class="var">startTime</span> <span class="kw">Then</span>
+        <span class="var">duration</span> = <span class="var">DateDiff</span>(<span class="str">&quot;n&quot;</span>, <span class="var">startTime</span>, <span class="var">endTime</span>) / <span class="num">60</span>
+    <span class="kw">Else</span>
+        <span class="var">duration</span> = (<span class="var">DateDiff</span>(<span class="str">&quot;n&quot;</span>, <span class="var">startTime</span>, <span class="var">CDate</span>(<span class="str">&quot;23:59:00&quot;</span>)) + <span class="var">DateDiff</span>(<span class="str">&quot;n&quot;</span>, <span class="var">CDate</span>(<span class="str">&quot;00:00:00&quot;</span>), <span class="var">endTime</span>) + <span class="num">1</span>) / <span class="num">60</span>
+    <span class="kw">End</span> <span class="kw">If</span>
+    
+    <span class="kw">Dim</span> <span class="var">displayHour</span> <span class="kw">As</span> <span class="kw">Integer</span>
+    <span class="var">displayHour</span> = <span class="var">startHour</span>
+    <span class="kw">If</span> <span class="var">displayHour</span> = <span class="num">0</span> <span class="kw">Then</span> <span class="var">displayHour</span> = <span class="num">12</span>
+    
+    <span class="var">AdvancedShiftParser</span> = <span class="var">prefix</span> &amp; <span class="str">&quot; &quot;</span> &amp; <span class="kw">Format</span>(<span class="var">displayHour</span>, <span class="str">&quot;00&quot;</span>) &amp; <span class="str">&quot; (&quot;</span> &amp; <span class="kw">Format</span>(<span class="var">duration</span>, <span class="str">&quot;00&quot;</span>) &amp; <span class="str">&quot;)&quot;</span>
+    <span class="kw">Exit</span> <span class="kw">Function</span>
+
+<span class="fn">ParserFallback:</span>
+    <span class="fn">AdvancedShiftParser</span> = <span class="var">rawShift</span>
+<span class="kw">End</span> <span class="kw">Function</span>`;
+
+  const codeSnippets = [
+    { file: 'CalculateReceivings_V1_2.bas', displayFile: 'CalculateReceivings_V1_2.txt', content: fullCalculate },
+    { file: 'GenerateDailyReport_V1_2.bas', displayFile: 'GenerateDailyReport_V1_2.txt', content: fullDaily },
+    { file: 'GenerateWeeklyReport_V1_2.bas', displayFile: 'GenerateWeeklyReport_V1_2.txt', content: fullWeekly }
+  ];
+
+  const tabs = document.querySelectorAll('.code-tab');
+  const contentPre = document.getElementById('codeContent');
+  const filenameSpan = document.getElementById('codeFilename');
+  const downloadBtn = document.getElementById('downloadCodeBtn');
+
+  function showTab(i) {
+    tabs.forEach((t,idx)=>t.classList.toggle('active', idx===i));
+    contentPre.innerHTML = codeSnippets[i].content;
+    filenameSpan.innerText = codeSnippets[i].displayFile;
+    downloadBtn.setAttribute('data-filename', codeSnippets[i].displayFile);
+    downloadBtn.setAttribute('data-code', codeSnippets[i].content);
+  }
+  showTab(0);
+
+  function getRawVBA(htmlContent) {
+    let tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    let text = tempDiv.innerText || tempDiv.textContent;
+    return text;
+  }
+
+  downloadBtn.addEventListener('click', () => {
+    const activeTab = Array.from(tabs).findIndex(t => t.classList.contains('active'));
+    if (activeTab === -1) return;
+    const snippet = codeSnippets[activeTab];
+    const rawCode = getRawVBA(snippet.content);
+    const blob = new Blob([rawCode], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = snippet.displayFile;   // .txt file
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  tabs.forEach(t => t.addEventListener('click', () => showTab(parseInt(t.dataset.tab))));
+
+  // QR demo grid
+  const qrPattern = [1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1];
+  const qrGrid = document.getElementById('qrDemo');
+  if(qrGrid) { qrPattern.forEach(v => { const cell = document.createElement('div'); cell.className = 'qr-cell ' + (v ? 'qr-on' : 'qr-off'); qrGrid.appendChild(cell); }); }
+
+  // Three.js background
+  const canvas = document.getElementById('hero-canvas');
+  if(canvas) {
+    let scene, camera, renderer, mesh, particles;
+    function initThree() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w/h;
+      camera.updateProjectionMatrix();
+      const geometry = new THREE.IcosahedronGeometry(0.9, 0);
+      const material = new THREE.MeshStandardMaterial({ color: 0x2d6a4f, wireframe: true, emissive: 0x1a3a2a });
+      mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+      const particlesGeo = new THREE.BufferGeometry();
+      const positions = new Float32Array(700 * 3);
+      for(let i=0; i<700; i++) { positions[i*3] = (Math.random() - 0.5) * 15; positions[i*3+1] = (Math.random() - 0.5) * 8; positions[i*3+2] = (Math.random() - 0.5) * 12 - 5; }
+      particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const particlesMat = new THREE.PointsMaterial({ color: 0x6fbf73, size: 0.05, transparent: true, opacity: 0.3 });
+      particles = new THREE.Points(particlesGeo, particlesMat);
+      scene.add(particles);
+      scene.add(new THREE.AmbientLight(0x222222));
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+      dirLight.position.set(1,2,1);
+      scene.add(dirLight);
+      camera.position.set(0, 0, 3.2);
+      animate();
+    }
+    function animate() {
+      if(!mesh) return;
+      requestAnimationFrame(animate);
+      mesh.rotation.y += 0.008;
+      mesh.rotation.x = Math.sin(Date.now() * 0.002) * 0.2;
+      if(particles) particles.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+    window.addEventListener('resize', () => { if(renderer && camera) { const w = canvas.clientWidth, h = canvas.clientHeight; renderer.setSize(w, h); camera.aspect = w/h; camera.updateProjectionMatrix(); } });
+    initThree();
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.fromTo(".tool-card", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, scrollTrigger: { trigger: "#tools", start: "top 80%" } });
+  gsap.fromTo(".step", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, scrollTrigger: { trigger: "#guide", start: "top 80%" } });
+  gsap.fromTo(".feat-item, .format-card, .print-card", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05, scrollTrigger: { trigger: "#app", start: "top 75%" } });
+  gsap.fromTo(".app-main-card", { opacity: 0, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.7, scrollTrigger: { trigger: "#app", start: "top 80%" } });
+  gsap.fromTo(".code-window", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { trigger: "#showcase", start: "top 80%" } });
+  gsap.fromTo(".hero-inner h1", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, delay: 0.2 });
+  gsap.fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.4 });
+  gsap.fromTo(".hero-actions a", { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, stagger: 0.1, delay: 0.6 });
+  gsap.fromTo(".hero-stats", { opacity: 0, y: 20 }, { opacity: 1, y: 0, delay: 0.8 });
+
+  document.getElementById('apkDownload')?.addEventListener('click', (e) => { e.preventDefault(); alert('📱 APK download simulation — QR Forge v2.0 ready for sideload.'); });
+  document.getElementById('githubBtn')?.addEventListener('click', () => { alert('🔗 GitHub repo: github.com/dsu11425/qr-forge (demo)'); });
+</script>
+</body>
+</html>
