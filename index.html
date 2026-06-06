@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>QR Forge · Smart QR Generator for Warehouse</title>
-  <meta name="description" content="Flutter-powered QR code generator for shelves & dispatch – offline, auto-format, batch print, PDF export.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Automation Tools | Excel VBA & Warehouse Utilities</title>
+  <meta name="description" content="Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
@@ -13,200 +13,375 @@
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(145deg, #f9fafb 0%, #f0f4fa 100%);
-      color: #0b1120;
+      background: #f8fafc;
+      color: #0f172a;
+      line-height: 1.5;
+      scroll-behavior: smooth;
     }
+
+    /* animations & keyframes */
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes subtlePulse {
+      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2); }
+      70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+    @keyframes glowShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .animate-fadeUp {
+      animation: fadeUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+      opacity: 0;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+
+    /* container & layout */
     .container {
       max-width: 1280px;
       margin: 0 auto;
       padding: 0 24px;
     }
-    .back-link {
-      display: inline-flex;
+
+    /* header / nav */
+    .glass-nav {
+      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.75);
+      border-bottom: 1px solid rgba(226,232,240,0.8);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      background: #ffffffcc;
-      backdrop-filter: blur(8px);
-      border-radius: 60px;
-      padding: 0.5rem 1.2rem;
-      text-decoration: none;
-      font-weight: 500;
-      transition: 0.2s;
-      color: #1e293b;
+      padding: 1rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
-    .back-link:hover {
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      transform: translateX(-3px);
-    }
-    h1 {
-      font-size: 3.2rem;
-      font-weight: 800;
-      background: linear-gradient(125deg, #0f172a, #2563eb);
+    .logo {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, #1e293b, #3b82f6);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
     }
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.8rem;
-      margin: 2.5rem 0;
+    .qr-link {
+      background: #0f172a;
+      color: white;
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
     }
-    .feature-card {
-      background: rgba(255,255,255,0.75);
-      backdrop-filter: blur(12px);
+    .qr-link:hover {
+      background: #1e293b;
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* buttons & cards */
+    .btn-outline {
+      border: 1px solid #cbd5e1;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #1e293b;
+    }
+    .btn-outline:hover {
+      border-color: #3b82f6;
+      background: #eff6ff;
+      transform: translateY(-2px);
+    }
+
+    .tool-card {
+      background: white;
       border-radius: 2rem;
       padding: 1.5rem;
-      transition: all 0.25s ease;
-      border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border: 1px solid #eef2ff;
     }
-    .feature-card:hover {
+    .tool-card:hover {
       transform: translateY(-6px);
+      box-shadow: 0 25px 40px -12px rgba(0,0,0,0.15);
+      border-color: #cbdffc;
+    }
+
+    .script-card {
+      background: #ffffffdd;
+      backdrop-filter: blur(4px);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      border: 1px solid #e2e8f0;
+    }
+    .script-card:hover {
+      border-color: #a5b4fc;
       background: white;
-      border-color: #cbd5e1;
-      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
     }
-    .demo-mock {
-      background: #0f172a;
-      border-radius: 2rem;
-      padding: 2rem;
-      color: white;
-      margin: 2rem 0;
+
+    .video-placeholder {
+      background: #f1f5f9;
+      border-radius: 1rem;
+      margin-top: 1rem;
+      overflow: hidden;
+      transition: all 0.2s;
     }
-    .badge-light {
-      background: #e2e8f0;
-      padding: 0.2rem 0.8rem;
+    .video-placeholder video {
+      width: 100%;
+      border-radius: 0.75rem;
+      display: block;
+    }
+    .video-caption {
+      font-size: 0.75rem;
+      color: #475569;
+      text-align: center;
+      padding: 0.5rem 0 0.25rem;
+      letter-spacing: 0.3px;
+    }
+
+    .step {
+      background: white;
+      border-radius: 1.25rem;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      border-left: 4px solid #3b82f6;
+    }
+
+    .badge {
+      background: #eef2ff;
+      color: #1e40af;
       border-radius: 30px;
+      padding: 0.2rem 0.8rem;
       font-size: 0.75rem;
       font-weight: 600;
     }
-    .btn-gradient {
-      background: linear-gradient(95deg, #1e293b, #2d3a5e);
-      color: white;
-      padding: 0.7rem 1.8rem;
-      border-radius: 40px;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      transition: 0.2s;
+
+    footer {
+      border-top: 1px solid #e2e8f0;
+      background: #f9fafb;
     }
-    .btn-gradient:hover {
-      transform: scale(1.02);
-      background: linear-gradient(95deg, #0f172a, #1e293b);
-      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
-    }
-    .qr-steps {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: space-between;
-      margin: 2rem 0;
-    }
-    .step-bubble {
-      background: white;
-      padding: 0.8rem 1rem;
-      border-radius: 60px;
-      font-weight: 500;
-      flex: 1;
-      text-align: center;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-      border: 1px solid #e2e8f0;
-    }
-    @media (max-width: 740px) {
-      h1 { font-size: 2.4rem; }
+
+    @media (max-width: 768px) {
       .container { padding: 0 20px; }
+      .tool-card { padding: 1.2rem; }
     }
   </style>
 </head>
 <body>
 
-<div class="container" style="padding-top: 2rem;">
-  <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Automation Tools</a>
-</div>
-
-<section class="container" style="padding: 2rem 0 1rem;">
-  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
-    <div>
-      <span class="badge-light"><i class="fab fa-android"></i> Android 8+ · iOS beta soon</span>
-      <h1>QR Forge <span style="font-weight: 500; font-size: 1.8rem;">v2.0</span></h1>
-      <p style="font-size: 1.2rem; max-width: 560px; margin-top: 0.5rem;">Smart QR generator for warehouse ops — offline, autocomplete, batch print & PDF export.</p>
-    </div>
-    <div>
-      <a href="#" class="btn-gradient"><i class="fab fa-android"></i> Download APK ~4MB</a>
-    </div>
-  </div>
-</section>
-
-<div class="container">
-  <!-- Smart keyboard, auto-formatting preview row -->
-  <div class="demo-mock">
-    <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; justify-content: space-between;">
-      <div>
-        <i class="fas fa-keyboard" style="font-size: 2rem;"></i>
-        <h3 style="margin: 0.5rem 0;">Smart keyboard + auto-dash</h3>
-        <p>Alphanumeric → numpad switch automatically, formats AA0-00-000 or A-00 on the fly.</p>
-      </div>
-      <div style="background: #1e293b; border-radius: 1rem; padding: 0.8rem 1.2rem;">
-        <code style="color:#a5f3c3;">AA0-12-345</code>  <i class="fas fa-qrcode" style="color:white; margin-left: 1rem;"></i>
-      </div>
-    </div>
-  </div>
-
-  <div class="feature-grid">
-    <div class="feature-card"><i class="fas fa-magic fa-2x" style="color:#2563eb;"></i><h3>Instant QR preview</h3><p>Updates the moment code is complete. Live rendering.</p></div>
-    <div class="feature-card"><i class="fas fa-history fa-2x" style="color:#2563eb;"></i><h3>Autocomplete + 200 history</h3><p>Dropdown from previous entries, speeds up scanning.</p></div>
-    <div class="feature-card"><i class="fas fa-print fa-2x" style="color:#2563eb;"></i><h3>Multi‑select print</h3><p>Long-press to batch print multiple QR codes.</p></div>
-    <div class="feature-card"><i class="fas fa-wifi fa-2x" style="color:#2563eb;"></i><h3>WiFi printing</h3><p>Native system dialog → any network printer.</p></div>
-    <div class="feature-card"><i class="fas fa-file-pdf fa-2x" style="color:#2563eb;"></i><h3>PDF export + A4 layout</h3><p>Adjustable QR size (0.6″–3.0″) and live preview.</p></div>
-    <div class="feature-card"><i class="fas fa-share-alt fa-2x" style="color:#2563eb;"></i><h3>Share & save</h3><p>Export PNG to gallery or share via any app.</p></div>
-  </div>
-
-  <!-- types and demo steps -->
-  <div style="background: #ffffffcc; border-radius: 2rem; padding: 1.8rem; margin: 2rem 0;">
-    <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between;">
-      <div><i class="fas fa-archive"></i> <strong>📦 Shelves:</strong> AA0-00-000 (8 chars → 2 letters + 6 digits)</div>
-      <div><i class="fas fa-truck"></i> <strong>🚚 Dispatch:</strong> A-00 (letter + 2 digits)</div>
-    </div>
-  </div>
-
-  <div class="qr-steps">
-    <div class="step-bubble">1️⃣ Select type: Shelf / Dispatch</div>
-    <div class="step-bubble">2️⃣ Type code → auto-format + suggestions</div>
-    <div class="step-bubble">3️⃣ QR appears instantly</div>
-    <div class="step-bubble">4️⃣ Save/print PNG, PDF or WiFi</div>
-    <div class="step-bubble">5️⃣ History up to 200 records</div>
-  </div>
-
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1.5rem; margin: 2rem 0;">
-    <div><i class="fas fa-sliders-h"></i> <strong>Adjustable QR size</strong><br>0.6″ to 3.0″ slider + live preview</div>
-    <div><i class="fas fa-table"></i> <strong>Auto-layout grid</strong><br>Multiple QRs arranged on A4</div>
-    <div><i class="fas fa-wifi"></i> <strong>WiFi printer</strong><br>Works with any network printer</div>
-    <div><i class="fas fa-cubes"></i> <strong>Flutter 3 · Dart · Material 3</strong><br>qr_flutter, pdf / printing, shared_preferences</div>
-  </div>
-
-  <div style="text-align: center; padding: 2rem 0 3rem;">
-    <p style="margin-bottom: 1rem;">✨ Offline ready • Batch printing • PDF layouts with dynamic grid</p>
-    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-      <span class="badge-light"><i class="fas fa-check-circle"></i> Auto-dash formatting</span>
-      <span class="badge-light"><i class="fas fa-check-circle"></i> Live QR render</span>
-      <span class="badge-light"><i class="fas fa-check-circle"></i> 200-item history</span>
-      <span class="badge-light"><i class="fas fa-check-circle"></i> PDF batch layouts</span>
-    </div>
-    <div style="margin-top: 2rem;">
-      <a href="#" class="btn-gradient"><i class="fas fa-download"></i> Get QR Forge for Android</a>
-      <p style="margin-top: 1rem; font-size:0.85rem;">~4 MB • Flutter 3 • DSU11425</p>
-    </div>
+<div class="glass-nav">
+  <div class="container nav-inner">
+    <div class="logo"><i class="fas fa-microchip"></i> AutomationTools</div>
+    <a href="qrforge.html" class="qr-link"><i class="fas fa-qrcode"></i> QR Forge <i class="fas fa-external-link-alt fa-xs"></i></a>
   </div>
 </div>
 
-<footer style="border-top: 1px solid #cbd5e1; background: #f1f5f9; margin-top: 2rem; padding: 1.5rem 0; text-align: center;">
-  <div class="container">QR Forge • standalone utility for warehouse efficiency — <a href="index.html" style="color:#2563eb;">← back to Automation Tools</a></div>
+<main>
+  <!-- Hero -->
+  <section style="padding: 4rem 0 3rem 0; background: linear-gradient(120deg, #ffffff 0%, #f1f5f9 100%);">
+    <div class="container">
+      <div class="animate-fadeUp" style="max-width: 800px;">
+        <span class="badge"><i class="fas fa-code"></i> Codes by Pinnexus</span>
+        <h1 style="font-size: 3.2rem; font-weight: 700; margin: 1rem 0 0.5rem; letter-spacing: -0.02em;">Automation tools<br><span style="color: #2563eb;">built for real work</span></h1>
+        <p style="font-size: 1.2rem; color: #334155; max-width: 600px;">Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.</p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem;">
+          <div><span class="badge" style="background:#1e293b; color:white;">3 VBA Scripts</span></div>
+          <div><span class="badge" style="background:#1e293b; color:white;">v2.0</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's included (3 tools now, QR Forge removed) -->
+  <section style="padding: 2rem 0 3rem;">
+    <div class="container">
+      <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 2rem;">Three tools, <span style="background: linear-gradient(120deg, #2563eb, #7c3aed); background-clip: text; -webkit-background-clip: text; color: transparent;">one workflow.</span></h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+        <div class="tool-card animate-fadeUp delay-100">
+          <i class="fas fa-calculator" style="font-size: 2rem; color:#2563eb; margin-bottom: 1rem;"></i>
+          <h3 style="font-weight: 700; margin-bottom: 0.5rem;">CalculateReceivings</h3>
+          <p style="color: #334155;">VLOOKUP cost calc + 1.05× multiplier, auto-clean columns, final total.</p>
+          <div><span class="badge">VBA · Excel</span></div>
+        </div>
+        <div class="tool-card animate-fadeUp delay-200">
+          <i class="fas fa-chart-line" style="font-size: 2rem; color:#2563eb; margin-bottom: 1rem;"></i>
+          <h3 style="font-weight: 700; margin-bottom: 0.5rem;">GenerateDailyReport</h3>
+          <p>Picker success/cancel counts, top TG/non-TG, modified orders flag, summary block.</p>
+          <div><span class="badge">VBA · Excel</span></div>
+        </div>
+        <div class="tool-card animate-fadeUp delay-300">
+          <i class="fas fa-calendar-week" style="font-size: 2rem; color:#2563eb; margin-bottom: 1rem;"></i>
+          <h3 style="font-weight: 700; margin-bottom: 0.5rem;">GenerateWeeklyReport</h3>
+          <p>Groups consecutive identical shifts, exports clean employee schedule with date ranges.</p>
+          <div><span class="badge">VBA · Excel</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code showcase + working guide videos (for each script) -->
+  <section style="padding: 3rem 0; background: #f1f5f9;">
+    <div class="container">
+      <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 1rem;"><i class="fas fa-laptop-code"></i> Browse the scripts</h2>
+      <p style="margin-bottom: 2rem; color: #334155;">Each macro includes a working video guide, source code and ready-to-use logic.</p>
+      <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+        
+        <!-- Script 1: CalculateReceivings -->
+        <div class="script-card animate-fadeUp">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-size: 1.5rem; font-weight: 600;">CalculateReceivings <span class="badge">v1.2.1</span></h3>
+              <p style="margin: 0.5rem 0;">VLOOKUP + multiplier & auto total. Cleans columns in one click.</p>
+            </div>
+            <a href="#" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+          </div>
+          <pre style="background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 1rem 0;">' CalculateReceivings.V1.2.VBA.txt
+Sub CalculateReceivings()
+    Dim wsMain As Worksheet, wsData As Worksheet
+    Dim lastRow As Long, finalSum As Double
+    ' ... full logic (warehouse cost adjust)
+    MsgBox "FINAL TOTAL: " & Format(finalSum, "#,##0.00")
+End Sub</pre>
+          <!-- working guide video -->
+          <div class="video-placeholder">
+            <video controls poster="https://placehold.co/640x360/eef2ff/1e293b?text=Working+Guide+Video+%7C+CalculateReceivings">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: CalculateReceivings demo (replace with actual tutorial)</div>
+          </div>
+        </div>
+        
+        <!-- Script 2: GenerateDailyReport -->
+        <div class="script-card animate-fadeUp delay-100">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-size: 1.5rem; font-weight: 600;">GenerateDailyReport <span class="badge">v1.1</span></h3>
+              <p>Picker success/cancel, top TG/non-TG, modified orders flag.</p>
+            </div>
+            <a href="#" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+          </div>
+          <pre style="background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 1rem 0;">' GenerateDailyReport macro
+Sub GenerateDailyReport()
+    ' Aggregates picker metrics, success/cancel rates
+    ' Highlights top TG performers, summary block
+End Sub</pre>
+          <div class="video-placeholder">
+            <video controls poster="https://placehold.co/640x360/eef2ff/1e293b?text=Working+Guide+Video+%7C+Daily+Report">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: GenerateDailyReport (replace later)</div>
+          </div>
+        </div>
+        
+        <!-- Script 3: GenerateWeeklyReport -->
+        <div class="script-card animate-fadeUp delay-200">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-size: 1.5rem; font-weight: 600;">GenerateWeeklyReport <span class="badge">v1.0</span></h3>
+              <p>Groups identical shifts, exports clean schedule with date ranges.</p>
+            </div>
+            <a href="#" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+          </div>
+          <pre style="background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 1rem 0;">' Weekly shift consolidator
+Sub GenerateWeeklyReport()
+    ' Consecutive shifts grouping, exports final table
+End Sub</pre>
+          <div class="video-placeholder">
+            <video controls poster="https://placehold.co/640x360/eef2ff/1e293b?text=Working+Guide+Video+%7C+Weekly+Report">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: GenerateWeeklyReport (replace with real video)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup guide with added video -->
+  <section style="padding: 4rem 0;">
+    <div class="container">
+      <h2 style="font-size: 2rem; font-weight: 600; text-align: center;">Setup guide <span style="color:#2563eb;">🎬 video walkthrough</span></h2>
+      <p style="text-align: center; margin-bottom: 2rem;">Up and running in four steps + watch the full tutorial below.</p>
+      
+      <!-- added setup video -->
+      <div style="max-width: 800px; margin: 0 auto 2rem auto;">
+        <div class="video-placeholder" style="box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);">
+          <video controls poster="https://placehold.co/800x450/ffffff/1e293b?text=Setup+Guide+Video+%7C+How+to+install+macros">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          </video>
+          <div class="video-caption"><i class="fas fa-video"></i> Complete setup guide — from Alt+F11 to PERSONAL.XLSB (replace with your video)</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+        <div class="step animate-fadeUp delay-100"><span style="font-weight:800;">01</span> Open workbook <span style="display:block; font-size:0.9rem;">Match sheet names to script expectations.</span></div>
+        <div class="step animate-fadeUp delay-200"><span style="font-weight:800;">02</span> Alt+F11 → Module <span style="display:block; font-size:0.9rem;">Insert → Module, paste macro code.</span></div>
+        <div class="step animate-fadeUp delay-300"><span style="font-weight:800;">03</span> Save as .xlsm <span style="display:block; font-size:0.9rem;">Enable macros when prompted.</span></div>
+        <div class="step animate-fadeUp delay-400"><span style="font-weight:800;">04</span> Alt+F8 → Run <span style="display:block; font-size:0.9rem;">Select macro name → Run.</span></div>
+      </div>
+
+      <div style="background: #eef2ff; border-radius: 1.5rem; padding: 1.5rem; margin-top: 2.5rem;">
+        <h3><i class="fas fa-folder-open"></i> 📁 Make macros global (PERSONAL.XLSB)</h3>
+        <p style="margin-top:0.5rem;">Want these scripts available in any Excel file? Add them to your Personal Macro Workbook. Steps inside VBA editor → locate PERSONAL.XLSB → Insert module → paste scripts. Now run from Alt+F8 anywhere!</p>
+        <div class="badge" style="margin-top:0.8rem;">💡 Pro tip: assign shortcut keys Ctrl+Shift+letter</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer style="padding: 2rem 0; text-align: center;">
+  <div class="container">
+    <p><i class="fas fa-copyright"></i> Automation tools — built by DSU11425 • Excel VBA & Flutter utilities</p>
+    <p style="margin-top: 0.5rem;"><a href="qrforge.html" style="color:#2563eb;">⚡ Discover QR Forge standalone app →</a></p>
+  </div>
 </footer>
+
+<script>
+  // little extra fade/reset for intersection observer – additional micro animation
+  const cards = document.querySelectorAll('.tool-card, .script-card, .step');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  cards.forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(card);
+  });
+</script>
 </body>
 </html>
