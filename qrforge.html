@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>QR Forge · Smart QR Generator for Warehouse</title>
+  <meta name="description" content="Flutter-powered QR code generator for shelves & dispatch – offline, auto-format, batch print, PDF export.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(145deg, #f9fafb 0%, #f0f4fa 100%);
+      color: #0b1120;
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffffcc;
+      backdrop-filter: blur(8px);
+      border-radius: 60px;
+      padding: 0.5rem 1.2rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s;
+      color: #1e293b;
+    }
+    .back-link:hover {
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transform: translateX(-3px);
+    }
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      background: linear-gradient(125deg, #0f172a, #2563eb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.8rem;
+      margin: 2.5rem 0;
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      background: white;
+      border-color: #cbd5e1;
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+    }
+    .demo-mock {
+      background: #0f172a;
+      border-radius: 2rem;
+      padding: 2rem;
+      color: white;
+      margin: 2rem 0;
+    }
+    .badge-light {
+      background: #e2e8f0;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .btn-gradient {
+      background: linear-gradient(95deg, #1e293b, #2d3a5e);
+      color: white;
+      padding: 0.7rem 1.8rem;
+      border-radius: 40px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-gradient:hover {
+      transform: scale(1.02);
+      background: linear-gradient(95deg, #0f172a, #1e293b);
+      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
+    }
+    .qr-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      margin: 2rem 0;
+    }
+    .step-bubble {
+      background: white;
+      padding: 0.8rem 1rem;
+      border-radius: 60px;
+      font-weight: 500;
+      flex: 1;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+    @media (max-width: 740px) {
+      h1 { font-size: 2.4rem; }
+      .container { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" style="padding-top: 2rem;">
+  <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Automation Tools</a>
+</div>
+
+<section class="container" style="padding: 2rem 0 1rem;">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+    <div>
+      <span class="badge-light"><i class="fab fa-android"></i> Android 8+ · iOS beta soon</span>
+      <h1>QR Forge <span style="font-weight: 500; font-size: 1.8rem;">v2.0</span></h1>
+      <p style="font-size: 1.2rem; max-width: 560px; margin-top: 0.5rem;">Smart QR generator for warehouse ops — offline, autocomplete, batch print & PDF export.</p>
+    </div>
+    <div>
+      <a href="#" class="btn-gradient"><i class="fab fa-android"></i> Download APK ~4MB</a>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <!-- Smart keyboard, auto-formatting preview row -->
+  <div class="demo-mock">
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; justify-content: space-between;">
+      <div>
+        <i class="fas fa-keyboard" style="font-size: 2rem;"></i>
+        <h3 style="margin: 0.5rem 0;">Smart keyboard + auto-dash</h3>
+        <p>Alphanumeric → numpad switch automatically, formats AA0-00-000 or A-00 on the fly.</p>
+      </div>
+      <div style="background: #1e293b; border-radius: 1rem; padding: 0.8rem 1.2rem;">
+        <code style="color:#a5f3c3;">AA0-12-345</code>  <i class="fas fa-qrcode" style="color:white; margin-left: 1rem;"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card"><i class="fas fa-magic fa-2x" style="color:#2563eb;"></i><h3>Instant QR preview</h3><p>Updates the moment code is complete. Live rendering.</p></div>
+    <div class="feature-card"><i class="fas fa-history fa-2x" style="color:#2563eb;"></i><h3>Autocomplete + 200 history</h3><p>Dropdown from previous entries, speeds up scanning.</p></div>
+    <div class="feature-card"><i class="fas fa-print fa-2x" style="color:#2563eb;"></i><h3>Multi‑select print</h3><p>Long-press to batch print multiple QR codes.</p></div>
+    <div class="feature-card"><i class="fas fa-wifi fa-2x" style="color:#2563eb;"></i><h3>WiFi printing</h3><p>Native system dialog → any network printer.</p></div>
+    <div class="feature-card"><i class="fas fa-file-pdf fa-2x" style="color:#2563eb;"></i><h3>PDF export + A4 layout</h3><p>Adjustable QR size (0.6″–3.0″) and live preview.</p></div>
+    <div class="feature-card"><i class="fas fa-share-alt fa-2x" style="color:#2563eb;"></i><h3>Share & save</h3><p>Export PNG to gallery or share via any app.</p></div>
+  </div>
+
+  <!-- types and demo steps -->
+  <div style="background: #ffffffcc; border-radius: 2rem; padding: 1.8rem; margin: 2rem 0;">
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between;">
+      <div><i class="fas fa-archive"></i> <strong>📦 Shelves:</strong> AA0-00-000 (8 chars → 2 letters + 6 digits)</div>
+      <div><i class="fas fa-truck"></i> <strong>🚚 Dispatch:</strong> A-00 (letter + 2 digits)</div>
+    </div>
+  </div>
+
+  <div class="qr-steps">
+    <div class="step-bubble">1️⃣ Select type: Shelf / Dispatch</div>
+    <div class="step-bubble">2️⃣ Type code → auto-format + suggestions</div>
+    <div class="step-bubble">3️⃣ QR appears instantly</div>
+    <div class="step-bubble">4️⃣ Save/print PNG, PDF or WiFi</div>
+    <div class="step-bubble">5️⃣ History up to 200 records</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1.5rem; margin: 2rem 0;">
+    <div><i class="fas fa-sliders-h"></i> <strong>Adjustable QR size</strong><br>0.6″ to 3.0″ slider + live preview</div>
+    <div><i class="fas fa-table"></i> <strong>Auto-layout grid</strong><br>Multiple QRs arranged on A4</div>
+    <div><i class="fas fa-wifi"></i> <strong>WiFi printer</strong><br>Works with any network printer</div>
+    <div><i class="fas fa-cubes"></i> <strong>Flutter 3 · Dart · Material 3</strong><br>qr_flutter, pdf / printing, shared_preferences</div>
+  </div>
+
+  <div style="text-align: center; padding: 2rem 0 3rem;">
+    <p style="margin-bottom: 1rem;">✨ Offline ready • Batch printing • PDF layouts with dynamic grid</p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <span class="badge-light"><i class="fas fa-check-circle"></i> Auto-dash formatting</span>
+      <span class="badge-light"><i class="fas fa-check-circle"></i> Live QR render</span>
+      <span class="badge-light"><i class="fas fa-check-circle"></i> 200-item history</span>
+      <span class="badge-light"><i class="fas fa-check-circle"></i> PDF batch layouts</span>
+    </div>
+    <div style="margin-top: 2rem;">
+      <a href="#" class="btn-gradient"><i class="fas fa-download"></i> Get QR Forge for Android</a>
+      <p style="margin-top: 1rem; font-size:0.85rem;">~4 MB • Flutter 3 • DSU11425</p>
+    </div>
+  </div>
+</div>
+
+<footer style="border-top: 1px solid #cbd5e1; background: #f1f5f9; margin-top: 2rem; padding: 1.5rem 0; text-align: center;">
+  <div class="container">QR Forge • standalone utility for warehouse efficiency — <a href="index.html" style="color:#2563eb;">← back to Automation Tools</a></div>
+</footer>
+</body>
+</html>
