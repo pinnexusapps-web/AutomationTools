@@ -1,512 +1,788 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Pinnexus · Codes by DSU11425</title>
-<!-- Google Fonts & Icons -->
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
-<!-- GSAP + ScrollTrigger + Three.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Automation Tools | Excel VBA & Warehouse Utilities</title>
+  <meta name="description" content="Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --black: #0a0a0a;
-    --white: #f8f8f6;
-    --gray: #e5e5e3;
-    --gray-mid: #888884;
-    --gray-dark: #333331;
-    --accent: #1a1a1a;
-    --green: #2d6a4f;
-    --green-light: #d8f3dc;
-    --border: #e0e0dd;
-    --radius: 12px;
-    --font: 'DM Sans', sans-serif;
-    --mono: 'DM Mono', monospace;
-  }
-  html { scroll-behavior: smooth; overflow-x: hidden; }
-  body { font-family: var(--font); background: #fff; color: var(--black); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #050506;
+      color: #e2e8f0;
+      line-height: 1.6;
+      overflow-x: hidden;
+      font-weight: 300;
+    }
 
-  /* 3D canvas background (hero only) */
-  #hero-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.38;
-  }
-  .hero {
-    position: relative;
-    background: var(--black);
-    color: var(--white);
-    padding: 7rem 2.5rem 5rem;
-    overflow: hidden;
-    isolation: isolate;
-  }
-  .hero-inner {
-    position: relative;
-    z-index: 2;
-  }
+    /* Modern Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #222;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #333;
+    }
 
-  /* NAV */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 2.5rem; height: 56px;
-  }
-  .nav-logo { font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--black); text-decoration: none; display: flex; align-items: center; gap: 8px; }
-  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--black); display: inline-block; }
-  .nav-links { display: flex; gap: 2rem; list-style: none; }
-  .nav-links a { font-size: 13px; color: var(--gray-mid); text-decoration: none; font-weight: 400; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--black); }
-  .nav-cta { font-size: 13px; background: var(--black); color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: opacity 0.2s; }
-  .nav-cta:hover { opacity: 0.8; }
+    /* Three.js canvas background — Fixed Layer */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.8;
+    }
 
-  h1 { font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 300; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
-  h1 span { font-weight: 600; background: linear-gradient(120deg, #fff, #b0b0b0); background-clip: text; -webkit-background-clip: text; color: transparent; }
-  .hero-sub { font-size: 16px; color: rgba(255,255,255,0.5); max-width: 480px; line-height: 1.7; margin-bottom: 2.5rem; }
-  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-  .btn-white { background: #fff; color: #000; padding: 11px 22px; border-radius: 7px; text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.2s; }
-  .btn-white:hover { opacity: 0.88; transform: translateY(-2px); }
-  .btn-ghost { border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); padding: 11px 22px; border-radius: 7px; text-decoration: none; font-size: 13px; transition: border-color 0.2s, color 0.2s; }
-  .hero-stats { display: flex; gap: 3rem; margin-top: 4rem; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.08); }
-  .stat-num { font-size: 28px; font-weight: 600; color: #fff; }
-  .stat-lbl { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
 
-  section { padding: 5rem 2.5rem; }
-  .section-inner { max-width: 1100px; margin: 0 auto; }
-  .section-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-mid); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
-  .section-label::before { content: ''; display: block; width: 16px; height: 1px; background: var(--gray-mid); }
-  h2 { font-size: 2rem; font-weight: 300; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
-  h2 strong { font-weight: 600; }
+    /* Navigation styling */
+    .glass-nav {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(5, 5, 6, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .logo {
+      font-weight: 500;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .qr-link {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 400;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .qr-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
 
-  .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-  .tool-card { background: #fff; padding: 1.75rem; transition: all 0.25s; cursor: pointer; }
-  .tool-card:hover { background: #fafaf9; transform: translateY(-3px); }
-  .tool-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--black); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-  .tool-icon svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 1.5; fill: none; }
+    /* Advanced Outline Button */
+    .btn-outline {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 400;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #f1f5f9;
+      font-size: 0.85rem;
+    }
+    .btn-outline:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
 
-  .code-section { background: var(--black); color: var(--white); }
-  .code-window { background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 0 0 10px 10px; }
-  pre { font-family: var(--mono); font-size: 12px; line-height: 1.8; color: rgba(255,255,255,0.75); white-space: pre-wrap; word-break: break-word; }
-  .kw { color: #c792ea; } .fn { color: #82aaff; } .str { color: #c3e88d; } .cm { color: rgba(255,255,255,0.35); } .num { color: #f78c6c; } .var { color: #eeffff; }
-  .code-tab { padding: 10px 18px; font-size: 12px; font-family: var(--mono); color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; display: inline-block; transition: all 0.2s; }
-  .code-tab.active { color: #fff; border-bottom-color: #fff; }
-  .code-tab:hover:not(.active) { color: rgba(255,255,255,0.6); }
+    /* Minimalist Cards with Perspective Layer */
+    .tool-card {
+      background: rgba(10, 10, 12, 0.4);
+      border-radius: 1.25rem;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      transition: border-color 0.5s ease, background 0.5s ease;
+    }
+    .tool-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(15, 15, 18, 0.6);
+    }
+    .tool-card h3 {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+      color: #fff;
+      transform: translateZ(20px);
+    }
+    .tool-card p {
+      font-weight: 300;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      transform: translateZ(15px);
+    }
 
-  .code-download-btn {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #fff;
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    backdrop-filter: blur(4px);
-    text-decoration: none;
-  }
-  .code-download-btn:hover {
-    background: rgba(255,255,255,0.2);
-    border-color: rgba(255,255,255,0.5);
-    transform: translateY(-1px);
-  }
-  .code-download-btn i { font-size: 13px; }
+    /* Advanced Tab Interface */
+    .tab-buttons {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 2.5rem;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #64748b;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #fff;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tab-btn.active {
+      color: #fff;
+    }
+    .tab-btn.active::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    .tab-btn:hover:not(.active) {
+      color: #94a3b8;
+    }
+    
+    .tab-content {
+      display: none;
+      opacity: 0;
+    }
+    .tab-content.active-tab {
+      display: block;
+      opacity: 1;
+    }
 
-  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem; }
-  .step { display: flex; flex-direction: column; gap: 0.5rem; }
-  .step-num { font-size: 11px; font-family: var(--mono); color: var(--gray-mid); }
-  .step-title { font-size: 14px; font-weight: 600; }
-  .step-text { font-size: 13px; color: var(--gray-mid); line-height: 1.65; }
+    .script-card {
+      background: rgba(8, 8, 10, 0.5);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+    }
+    
+    pre {
+      background: #020203 !important;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      color: #cbd5e1;
+      padding: 1.25rem;
+      border-radius: 0.8rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 1.5rem 0;
+    }
+    
+    .video-placeholder {
+      background: #020203;
+      border-radius: 1rem;
+      margin-top: 1.5rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .video-placeholder video {
+      width: 100%;
+      display: block;
+    }
+    .video-caption {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-align: center;
+      padding: 0.8rem 0;
+    }
+    
+    .badge {
+      background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 30px;
+      padding: 0.25rem 0.8rem;
+      font-size: 0.725rem;
+      font-weight: 400;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .step {
+      background: rgba(10, 10, 12, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      transition: border-color 0.3s;
+    }
+    .step:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      background: #020203;
+      text-align: center;
+      padding: 3rem 0;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
 
-  /* QR Forge styles */
-  .app-main-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 2rem; display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; justify-content: space-between; margin-top: 2rem; }
-  .app-info { flex: 2; min-width: 240px; }
-  .app-visual { flex: 1; min-width: 160px; background: var(--black); border-radius: 20px; padding: 1.5rem; text-align: center; }
-  .qr-demo { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; max-width: 140px; margin: 0 auto; background: #fff; padding: 8px; border-radius: 12px; }
-  .qr-cell { aspect-ratio: 1; border-radius: 2px; }
-  .qr-on { background: #0a0a0a; }
-  .qr-off { background: #f0f0f0; }
-  .app-badge-row { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
-  .app-badge { font-size: 10px; letter-spacing: 0.08em; background: var(--green-light); color: var(--green); padding: 4px 12px; border-radius: 20px; font-weight: 600; }
-  .dl-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--black); color: #fff; padding: 12px 22px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 500; transition: 0.2s; border: none; cursor: pointer; }
-  .dl-btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--gray-mid); }
-  .dl-btn-ghost:hover { border-color: #aaa; color: #000; background: #f5f5f5; }
-  .features-masonry { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin: 1.5rem 0; border: 1px solid var(--border); }
-  .feat-item { background: #fff; padding: 1.2rem 1rem; display: flex; gap: 10px; align-items: flex-start; }
-  .feat-item i { font-size: 22px; color: var(--green); flex-shrink: 0; }
-  .feat-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-  .feat-text p { font-size: 12px; color: var(--gray-mid); line-height: 1.4; }
-  .format-row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1rem 0 2rem; }
-  .format-card { flex: 1; background: #f9f9f8; border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; }
-  .format-code { font-family: var(--mono); font-size: 20px; font-weight: 600; background: var(--black); color: #fff; display: inline-block; padding: 4px 12px; border-radius: 40px; margin: 10px 0; letter-spacing: 1px; }
-  .flow-steps { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin: 2rem 0; background: #f4f4f2; border-radius: 48px; padding: 1rem 1.5rem; }
-  .flow-step { flex: 1; text-align: center; min-width: 80px; }
-  .flow-dot { width: 36px; height: 36px; background: var(--black); color: white; border-radius: 60px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: bold; margin-bottom: 8px; }
-  .flow-dot.accent { background: var(--green); }
-  .print-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 1rem; margin: 1.5rem 0; }
-  .print-card { background: #fefefe; border: 1px solid var(--border); border-radius: 16px; padding: 1rem; transition: 0.2s; }
-  .tech-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0; }
-  .tech-pill { background: #eef2ff; border-radius: 40px; padding: 5px 14px; font-size: 11px; font-family: var(--mono); font-weight: 500; color: #1e293b; }
+    h1, h2, h3 {
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
 
-  footer { background: var(--black); color: rgba(255,255,255,0.3); padding: 2rem 2.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-  .badge-vba { background: #eef2ff; color: #3730a3; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: inline-block; margin-top: 8px; }
-  .badge-android { background: var(--green-light); color: var(--green); padding: 3px 8px; border-radius: 4px; font-size: 10px; display: inline-block; margin-left: 5px; }
-  .personal-guide { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 1.8rem; margin-top: 2rem; }
-  .personal-guide h3 { font-size: 1.2rem; margin-bottom: 1rem; font-weight: 600; color: #166534; }
-
-  @media (max-width: 768px) {
-    nav { padding: 0 1rem; }
-    .nav-links { display: none; }
-    .hero { padding: 4rem 1.25rem 3rem; }
-    section { padding: 3rem 1.25rem; }
-    h2 { font-size: 1.7rem; }
-    .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
-    .steps-grid { grid-template-columns: 1fr; gap: 1.2rem; }
-    .tools-grid { grid-template-columns: 1fr; }
-    .app-main-card { flex-direction: column; text-align: center; }
-    .app-visual { width: 100%; }
-    .features-masonry { grid-template-columns: 1fr; }
-    .format-row { flex-direction: column; }
-    .flow-steps { flex-direction: column; align-items: flex-start; background: transparent; padding: 0; gap: 1rem; border-radius: 0; }
-    .flow-step { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; }
-    .flow-dot { margin-bottom: 0; }
-    footer { flex-direction: column; align-items: flex-start; }
-    .code-body { max-height: 400px; }
-  }
-  @media (max-width: 480px) {
-    .hero-actions { flex-direction: column; }
-    .btn-white, .btn-ghost { text-align: center; }
-  }
-</style>
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      h1 { font-size: 2.75rem !important; }
+    }
+    @media (max-width: 768px) {
+      .nav-inner { flex-direction: column; text-align: center; }
+      .feature-grid { grid-template-columns: 1fr !important; }
+      h1 { font-size: 2.25rem !important; }
+      .setup-steps { grid-template-columns: 1fr !important; }
+    }
+  </style>
 </head>
 <body>
 
-<nav>
-  <a href="#" class="nav-logo"><span class="logo-dot"></span> Pinnexus</a>
-  <ul class="nav-links">
-    <li><a href="#tools">Tools</a></li>
-    <li><a href="#showcase">Code</a></li>
-    <li><a href="#guide">Guide</a></li>
-    <li><a href="#app">QR Forge</a></li>
-  </ul>
-  <a href="#app" class="nav-cta">Get the App</a>
-</nav>
+<canvas id="bg-canvas"></canvas>
 
-<!-- HERO with 3D canvas -->
-<section class="hero" id="hero">
-  <canvas id="hero-canvas"></canvas>
-  <div class="hero-inner">
-    <div class="hero-tag" style="font-size:11px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:1rem;">Codes by Pinnexus</div>
-    <h1>Automation tools<br>built for <span>real work</span></h1>
-    <p class="hero-sub">Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.</p>
-    <div class="hero-actions">
-      <a href="#tools" class="btn-white">Explore tools</a>
-      <a href="#guide" class="btn-ghost">Setup guide</a>
-    </div>
-    <div class="hero-stats">
-      <div><div class="stat-num">3</div><div class="stat-lbl">VBA Scripts</div></div>
-      <div><div class="stat-num">1</div><div class="stat-lbl">Android App</div></div>
-      <div><div class="stat-num">v2.0</div><div class="stat-lbl">QR Forge</div></div>
-    </div>
+<div class="glass-nav">
+  <div class="container nav-inner">
+    <div class="logo"><i class="fas fa-microchip"></i> AutomationTools</div>
+    <a href="qrforge.html" class="qr-link"><i class="fas fa-qrcode"></i> QR Forge <i class="fas fa-external-link-alt fa-xs"></i></a>
   </div>
-</section>
+</div>
 
-<!-- TOOLS SECTION -->
-<section id="tools">
-  <div class="section-inner">
-    <div class="section-label">What's included</div>
-    <h2>Four tools,<br><strong>one workflow.</strong></h2>
-    <p class="section-desc" style="color: var(--gray-mid); max-width: 480px;">From receivings calculation to shift scheduling — each tool is purpose-built for warehouse and dispatch operations.</p>
-    <div class="tools-grid">
-      <div class="tool-card"><div class="tool-icon"><svg viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/><path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/><path d="m16 5 3 3"/></svg></div><div class="tool-name">CalculateReceivings</div><div class="tool-desc">VLOOKUP cost calc + 1.05× multiplier, auto-clean columns, final total.</div><span class="badge-vba">VBA · Excel</span></div>
-      <div class="tool-card"><div class="tool-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></div><div class="tool-name">GenerateDailyReport</div><div class="tool-desc">Picker success/cancel counts, top TG/non-TG, modified orders flag, summary block.</div><span class="badge-vba">VBA · Excel</span></div>
-      <div class="tool-card"><div class="tool-icon"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/><path d="M14 17h7M17 14v7"/></svg></div><div class="tool-name">GenerateWeeklyReport</div><div class="tool-desc">Groups consecutive identical shifts, exports clean employee schedule with date ranges.</div><span class="badge-vba">VBA · Excel</span></div>
-      <div class="tool-card"><div class="tool-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div><div class="tool-name">QR Forge</div><div class="tool-desc">Generate QR codes for shelves/dispatch — offline, autocomplete, batch print.</div><span class="badge-android">Android</span><span class="badge-android" style="margin-left:4px;">iOS soon</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- CODE SHOWCASE with DOWNLOAD BUTTON pointing to actual .txt files -->
-<section class="code-section" id="showcase">
-  <div class="section-inner">
-    <div class="section-label">Code showcase</div>
-    <h2 style="color:#fff;">Browse the <strong>scripts</strong></h2>
-    <div style="display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:0; flex-wrap:wrap;" id="codeTabs">
-      <div class="code-tab active" data-tab="0">CalculateReceivings</div>
-      <div class="code-tab" data-tab="1">GenerateDailyReport</div>
-      <div class="code-tab" data-tab="2">GenerateWeeklyReport</div>
-    </div>
-    <div class="code-window">
-      <div class="code-header" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:10px;">
-        <div style="display:flex; gap:6px;">
-          <div style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></div>
-          <div style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></div>
-          <div style="width:10px;height:10px;border-radius:50%;background:#28c840;"></div>
+<main>
+  <!-- Hero Section -->
+  <section style="padding: 6rem 0 4rem 0;" class="hero-section">
+    <div class="container">
+      <div class="hero-content" style="max-width: 750px;">
+        <span class="badge" class="reveal-item"><i class="fas fa-code"></i> by Pinnexus</span>
+        <h1 style="font-size: 3.5rem; font-weight: 400; margin: 1.2rem 0 0.8rem; letter-spacing: -1.5px; line-height: 1.15;" class="reveal-item">
+          Automation tools<br><span style="color: #64748b;">built for real work</span>
+        </h1>
+        <p style="font-size: 1.1rem; color: #94a3b8; max-width: 540px;" class="reveal-item">
+          Excel VBA scripts and utilities that eliminate repetitive tasks <br>— built by DSU11425, designed to save hours every week.
+        </p>
+        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;" class="reveal-item">
+          <span class="badge" style="background:rgba(255,255,255,0.08); color:#fff;">3 VBA Scripts</span>
+          <span class="badge" style="background:rgba(255,255,255,0.08); color:#fff;">v2.0</span>
         </div>
-        <div class="code-filename" style="font-size:11px; font-family:var(--mono); color:rgba(255,255,255,0.5);" id="codeFilename">CalculateReceivings.V1.2.VBA.txt</div>
-        <a id="downloadCodeBtn" class="code-download-btn" download><i class="ti ti-download"></i> Download .txt</a>
-      </div>
-      <div class="code-body" style="padding:1.25rem 1.5rem; overflow-x:auto;">
-        <pre id="codeContent"></pre>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- GUIDE SECTION with PERSONAL.XLSB instructions -->
-<section id="guide">
-  <div class="section-inner">
-    <div class="section-label">Setup guide</div>
-    <h2>Up and running<br><strong>in four steps.</strong></h2>
-    <div class="steps-grid">
-      <div class="step"><div class="step-num">01</div><div class="step-title">Open workbook</div><div class="step-text">Open Excel file with source data. Ensure sheet names match script expectations.</div></div>
-      <div class="step"><div class="step-num">02</div><div class="step-title">Alt+F11 → Module</div><div class="step-text">Insert → Module, paste the full macro code.</div></div>
-      <div class="step"><div class="step-num">03</div><div class="step-title">Save as .xlsm</div><div class="step-text">Enable macros when prompted.</div></div>
-      <div class="step"><div class="step-num">04</div><div class="step-title">Alt+F8 → Run</div><div class="step-text">Select macro name → Run.</div></div>
-    </div>
+  <!-- Feature Cards Overview -->
+  <section style="padding: 4rem 0 4rem;" class="features-section">
+    <div class="container">
+      <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Three tools, <span style="color:#64748b;">one workflow.</span></h2>
+      <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.8rem;">
+        
+        <div class="tool-card animate-card">
+          <i class="fas fa-calculator" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+          <h3>Calculate Receivings</h3>
+          <p>VLOOKUP · cost · Tax multiplier · auto-clean columns · final total</p>
+          <div><span class="badge">VBA · Excel</span></div>
+        </div>
 
-    <!-- PERSONAL.XLSB Global Macro Guide -->
-    <div class="personal-guide">
-      <h3>📁 Make macros global (PERSONAL.XLSB)</h3>
-      <p style="margin-bottom: 12px; font-size: 14px;">Want these scripts available in <strong>any</strong> Excel file without copying every time? Add them to your Personal Macro Workbook.</p>
-      <ol style="margin-left: 1.2rem; font-size: 13px; color: #14532d; line-height: 1.7;">
-        <li>Open any Excel file. Press <code style="background:#e6f7e6; padding:2px 6px; border-radius:6px;">Alt + F11</code> to open VBA editor.</li>
-        <li>If <strong>PERSONAL.XLSB</strong> does not exist: close VBA editor, go to <strong>View → Macros</strong>, type any name (e.g. "CreatePersonal"), click <strong>Create</strong>. Then close Excel and save when prompted. Reopen Excel → PERSONAL.XLSB is created.</li>
-        <li>In VBA editor (<kbd>Alt+F11</kbd>), locate <strong>VBAProject (PERSONAL.XLSB)</strong> in the Project Explorer.</li>
-        <li>Right-click → <strong>Insert → Module</strong>. Paste the full script (e.g., CalculateReceivings).</li>
-        <li>Repeat for each macro: GenerateDailyReport, GenerateWeeklyReport (each in separate module or same).</li>
-        <li>Press <kbd>Ctrl+S</kbd> to save PERSONAL.XLSB. (If protected: enable trust access to VBA project under Macro Settings).</li>
-        <li>Now you can run <strong>CalculateReceivings</strong>, <strong>GenerateDailyReport</strong>, <strong>GenerateWeeklyReport</strong> from <kbd>Alt+F8</kbd> in any Excel workbook!</li>
-      </ol>
-      <div style="margin-top: 12px; background:#fff; border-radius: 12px; padding: 12px; font-size: 12px; border-left: 4px solid #2d6a4f;">
-        💡 <strong>Pro tip:</strong> Assign shortcut keys by opening Macro dialog → Options → set Ctrl+Shift+letter. Your global macros become instant productivity boosters.
+        <div class="tool-card animate-card">
+          <i class="fas fa-chart-line" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+          <h3>Generate Daily Report</h3>
+          <p>Picker · success/cancel counts · top Inhouse/Suplier · modified orders flag</p>
+          <div><span class="badge">VBA · Excel</span></div>
+        </div>
+
+        <div class="tool-card animate-card">
+          <i class="fas fa-calendar-week" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+          <h3>Generate Bio Time</h3>
+          <p>Groups consecutive identical shifts · exports clean schedule</p>
+          <div><span class="badge">VBA · Excel</span></div>
+        </div>
+
       </div>
     </div>
+  </section>
 
-    <div style="margin-top:1rem; background:#f9f9f8; border-radius:12px; padding:1.2rem;"><span style="font-weight:600;">⚠️ Enable macros</span> — only for trusted files.</div>
-  </div>
-</section>
-
-<!-- QR FORGE SECTION -->
-<section id="app" style="background:#fdfdfc;">
-  <div class="section-inner">
-    <div class="section-label">Mobile app · v2.0.0</div>
-    <h2>QR Forge: <strong>Smart QR generator</strong> for warehouse ops</h2>
-    <p class="section-desc" style="max-width:600px;">Flutter-powered app with auto-formatting, instant preview, offline & batch printing.</p>
-
-    <div class="app-main-card">
-      <div class="app-info">
-        <div class="app-badge-row"><span class="app-badge">Android 8+</span><span class="app-badge">iOS beta soon</span></div>
-        <div style="font-size: 1.8rem; font-weight: 600;">QR Forge</div>
-        <div style="margin: 0.5rem 0 1rem;">Auto-dash formatting · History autocomplete · Multi-select print · PDF export</div>
-        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1rem;">
-          <li>✔️ Smart keyboard (alpha→numpad)</li><li>✔️ Live QR rendering on last char</li><li>✔️ 200-item history + autocomplete</li><li>✔️ WiFi printing & PDF batch layouts</li>
-        </ul>
-        <div><button class="dl-btn" id="apkDownload"><i class="ti ti-device-mobile"></i> Download APK</button> <button class="dl-btn dl-btn-ghost" id="githubBtn" style="margin-left:6px;"><i class="ti ti-brand-github"></i> GitHub</button></div>
-        <div style="font-size:11px; margin-top:8px;">~4 MB · Flutter 3 · DSU11425</div>
+  <!-- Script Browser[cite: 1] -->
+  <section style="padding: 5rem 0;" class="browser-section">
+    <div class="container">
+      <h2 style="margin-bottom: 0.5rem; font-size: 2rem;"><i class="fas fa-laptop-code"></i> Browse the scripts</h2>
+      <p style="margin-bottom: 2.5rem; color: #64748b;">Each macro includes a working video guide and source code.</p>
+      
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="tab1">Calculate Receivings</button>
+        <button class="tab-btn" data-tab="tab2">Generate Daily Report</button>
+        <button class="tab-btn" data-tab="tab3">Generate Bio Time</button>
       </div>
-      <div class="app-visual">
-        <div class="qr-demo" id="qrDemo"></div>
-        <div style="margin-top:12px; font-size:10px; color:rgba(255,255,255,0.5);">sample QR preview</div>
+
+      <!-- Tab 1 -->
+      <div id="tab1" class="tab-content active-tab">
+        <div class="script-card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-weight: 500; color: #fff;">Calculate Receivings <span class="badge">v1.2.1</span></h3>
+              <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">VLOOKUP · cost · Tax multiplier · auto-clean columns · final total</p>
+            </div>
+            <a href="Calculate Receivings V1.2.1 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+          </div>
+          <pre><code>' Calculate Receivings V1.2.1 VBA.txt
+Sub CalculateReceivings()
+    Dim wsMain As Worksheet, wsData As Worksheet
+    Dim lastRow As Long, finalSum As Double
+
+    If lastRow <= skuRow Then
+        If retryCount = 0 Then
+            wsMain.Cells(skuRow, skuCol).Insert Shift:=xlToRight
+            retryCount = 1
+            GoTo FindSKULabel
+        Else
+            MsgBox "Warning: No data found under the SKU column even after adjustment!", vbExclamation, "No Data"
+            Exit Sub
+        End If
+    End If
+
+    ' ... full logic (Download the .txt)
+
+    wsMain.Range(wsMain.Cells(1, skuCol + 1), wsMain.Cells(1, skuCol + 13)).ColumnWidth = 2.5
+    
+    prodNameColLetter = Split(wsMain.Cells(1, skuCol + 1).Address, "$")(1)
+    wsMain.Columns(prodNameColLetter).AutoFit
+    
+    pColLetter = Split(wsMain.Cells(1, skuCol + 14).Address, "$")(1)
+
+    wsMain.Columns(qColLetter).AutoFit
+    
+    MsgBox "Process completed successfully!" & vbCrLf & vbCrLf & _
+           "==============================" & vbCrLf & _
+           " FINAL TOTAL AMOUNT: " & Format(finalSum, "#,##0.00") & vbCrLf & _
+           "==============================", vbInformation, "Success"
+End Sub</code></pre>
+          <div class="video-placeholder">
+            <video controls poster="https://placehold.co/640x360/111/ffffff?text=Working+Guide+CalculateReceivings">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Calculate Receivings demo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2 -->
+      <div id="tab2" class="tab-content">
+        <div class="script-card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-weight: 500; color: #fff;">Generate Daily Report <span class="badge">v1.2</span></h3>
+              <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Picker · success/cancel counts · top Inhouse/Suplier · modified orders flag</p>
+            </div>
+            <a href="Generate Daily Report V1.2 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+          </div>
+          <pre><code>' Generate Daily Report V1.2 VBA.txt
+  Sub GenerateDailyReport()
+      Dim wsData As Worksheet, wsReport As Worksheet
+      Dim lastRow As Long, reportRow As Long, lastReportRow As Long
+      Dim pickerDict As Object
+
+      Set wsData = ActiveSheet
+
+      lastRow = wsData.Cells(wsData.Rows.Count, "A").End(xlUp).Row
+      If lastRow <= 1 Then
+          MsgBox "The active sheet seems to be empty or has no data rows. Please open the correct file first!", vbCritical, "Error"
+          Exit Sub
+      End If
+      
+    ' ... full logic (Download the .txt)
+
+     summaryRow = modifiedRow + 3
+        
+      .Cells(summaryRow, 2).Value = "Good morning team,"
+      .Cells(summaryRow + 2, 2).Value = "Daily sales report " & formattedDate
+      
+      .Cells(summaryRow + 3, 2).Value = "Orders:"
+      .Cells(summaryRow + 3, 3).Formula = "=SUM(D3:D" & reportRow - 1 & ")"
+
+      End With
+    
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+  End Sub </code></pre>
+          <div class="video-placeholder">
+            <video controls poster="https://placehold.co/640x360/111/ffffff?text=Daily+Report+Guide">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Generate Daily Report</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3 -->
+      <div id="tab3" class="tab-content">
+        <div class="script-card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-weight: 500; color: #fff;">Generate Bio Time <span class="badge">v1.1</span></h3>
+              <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Groups consecutive identical shifts · exports clean schedule</p>
+            </div>
+            <a href="Generate Bio Time V1.1 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+          </div>
+          <pre><code>' Generate Bio Time V1.1 VBA.txt
+  Sub Generate Bio Time()
+    Dim srcBook As Workbook
+    Dim srcSheet As Worksheet
+
+    lastRow = srcSheet.Cells(srcSheet.Rows.Count, 1).End(xlUp).Row
+    lastCol = srcSheet.Cells(17, srcSheet.Columns.Count).End(xlToLeft).Column
+    If lastCol < 5 Then lastCol = 15
+    
+    foundRoster = False
+    For r = 1 To lastRow
+        For c = 1 To lastCol
+            If InStr(UCase(CStr(srcSheet.Cells(r, c).Value)), "MONDAY") > 0 Then
+                rosterRow = r
+                startCol = c
+                foundRoster = True
+                Exit For
+            End If
+        Next c
+        If foundRoster Then Exit For
+    Next r
+    
+    Function AdvancedShiftParser(ByVal rawShift As String) As String
+      rawShift = UCase(WorksheetFunction.Trim(rawShift))
+      rawShift = Replace(rawShift, Chr(160), " ")
+    
+       If InStr(cleanStr, "-") = 0 Then
+        Dim p1 As Long, p2 As Long, a1 As Long, a2 As Long
+        Dim cutPos As Long
+        
+    ' ... full logic (Download the .txt)
+
+        p1 = InStr(1, cleanStr, "PM")
+        p2 = InStr(p1 + 2, cleanStr, "PM")
+        a1 = InStr(1, cleanStr, "AM")
+        a2 = InStr(a1 + 2, cleanStr, "AM")
+
+      Dim displayHour As Integer
+    displayHour = startHour
+    If displayHour = 0 Then displayHour = 12
+    
+    AdvancedShiftParser = prefix & " " & Format(displayHour, "00") & " (" & Format(duration, "00") & ")"
+    Exit Function
+
+  ParserFallback:
+      AdvancedShiftParser = rawShift
+End Function</code></pre>
+          <div class="video-placeholder">
+            <video controls poster="https://placehold.co/640x360/111/ffffff?text=Weekly+Report+Guide">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            </video>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Generate Bio Time</div>
+          </div>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="features-masonry">
-      <div class="feat-item"><i class="ti ti-keyboard"></i><div class="feat-text"><h4>Smart keyboard</h4><p>Auto-switches from letters to numbers at correct position</p></div></div>
-      <div class="feat-item"><i class="ti ti-separator"></i><div class="feat-text"><h4>Auto-dash formatting</h4><p>AA0-00-000 / A-00 inserted automatically</p></div></div>
-      <div class="feat-item"><i class="ti ti-qrcode"></i><div class="feat-text"><h4>Instant QR preview</h4><p>Updates the moment code is complete</p></div></div>
-      <div class="feat-item"><i class="ti ti-history"></i><div class="feat-text"><h4>Autocomplete</h4><p>Dropdown from previous entries while typing</p></div></div>
-      <div class="feat-item"><i class="ti ti-select"></i><div class="feat-text"><h4>Multi-select print</h4><p>Long-press to batch print multiple QR codes</p></div></div>
-      <div class="feat-item"><i class="ti ti-printer"></i><div class="feat-text"><h4>WiFi printing</h4><p>Native system dialog → any network printer</p></div></div>
-      <div class="feat-item"><i class="ti ti-file-type-pdf"></i><div class="feat-text"><h4>PDF export</h4><p>A4 layout with adjustable QR size (0.6″–3.0″)</p></div></div>
-      <div class="feat-item"><i class="ti ti-share"></i><div class="feat-text"><h4>Share & save</h4><p>Export PNG to gallery or share via apps</p></div></div>
-    </div>
+  <!-- Setup Guide Section -->
+  <section style="padding: 5rem 0;" class="setup-section">
+    <div class="container">
+      <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">Setup guide <span style="color:#64748b;">🎬 video walkthrough</span></h2>
+      <p style="text-align: center; margin-bottom: 3rem; color:#64748b;">Up and running in four steps + watch the full tutorial below.</p>
+      
+      <div style="max-width: 760px; margin: 0 auto 3rem auto;" class="setup-video-wrapper">
+        <div class="video-placeholder">
+          <video controls poster="https://placehold.co/800x450/111/ffffff?text=Setup+Guide+Video">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          </video>
+          <div class="video-caption"><i class="fas fa-video"></i> Complete setup guide — Alt+F11 to PERSONAL.XLSB</div>
+        </div>
+      </div>
 
-    <div class="format-row">
-      <div class="format-card"><div style="font-weight:600;">📦 Shelves</div><div class="format-code">AA0-00-000</div><div>8 chars → 2 letters + 6 digits, dashes inserted automatically</div></div>
-      <div class="format-card"><div style="font-weight:600;">🚚 Dispatch</div><div class="format-code">A-00</div><div>Letter + 2 digits, auto dash after first char</div></div>
-    </div>
+      <div class="setup-steps" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+        <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">01</span> Open workbook<br><span style="font-size:0.85rem; color:#64748b;">Match sheet names</span></div>
+        <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">02</span> Alt+F11 → Module<br><span style="font-size:0.85rem; color:#64748b;">Insert → Module, paste macro</span></div>
+        <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">03</span> Save as .xlsm<br><span style="font-size:0.85rem; color:#64748b;">Enable macros</span></div>
+        <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">04</span> Alt+F8 → Run<br><span style="font-size:0.85rem; color:#64748b;">Select macro → Run</span></div>
+      </div>
 
-    <div class="flow-steps">
-      <div class="flow-step"><div class="flow-dot">1</div><div>Select type</div><small>Shelf/Dispatch</small></div>
-      <div class="flow-step"><div class="flow-dot">2</div><div>Type code</div><small>Auto-format + suggestions</small></div>
-      <div class="flow-step"><div class="flow-dot accent">3</div><div>QR appears</div><small>Instant preview</small></div>
-      <div class="flow-step"><div class="flow-dot">4</div><div>Save/print</div><small>PNG, PDF or WiFi</small></div>
-      <div class="flow-step"><div class="flow-dot">5</div><div>History</div><small>Up to 200 records</small></div>
-    </div>
-
-    <div style="background:#f8f8f6; border-radius:20px; padding:1.5rem; margin-top:0.5rem;">
-      <div class="print-grid">
-        <div class="print-card"><i class="ti ti-adjustments-horizontal"></i><strong>Adjustable QR size</strong><br>0.6″ to 3.0″ slider</div>
-        <div class="print-card"><i class="ti ti-eye"></i><strong>Live PDF preview</strong><br>See exact layout before print</div>
-        <div class="print-card"><i class="ti ti-layout-grid"></i><strong>Auto-layout grid</strong><br>Multiple QRs arranged on A4</div>
-        <div class="print-card"><i class="ti ti-wifi"></i><strong>WiFi printer</strong><br>Works with any network printer</div>
+      <div style="background: rgba(10,10,12,0.4); border-radius: 1.25rem; padding: 2rem; margin-top: 3rem; border:1px solid rgba(255,255,255,0.05);" class="pro-tip-card">
+        <h3 style="font-weight: 400; color:#fff; display:flex; align-items:center; gap:10px;"><i class="fas fa-folder-open" style="color:#64748b;"></i> Make macros global (PERSONAL.XLSB)</h3>
+        <p style="margin-top:0.6rem; font-size:0.95rem; color:#94a3b8;">Add scripts to Personal Macro Workbook — available in any Excel file.</p>
+        <div class="badge" style="margin-top:1rem; background:rgba(255,255,255,0.06);">💡 Pro tip: assign shortcut keys Ctrl+Shift+letter</div>
       </div>
     </div>
-
-    <div class="tech-pills">
-      <span class="tech-pill">Flutter 3</span><span class="tech-pill">Dart</span><span class="tech-pill">Material 3</span><span class="tech-pill">qr_flutter</span>
-      <span class="tech-pill">pdf / printing</span><span class="tech-pill">shared_preferences</span><span class="tech-pill">gal</span><span class="tech-pill">share_plus</span>
-    </div>
-  </div>
-</section>
+  </section>
+</main>
 
 <footer>
-  <div class="footer-brand">Codes by Pinnexus</div>
-  <div class="footer-copy">Built by DSU11425 · v2.0 · 2025</div>
-  <div class="footer-links"><a href="#tools">Tools</a><a href="#guide">Guide</a><a href="#app">App</a></div>
+  <div class="container">
+    <p>Automation tools — built by DSU11425 • Excel VBA & Flutter utilities</p>
+    <p style="margin-top: 0.6rem;"><a href="qrforge.html" style="color:#fff; transition: opacity 0.3s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">⚡ Discover QR Forge standalone app →</a></p>
+  </div>
 </footer>
 
 <script>
-  // Embedded VBA for display (syntax-highlighted) — actual external .txt files for download
-  const fullCalculateDisplay = `<span class="cm">' Software Version 1.2.1</span>
-<span class="cm">' developed by DSU11425</span>
-<span class="kw">Sub</span> <span class="fn">CalculateReceivings</span>()
-    <span class="kw">Dim</span> <span class="var">wsMain</span> <span class="kw">As</span> Worksheet, <span class="var">wsData</span> <span class="kw">As</span> Worksheet
-    <span class="kw">Dim</span> <span class="var">lastRow</span> <span class="kw">As</span> Long, <span class="var">finalSum</span> <span class="kw">As</span> Double
-    <span class="cm">' ... full logic (same as before)</span>
-    MsgBox <span class="str">"Process completed successfully!"</span> & vbCrLf & <span class="str">"FINAL TOTAL: "</span> & Format(<span class="var">finalSum</span>, <span class="str">"#,##0.00"</span>), vbInformation
-<span class="kw">End</span> <span class="kw">Sub</span>`;
-
-  const fullDailyDisplay = `<span class="cm">' Software Version 1.2 — GenerateDailyReport (full)</span>
-<span class="kw">Sub</span> <span class="fn">GenerateDailyReport</span>()
-    <span class="kw">Dim</span> <span class="var">wsData</span> <span class="kw">As</span> Worksheet, <span class="var">wsReport</span> <span class="kw">As</span> Worksheet
-    <span class="kw">Dim</span> <span class="var">lastRow</span> <span class="kw">As</span> Long, <span class="var">i</span> <span class="kw">As</span> Long
-    <span class="kw">Set</span> <span class="var">wsData</span> = ActiveSheet
-    <span class="var">lastRow</span> = <span class="var">wsData</span>.Cells(<span class="var">wsData</span>.Rows.Count, <span class="str">"A"</span>).End(xlUp).Row
-    <span class="cm">' Clean AED prefixes</span>
-    <span class="kw">For</span> <span class="var">i</span> = <span class="num">2</span> <span class="kw">To</span> <span class="var">lastRow</span>
-        <span class="cm">' ...</span>
-    <span class="kw">Next</span>
-    <span class="kw">Set</span> <span class="var">wsReport</span> = Worksheets.Add(Before:=Worksheets(<span class="num">1</span>))
-    <span class="var">wsReport</span>.Name = <span class="str">"Daily Report"</span>
-    MsgBox <span class="str">"Daily report generated successfully!"</span>, vbInformation
-<span class="kw">End</span> <span class="kw">Sub</span>`;
-
-  const fullWeeklyDisplay = `<span class="cm">' Software Version 1.2 — GenerateWeeklyReport + AdvancedShiftParser</span>
-<span class="kw">Sub</span> <span class="fn">GenerateWeeklyReport</span>()
-    <span class="kw">Dim</span> <span class="var">srcSheet</span> <span class="kw">As</span> Worksheet, <span class="var">destSheet</span> <span class="kw">As</span> Worksheet
-    <span class="kw">Set</span> <span class="var">srcSheet</span> = ActiveSheet
-    <span class="cm">' Auto-locate Monday column</span>
-    <span class="kw">Set</span> <span class="var">destBook</span> = Workbooks.Add
-    MsgBox <span class="str">"Data Successfully Converted!"</span>, vbInformation
-<span class="kw">End</span> <span class="kw">Sub</span>
-<span class="kw">Function</span> <span class="fn">AdvancedShiftParser</span>(<span class="kw">ByVal</span> <span class="var">rawShift</span> <span class="kw">As</span> <span class="kw">String</span>) <span class="kw">As</span> <span class="kw">String</span>
-    <span class="cm">' ... normalization logic</span>
-    <span class="fn">AdvancedShiftParser</span> = <span class="str">"AM 08 (08)"</span>
-<span class="kw">End</span> <span class="kw">Function</span>`;
-
-  // Mapping: display content + actual file paths for download
-  const codeSnippets = [
-    { 
-      displayFile: 'CalculateReceivings.V1.2.VBA.txt', 
-      filePath: 'CalculateReceivings.V1.2.VBA.txt',
-      content: fullCalculateDisplay 
-    },
-    { 
-      displayFile: 'GenerateDailyReport.V1.2.VBA.txt', 
-      filePath: 'GenerateDailyReport.V1.2.VBA.txt',
-      content: fullDailyDisplay 
-    },
-    { 
-      displayFile: 'GenerateWeeklyReport.V1.2.VBA.txt', 
-      filePath: 'GenerateWeeklyReport.V1.2.VBA.txt',
-      content: fullWeeklyDisplay 
-    }
-  ];
-
-  const tabs = document.querySelectorAll('.code-tab');
-  const contentPre = document.getElementById('codeContent');
-  const filenameSpan = document.getElementById('codeFilename');
-  const downloadBtn = document.getElementById('downloadCodeBtn');
-
-  function showTab(i) {
-    tabs.forEach((t,idx)=>t.classList.toggle('active', idx===i));
-    contentPre.innerHTML = codeSnippets[i].content;
-    filenameSpan.innerText = codeSnippets[i].displayFile;
-    // update download link: point to the actual .txt file in the same folder
-    downloadBtn.href = codeSnippets[i].filePath;
-    downloadBtn.download = codeSnippets[i].displayFile;
-  }
-  showTab(0);
-
-  tabs.forEach(t => t.addEventListener('click', () => showTab(parseInt(t.dataset.tab))));
-
-  // QR demo grid
-  const qrPattern = [1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1];
-  const qrGrid = document.getElementById('qrDemo');
-  if(qrGrid) { qrPattern.forEach(v => { const cell = document.createElement('div'); cell.className = 'qr-cell ' + (v ? 'qr-on' : 'qr-off'); qrGrid.appendChild(cell); }); }
-
-  // Three.js background
-  const canvas = document.getElementById('hero-canvas');
-  if(canvas) {
-    let scene, camera, renderer, mesh, particles;
-    function initThree() {
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-      renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-      const w = canvas.clientWidth, h = canvas.clientHeight;
-      renderer.setSize(w, h);
-      camera.aspect = w/h;
-      camera.updateProjectionMatrix();
-      const geometry = new THREE.IcosahedronGeometry(0.9, 0);
-      const material = new THREE.MeshStandardMaterial({ color: 0x2d6a4f, wireframe: true, emissive: 0x1a3a2a });
-      mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
-      const particlesGeo = new THREE.BufferGeometry();
-      const positions = new Float32Array(700 * 3);
-      for(let i=0; i<700; i++) { positions[i*3] = (Math.random() - 0.5) * 15; positions[i*3+1] = (Math.random() - 0.5) * 8; positions[i*3+2] = (Math.random() - 0.5) * 12 - 5; }
-      particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const particlesMat = new THREE.PointsMaterial({ color: 0x6fbf73, size: 0.05, transparent: true, opacity: 0.3 });
-      particles = new THREE.Points(particlesGeo, particlesMat);
-      scene.add(particles);
-      scene.add(new THREE.AmbientLight(0x222222));
-      const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-      dirLight.position.set(1,2,1);
-      scene.add(dirLight);
-      camera.position.set(0, 0, 3.2);
-      animate();
-    }
-    function animate() {
-      if(!mesh) return;
-      requestAnimationFrame(animate);
-      mesh.rotation.y += 0.008;
-      mesh.rotation.x = Math.sin(Date.now() * 0.002) * 0.2;
-      if(particles) particles.rotation.y += 0.002;
-      renderer.render(scene, camera);
-    }
-    window.addEventListener('resize', () => { if(renderer && camera) { const w = canvas.clientWidth, h = canvas.clientHeight; renderer.setSize(w, h); camera.aspect = w/h; camera.updateProjectionMatrix(); } });
-    initThree();
-  }
-
   gsap.registerPlugin(ScrollTrigger);
-  gsap.fromTo(".tool-card", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, scrollTrigger: { trigger: "#tools", start: "top 80%" } });
-  gsap.fromTo(".step", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, scrollTrigger: { trigger: "#guide", start: "top 80%" } });
-  gsap.fromTo(".feat-item, .format-card, .print-card", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05, scrollTrigger: { trigger: "#app", start: "top 75%" } });
-  gsap.fromTo(".app-main-card", { opacity: 0, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.7, scrollTrigger: { trigger: "#app", start: "top 80%" } });
-  gsap.fromTo(".code-window", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, scrollTrigger: { trigger: "#showcase", start: "top 80%" } });
-  gsap.fromTo(".hero-inner h1", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, delay: 0.2 });
-  gsap.fromTo(".hero-sub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.4 });
-  gsap.fromTo(".hero-actions a", { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, stagger: 0.1, delay: 0.6 });
-  gsap.fromTo(".hero-stats", { opacity: 0, y: 20 }, { opacity: 1, y: 0, delay: 0.8 });
 
-  document.getElementById('apkDownload')?.addEventListener('click', (e) => { e.preventDefault(); alert('📱 APK download simulation — QR Forge v2.0 ready for sideload.'); });
-  document.getElementById('githubBtn')?.addEventListener('click', () => { alert('🔗 GitHub repo: github.com/dsu11425/qr-forge (demo)'); });
+  // --- 1. ADVANCED INTERACTION: GSAP REVEALS & SCROLLTRIGGER ---
+  
+  // Hero elements staggered reveal on load
+  const tl = gsap.timeline();
+  tl.from('.glass-nav', { y: -20, opacity: 0, duration: 0.8, ease: 'expo.out' })
+    .from('.hero-content .badge', { opacity: 0, y: 15, duration: 0.6, ease: 'power3.out' }, '-=0.4')
+    .from('.hero-content h1', { opacity: 0, y: 30, duration: 0.8, ease: 'power4.out' }, '-=0.5')
+    .from('.hero-content p', { opacity: 0, y: 20, duration: 0.6, ease: 'power3.out' }, '-=0.6')
+    .from('.hero-content .badge:not(:first-child)', { opacity: 0, scale: 0.9, stagger: 0.1, duration: 0.4 }, '-=0.4');
+
+  // Staggered reveal for Feature Grid Card elements[cite: 1]
+  gsap.from('.feature-grid .tool-card', {
+    scrollTrigger: {
+      trigger: '.features-section',
+      start: 'top 75%',
+      toggleActions: 'play none none reverse'
+    },
+    opacity: 0,
+    y: 40,
+    stagger: 0.15,
+    duration: 1,
+    ease: 'expo.out'
+  });
+
+  // Smooth reveal for Browser and Setup Sections[cite: 1]
+  gsap.from('.browser-section', {
+    scrollTrigger: { 
+      trigger: '.browser-section', 
+      start: 'top 85%',
+      toggleActions: 'play none none reverse'
+    },
+    opacity: 0, 
+    y: 30, 
+    duration: 0.8, 
+    ease: 'power3.out'
+  });
+
+  gsap.from('.setup-video-wrapper', {
+    scrollTrigger: { trigger: '.setup-section', start: 'top 75%' },
+    opacity: 0, scale: 0.98, duration: 0.8, ease: 'power3.out'
+  });
+
+  gsap.from('.setup-steps .step', {
+    scrollTrigger: { trigger: '.setup-steps', start: 'top 85%' },
+    opacity: 0, y: 25, stagger: 0.1, duration: 0.8, ease: 'power2.out'
+  });
+
+
+  // --- 2. ADVANCED TILT EFFECT (3D MOUSE HOVER ON CARDS) ---
+  const cards = document.querySelectorAll('.animate-card, .step-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - (rect.width/2);
+      const y = e.clientY - rect.top - (rect.height/2);
+      
+      // Calculate rotation degree limits
+      const factor = 15; 
+      const rotateX = -(y / rect.height) * factor;
+      const rotateY = (x / rect.width) * factor;
+      
+      gsap.to(card, {
+        rotateX: rotateX,
+        rotateY: rotateY,
+        transformOrigin: "center center",
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    });
+
+    card.addEventListener('mouseleave', () => {
+      gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.6, ease: "power4.out" });
+    });
+  });
+
+
+  // --- 3. TAB SWITCHING OPTIMIZED ANIMATION[cite: 1] ---
+  const tabs = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.getAttribute('data-tab');
+      if(btn.classList.contains('active')) return;
+
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const currentActive = document.querySelector('.tab-content.active-tab');
+      
+      // Out animation then fade in new tab[cite: 1]
+      gsap.to(currentActive, {
+        opacity: 0, y: -10, duration: 0.25, ease: 'power2.in', onComplete: () => {
+          currentActive.classList.remove('active-tab');
+          
+          const nextActive = document.getElementById(tabId);
+          nextActive.classList.add('active-tab');
+          
+          gsap.fromTo(nextActive, 
+            { opacity: 0, y: 15 }, 
+            { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }
+          );
+        }
+      });
+    });
+  });
+
+
+  // --- 4. ADVANCED THREE.JS KINETIC BACKGROUND INTERACTION ---
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Generative space star field particles
+  const particleCount = 1200;
+  const particleGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    positions[i*3] = (Math.random() - 0.5) * 160;
+    positions[i*3+1] = (Math.random() - 0.5) * 90;
+    positions[i*3+2] = (Math.random() - 0.5) * 60 - 20;
+  }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const particleMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.11, transparent: true, opacity: 0.25 });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+  // Core Wireframe Object - Abstract Geometric Mesh
+  const knotGeo = new THREE.TorusKnotGeometry(3, 0.5, 140, 18, 3, 4);
+  const knotMat = new THREE.MeshStandardMaterial({ 
+    color: 0x475569, 
+    wireframe: true, 
+    transparent: true, 
+    opacity: 0.12 
+  });
+  const knot = new THREE.Mesh(knotGeo, knotMat);
+  scene.add(knot);
+
+  // Minimal Lighting Array
+  const ambient = new THREE.AmbientLight(0xffffff, 0.2);
+  scene.add(ambient);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  directionalLight.position.set(5, 5, 5);
+  scene.add(directionalLight);
+
+  camera.position.z = 14;
+  camera.position.y = 0;
+
+  // Multi-Axis Scroll Parallax Tracking
+  gsap.to(camera.position, {
+    z: 8,
+    y: -3,
+    x: 2,
+    scrollTrigger: {
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 1.2
+    }
+  });
+
+  gsap.to(knot.rotation, {
+    z: Math.PI * 0.8,
+    scrollTrigger: {
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 1
+    }
+  });
+
+  // Mouse interactivity parallax for 3D space
+  let mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 1.5;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 1.5;
+  });
+
+  // Render Loop
+  const clock = new THREE.Clock();
+  function animate3d() {
+    requestAnimationFrame(animate3d);
+    const elapsedTime = clock.getElapsedTime();
+
+    // Constant slow float drift
+    particles.rotation.y = elapsedTime * 0.02;
+    knot.rotation.x = elapsedTime * 0.04;
+    knot.rotation.y = elapsedTime * 0.06;
+
+    // Fluid mouse follow delay integration
+    camera.position.x += (mouseX - camera.position.x) * 0.05;
+    camera.position.y += (-mouseY - camera.position.y) * 0.05;
+
+    renderer.render(scene, camera);
+  }
+  animate3d();
+
+  // Responsive Canvas Viewport Re-calculation
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 </script>
 </body>
 </html>
