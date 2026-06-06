@@ -126,6 +126,20 @@
       color: #fff;
     }
 
+    /* Hero Responsive Flex/Grid Split */
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .hero-interactive-space {
+      height: 380px;
+      width: 100%;
+      cursor: pointer;
+    }
+
     .tool-card {
       background: rgba(8, 8, 10, 0.35);
       border-radius: 1.25rem;
@@ -280,9 +294,12 @@
     }
     @media (max-width: 768px) {
       .nav-inner { flex-direction: column; text-align: center; }
+      .hero-split { grid-template-columns: 1fr; text-align: center; }
+      .hero-content { margin: 0 auto; }
       .feature-grid { grid-template-columns: 1fr !important; }
       h1 { font-size: 2.25rem !important; }
       .setup-steps { grid-template-columns: 1fr !important; }
+      .hero-interactive-space { height: 260px; }
     }
   </style>
 </head>
@@ -298,24 +315,30 @@
 </div>
 
 <main>
-  <section style="padding: 6rem 0 4rem 0;" class="hero-section">
+  <!-- Hero Section -->
+  <section style="padding: 5rem 0 4rem 0;" class="hero-section">
     <div class="container">
-      <div class="hero-content" style="max-width: 750px;">
-        <span class="badge"><i class="fas fa-code"></i> by Pinnexus</span>
-        <h1 style="font-size: 3.5rem; font-weight: 400; margin: 1.2rem 0 0.8rem; letter-spacing: -1.5px; line-height: 1.15;">
-          Automation tools<br><span style="color: #64748b;">built for real work</span>
-        </h1>
-        <p style="font-size: 1.1rem; color: #94a3b8; max-width: 540px;">
-          Excel VBA scripts and utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.
-        </p>
-        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;">
-          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA Scripts</span>
-          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
+      <div class="hero-split">
+        <div class="hero-content" style="max-width: 750px;">
+          <span class="badge"><i class="fas fa-code"></i> by Pinnexus</span>
+          <h1 style="font-size: 3.5rem; font-weight: 400; margin: 1.2rem 0 0.8rem; letter-spacing: -1.5px; line-height: 1.15;">
+            Automation tools<br><span style="color: #64748b;">built for real work</span>
+          </h1>
+          <p style="font-size: 1.1rem; color: #94a3b8; max-width: 540px;">
+            Excel VBA scripts and utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.
+          </p>
+          <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;">
+            <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA Scripts</span>
+            <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
+          </div>
         </div>
+        <!-- Spatial placeholder container triggering direct cursor hover dependencies -->
+        <div class="hero-interactive-space" id="hero-trigger"></div>
       </div>
     </div>
   </section>
 
+  <!-- Feature Cards -->
   <!-- Feature Cards Overview -->
   <section style="padding: 4rem 0 4rem;" class="features-section">
     <div class="container">
@@ -526,6 +549,7 @@ End Function</code></pre>
     </div>
   </section>
 
+  <!-- Setup Guide Section -->
   <section style="padding: 5rem 0;" class="setup-section">
     <div class="container">
       <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">Setup guide <span style="color:#64748b;">🎬 video walkthrough</span></h2>
@@ -587,7 +611,6 @@ End Function</code></pre>
     ease: 'expo.out'
   });
 
-  // Fixed Reveal Target: Animating the entire section container so child tabs initialize cleanly
   gsap.from('.browser-section', {
     scrollTrigger: { 
       trigger: '.browser-section', 
@@ -668,42 +691,32 @@ End Function</code></pre>
   });
 
 
-  // --- NEW THREE.JS GENERATIVE GRID LANDSCAPE MODEL ---
+  // --- THREE.JS ADVANCED QUANTUM CORE WEBGL ENGINE ---
   const scene = new THREE.Scene();
-  
-  // Fog enhances the landscape's depth perspective, mimicking infinite distance limits
-  scene.fog = new THREE.FogExp2(0x030304, 0.05);
+  scene.fog = new THREE.FogExp2(0x030304, 0.04);
 
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
   const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // Particle Field Background Layer (Fine Stardust)
-  const particleCount = 600;
-  const particleGeo = new THREE.BufferGeometry();
-  const particlePositions = new Float32Array(particleCount * 3);
-  for (let i = 0; i < particleCount; i++) {
-    particlePositions[i*3] = (Math.random() - 0.5) * 120;
-    particlePositions[i*3+1] = (Math.random() - 0.5) * 80;
-    particlePositions[i*3+2] = (Math.random() - 0.5) * 50 - 10;
-  }
-  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-  const particleMat = new THREE.PointsMaterial({ color: 0x64748b, size: 0.09, transparent: true, opacity: 0.4 });
-  const particles = new THREE.Points(particleGeo, particleMat);
-  scene.add(particles);
+  // Lighting configuration needed for depth textures
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(ambientLight);
 
-  // Create Matrix Wireframe Plane (The Digital Highway Model)
-  const terrainWidth = 70, terrainHeight = 70;
+  const coreLight = new THREE.PointLight(0xffffff, 1.8, 15);
+  coreLight.position.set(5.5, 2.5, 2);
+  scene.add(coreLight);
+
+  // Background Terrain Layer Matrix
+  const terrainWidth = 75, terrainHeight = 75;
   const segmentsX = 45, segmentsY = 45;
   const gridGeo = new THREE.PlaneGeometry(terrainWidth, terrainHeight, segmentsX, segmentsY);
   
-  // Modifying the Z-axis vertices mathematically to inject matrix-style terrain wave nodes
   const posAttribute = gridGeo.attributes.position;
   for (let i = 0; i < posAttribute.count; i++) {
     const x = posAttribute.getX(i);
     const y = posAttribute.getY(i);
-    // Simulating hills and valleys via combined trigonometric frequencies
     const zNoise = Math.sin(x * 0.2) * Math.cos(y * 0.2) * 1.5 + Math.sin(x * 0.08) * 2.0;
     posAttribute.setZ(i, zNoise);
   }
@@ -713,67 +726,170 @@ End Function</code></pre>
     color: 0x334155,
     wireframe: true,
     transparent: true,
-    opacity: 0.15
+    opacity: 0.13
   });
   
   const terrainMesh = new THREE.Mesh(gridGeo, gridMat);
-  // Orient plane horizontally matching lower viewport baseline orientations
   terrainMesh.rotation.x = -Math.PI / 2.1; 
   terrainMesh.position.y = -6;
   terrainMesh.position.z = -10;
   scene.add(terrainMesh);
 
+
+  // --- ADVANCED ADVANCED SYSTEM GENERATION B: ADVANCED QUANTUM CORE ---
+  const headerObjGroup = new THREE.Group();
+
+  // Layer 1: Solid Inner Shaded Facets (Icosahedron Core)
+  const coreGeo = new THREE.IcosahedronGeometry(1.4, 0);
+  const coreMat = new THREE.MeshPhongMaterial({
+    color: 0x0f172a,
+    emissive: 0x1e293b,
+    specular: 0xffffff,
+    shininess: 40,
+    flatShading: true,
+    transparent: true,
+    opacity: 0.85
+  });
+  const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+  headerObjGroup.add(coreMesh);
+
+  // Layer 2: External Wireframe Lattice Shell
+  const shellGeo = new THREE.IcosahedronGeometry(1.45, 0);
+  const shellMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.25
+  });
+  const shellMesh = new THREE.Mesh(shellGeo, shellMat);
+  headerObjGroup.add(shellMesh);
+
+  // Layer 3: Gyroscopic Node Ring System (Horizontal Orbit)
+  const ringA_Geo = new THREE.TorusGeometry(2.4, 0.03, 8, 50);
+  const ringA_Mat = new THREE.MeshBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.3 });
+  const ringA = new THREE.Mesh(ringA_Geo, ringA_Mat);
+  ringA.rotation.x = Math.PI / 2;
+  headerObjGroup.add(ringA);
+
+  // Layer 4: Gyroscopic Node Ring System (Vertical Intersecting Axis)
+  const ringB_Geo = new THREE.TorusGeometry(2.6, 0.02, 6, 40);
+  const ringB_Mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
+  const ringB = new THREE.Mesh(ringB_Geo, ringB_Mat);
+  ringB.rotation.y = Math.PI / 4;
+  headerObjGroup.add(ringB);
+
+  // Layer 5: Attracting Satellite Quantum Points Array
+  const satelliteCount = 25;
+  const satGeo = new THREE.BufferGeometry();
+  const satPositions = new Float32Array(satelliteCount * 3);
+  const satSpeeds = [];
+
+  for (let i = 0; i < satelliteCount; i++) {
+    // Spatial configuration localized around core vector parameters
+    const distance = 2.0 + Math.random() * 2.5;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos((Math.random() * 2) - 1);
+
+    satPositions[i*3] = distance * Math.sin(phi) * Math.cos(theta);
+    satPositions[i*3+1] = distance * Math.sin(phi) * Math.sin(theta);
+    satPositions[i*3+2] = distance * Math.cos(phi);
+    satSpeeds.push(0.01 + Math.random() * 0.02);
+  }
+
+  satGeo.setAttribute('position', new THREE.BufferAttribute(satPositions, 3));
+  const satMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.6 });
+  const satelliteParticles = new THREE.Points(satGeo, satMat);
+  headerObjGroup.add(satelliteParticles);
+
+  // Default coordinate initialization vector points for desktop environments
+  headerObjGroup.position.set(5.5, 2.0, -1);
+  scene.add(headerObjGroup);
+
   camera.position.z = 15;
   camera.position.y = 1.0;
 
-  // --- CINEMATIC BASE SCROLL TRIGGER CONTROLS ---
-  // Moving the landscape upward and tilting perspective on scroll
+
+  // --- PARALLAX SCROLL MANAGEMENT ---
   gsap.to(terrainMesh.position, {
-    z: 2,
-    y: -4,
-    scrollTrigger: {
-      trigger: "body",
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 1.5
-    }
+    z: 2, y: -4,
+    scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1.5 }
   });
 
-  gsap.to(terrainMesh.rotation, {
-    z: 0.25,
-    scrollTrigger: {
-      trigger: "body",
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 1.2
-    }
+  gsap.to(headerObjGroup.position, {
+    y: 8, z: -6, x: 7,
+    scrollTrigger: { trigger: ".hero-section", start: "top top", end: "bottom top", scrub: 1 }
   });
 
-  // Inertial Floating Mouse Tracker 
+
+  // --- RUNTIME INTERACTIVE ACTIONS ON HERO HOVER ---
+  let rotationVelocity = 1.0;
+  let targetScale = 1.0;
+  const triggerSpace = document.getElementById('hero-trigger');
+
+  triggerSpace.addEventListener('mouseenter', () => {
+    rotationVelocity = 3.5; // Acceleration metrics switch
+    targetScale = 1.15;
+  });
+
+  triggerSpace.addEventListener('mouseleave', () => {
+    rotationVelocity = 1.0;
+    targetScale = 1.0;
+  });
+
   let mouseX = 0, mouseY = 0;
   window.addEventListener('mousemove', (e) => {
     mouseX = (e.clientX / window.innerWidth - 0.5) * 1.2;
     mouseY = (e.clientY / window.innerHeight - 0.5) * 0.8;
   });
 
-  // Dynamic Framework Loop
+
+  // --- GEN ACTIVE CORE RENDER CLOCK LOOP ---
   const clock = new THREE.Clock();
+  
   function animate3d() {
     requestAnimationFrame(animate3d);
     const elapsedTime = clock.getElapsedTime();
 
-    // Subtle persistent spatial drift animation (Wave Pulse Matrix effect)
+    // 1. Structural terrain array dynamic wave motion calculations
     const vertices = gridGeo.attributes.position;
     for (let i = 0; i < vertices.count; i++) {
       const x = vertices.getX(i);
       const y = vertices.getY(i);
-      // Animating the network height structures using delta-time phases
-      const currentZ = Math.sin(x * 0.2 + elapsedTime * 0.4) * Math.cos(y * 0.2 + elapsedTime * 0.4) * 1.2;
+      const currentZ = Math.sin(x * 0.2 + elapsedTime * 0.4) * Math.cos(y * 0.2 + elapsedTime * 0.4) * 1.1;
       vertices.setZ(i, currentZ);
     }
     gridGeo.attributes.position.needsUpdate = true;
 
-    // Fluid kinetic mouse tracking interpolations
+    // 2. Multilayered Complex Spin Matrices
+    coreMesh.rotation.y = elapsedTime * 0.25 * rotationVelocity;
+    coreMesh.rotation.z = elapsedTime * 0.1 * rotationVelocity;
+    
+    shellMesh.rotation.y = -elapsedTime * 0.4 * rotationVelocity;
+    shellMesh.rotation.x = elapsedTime * 0.15;
+
+    ringA.rotation.z = elapsedTime * 0.12 * rotationVelocity;
+    ringB.rotation.x = -elapsedTime * 0.18 * rotationVelocity;
+
+    // Scale Interpolation transitions based on cursor detection
+    const currentScale = headerObjGroup.scale.x;
+    const stepScale = currentScale + (targetScale - currentScale) * 0.1;
+    headerObjGroup.scale.set(stepScale, stepScale, stepScale);
+
+    // Dynamic Micro-Satellite Core Accretion physics logic loops
+    const positions = satelliteParticles.geometry.attributes.position.array;
+    for(let i=0; i<satelliteCount; i++) {
+      positions[i*3]   += Math.sin(elapsedTime + i) * 0.003;
+      positions[i*3+1] += Math.cos(elapsedTime + i) * 0.003;
+    }
+    satelliteParticles.geometry.attributes.position.needsUpdate = true;
+    
+    // Constant physical hover float system dynamics equations
+    headerObjGroup.position.y = 2.0 + Math.sin(elapsedTime * 1.2) * 0.25;
+
+    // Smooth camera lookAt coordinate interpolation metrics
+    headerObjGroup.rotation.y += (mouseX * 0.4 - headerObjGroup.rotation.y) * 0.05;
+    headerObjGroup.rotation.x += (-mouseY * 0.4 - headerObjGroup.rotation.x) * 0.05;
+
     camera.position.x += (mouseX - camera.position.x) * 0.04;
     camera.position.y += (-mouseY + 1.0 - camera.position.y) * 0.04;
     camera.lookAt(0, -2, -5);
@@ -782,11 +898,25 @@ End Function</code></pre>
   }
   animate3d();
 
+  // Clean viewport layout transformations handler
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    if(window.innerWidth < 768) {
+      headerObjGroup.position.set(0, -1.2, -3);
+      coreLight.position.set(0, -1.2, 3);
+    } else {
+      headerObjGroup.position.set(5.5, 2.0, -1);
+      coreLight.position.set(5.5, 2.5, 2);
+    }
   });
+  
+  if(window.innerWidth < 768) {
+    headerObjGroup.position.set(0, -1.2, -3);
+    coreLight.position.set(0, -1.2, 3);
+  }
 </script>
 </body>
 </html>
