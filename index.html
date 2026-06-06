@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Automation Tools | Excel VBA & Warehouse Utilities</title>
+  <title>Automation Tools | Excel VBA & Warehouse Utilities (Dark)</title>
   <meta name="description" content="Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -16,26 +16,21 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #f8fafc;
-      color: #0f172a;
+      background: #0a0c10;
+      color: #eef2ff;
       line-height: 1.5;
       scroll-behavior: smooth;
     }
 
-    /* animations & keyframes */
+    /* dark theme animations */
     @keyframes fadeUp {
       0% { opacity: 0; transform: translateY(30px); }
       100% { opacity: 1; transform: translateY(0); }
     }
     @keyframes subtlePulse {
-      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2); }
-      70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-    }
-    @keyframes glowShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.2); }
+      70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
     }
 
     .animate-fadeUp {
@@ -47,18 +42,17 @@
     .delay-300 { animation-delay: 0.3s; }
     .delay-400 { animation-delay: 0.4s; }
 
-    /* container & layout */
     .container {
       max-width: 1280px;
       margin: 0 auto;
       padding: 0 24px;
     }
 
-    /* header / nav */
+    /* dark glass navigation */
     .glass-nav {
       backdrop-filter: blur(12px);
-      background: rgba(255,255,255,0.75);
-      border-bottom: 1px solid rgba(226,232,240,0.8);
+      background: rgba(10, 12, 16, 0.85);
+      border-bottom: 1px solid #2d2f36;
       position: sticky;
       top: 0;
       z-index: 50;
@@ -74,14 +68,14 @@
     .logo {
       font-weight: 700;
       font-size: 1.5rem;
-      background: linear-gradient(135deg, #1e293b, #3b82f6);
+      background: linear-gradient(135deg, #ffffff, #a0aec0);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
     }
     .qr-link {
-      background: #0f172a;
-      color: white;
+      background: #ffffff;
+      color: #0a0c10;
       padding: 0.5rem 1.2rem;
       border-radius: 100px;
       font-weight: 500;
@@ -92,15 +86,13 @@
       text-decoration: none;
     }
     .qr-link:hover {
-      background: #1e293b;
+      background: #e2e8f0;
       transform: scale(1.02);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
-    /* buttons & cards */
     .btn-outline {
-      border: 1px solid #cbd5e1;
-      background: white;
+      border: 1px solid #4a4f5e;
+      background: #1a1e26;
       padding: 0.5rem 1rem;
       border-radius: 40px;
       font-weight: 500;
@@ -110,48 +102,36 @@
       gap: 8px;
       cursor: pointer;
       text-decoration: none;
-      color: #1e293b;
+      color: #eef2ff;
     }
     .btn-outline:hover {
-      border-color: #3b82f6;
-      background: #eff6ff;
+      border-color: #ffffff;
+      background: #2d313c;
       transform: translateY(-2px);
     }
 
-    .tool-card {
-      background: white;
+    .tool-card, .script-card, .step {
+      background: #12141c;
       border-radius: 2rem;
       padding: 1.5rem;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+      border: 1px solid #2a2e3a;
       transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      border: 1px solid #eef2ff;
     }
-    .tool-card:hover {
+    .tool-card:hover, .script-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 25px 40px -12px rgba(0,0,0,0.15);
-      border-color: #cbdffc;
+      border-color: #5a6e8c;
+      background: #161a24;
     }
-
-    .script-card {
-      background: #ffffffdd;
-      backdrop-filter: blur(4px);
-      border-radius: 1.5rem;
-      padding: 1.5rem;
-      transition: all 0.3s;
-      border: 1px solid #e2e8f0;
-    }
-    .script-card:hover {
-      border-color: #a5b4fc;
-      background: white;
-      transform: translateY(-3px);
+    .step {
+      border-left: 4px solid #ffffff;
+      background: #12141c;
     }
 
     .video-placeholder {
-      background: #f1f5f9;
+      background: #0f1119;
       border-radius: 1rem;
       margin-top: 1rem;
       overflow: hidden;
-      transition: all 0.2s;
     }
     .video-placeholder video {
       width: 100%;
@@ -160,37 +140,33 @@
     }
     .video-caption {
       font-size: 0.75rem;
-      color: #475569;
+      color: #9ca3af;
       text-align: center;
       padding: 0.5rem 0 0.25rem;
-      letter-spacing: 0.3px;
-    }
-
-    .step {
-      background: white;
-      border-radius: 1.25rem;
-      padding: 1rem 1.2rem;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-      border-left: 4px solid #3b82f6;
     }
 
     .badge {
-      background: #eef2ff;
-      color: #1e40af;
+      background: #2d313e;
+      color: #e2e8f0;
       border-radius: 30px;
       padding: 0.2rem 0.8rem;
       font-size: 0.75rem;
       font-weight: 600;
     }
 
+    pre {
+      background: #07090f !important;
+      border: 1px solid #2a2e3a;
+      color: #e2e8f0;
+    }
+
     footer {
-      border-top: 1px solid #e2e8f0;
-      background: #f9fafb;
+      border-top: 1px solid #2a2e3a;
+      background: #0a0c10;
     }
 
     @media (max-width: 768px) {
       .container { padding: 0 20px; }
-      .tool-card { padding: 1.2rem; }
     }
   </style>
 </head>
@@ -204,40 +180,39 @@
 </div>
 
 <main>
-  <!-- Hero -->
-  <section style="padding: 4rem 0 3rem 0; background: linear-gradient(120deg, #ffffff 0%, #f1f5f9 100%);">
+  <section style="padding: 4rem 0 3rem 0; background: #0a0c10;">
     <div class="container">
       <div class="animate-fadeUp" style="max-width: 800px;">
         <span class="badge"><i class="fas fa-code"></i> Codes by Pinnexus</span>
-        <h1 style="font-size: 3.2rem; font-weight: 700; margin: 1rem 0 0.5rem; letter-spacing: -0.02em;">Automation tools<br><span style="color: #2563eb;">built for real work</span></h1>
-        <p style="font-size: 1.2rem; color: #334155; max-width: 600px;">Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.</p>
+        <h1 style="font-size: 3.2rem; font-weight: 700; margin: 1rem 0 0.5rem; letter-spacing: -0.02em; color: white;">Automation tools<br><span style="color: #ccc;">built for real work</span></h1>
+        <p style="font-size: 1.2rem; color: #b0b7c6;">Excel VBA scripts and utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.</p>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem;">
-          <div><span class="badge" style="background:#1e293b; color:white;">3 VBA Scripts</span></div>
-          <div><span class="badge" style="background:#1e293b; color:white;">v2.0</span></div>
+          <div><span class="badge" style="background:#fff; color:#000;">3 VBA Scripts</span></div>
+          <div><span class="badge" style="background:#fff; color:#000;">v2.0</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- What's included (3 tools now, QR Forge removed) -->
+  <!-- Three tools (QR Forge removed) -->
   <section style="padding: 2rem 0 3rem;">
     <div class="container">
-      <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 2rem;">Three tools, <span style="background: linear-gradient(120deg, #2563eb, #7c3aed); background-clip: text; -webkit-background-clip: text; color: transparent;">one workflow.</span></h2>
+      <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 2rem; color:white;">Three tools, <span style="color:#b0b7c6;">one workflow.</span></h2>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
         <div class="tool-card animate-fadeUp delay-100">
-          <i class="fas fa-calculator" style="font-size: 2rem; color:#2563eb; margin-bottom: 1rem;"></i>
+          <i class="fas fa-calculator" style="font-size: 2rem; color:#ffffff; margin-bottom: 1rem;"></i>
           <h3 style="font-weight: 700; margin-bottom: 0.5rem;">CalculateReceivings</h3>
-          <p style="color: #334155;">VLOOKUP cost calc + 1.05× multiplier, auto-clean columns, final total.</p>
+          <p style="color: #cbd5e6;">VLOOKUP cost calc + 1.05× multiplier, auto-clean columns, final total.</p>
           <div><span class="badge">VBA · Excel</span></div>
         </div>
         <div class="tool-card animate-fadeUp delay-200">
-          <i class="fas fa-chart-line" style="font-size: 2rem; color:#2563eb; margin-bottom: 1rem;"></i>
+          <i class="fas fa-chart-line" style="font-size: 2rem; color:#ffffff; margin-bottom: 1rem;"></i>
           <h3 style="font-weight: 700; margin-bottom: 0.5rem;">GenerateDailyReport</h3>
           <p>Picker success/cancel counts, top TG/non-TG, modified orders flag, summary block.</p>
           <div><span class="badge">VBA · Excel</span></div>
         </div>
         <div class="tool-card animate-fadeUp delay-300">
-          <i class="fas fa-calendar-week" style="font-size: 2rem; color:#2563eb; margin-bottom: 1rem;"></i>
+          <i class="fas fa-calendar-week" style="font-size: 2rem; color:#ffffff; margin-bottom: 1rem;"></i>
           <h3 style="font-weight: 700; margin-bottom: 0.5rem;">GenerateWeeklyReport</h3>
           <p>Groups consecutive identical shifts, exports clean employee schedule with date ranges.</p>
           <div><span class="badge">VBA · Excel</span></div>
@@ -246,41 +221,37 @@
     </div>
   </section>
 
-  <!-- Code showcase + working guide videos (for each script) -->
-  <section style="padding: 3rem 0; background: #f1f5f9;">
+  <!-- Code showcase + working guide videos (3 scripts) -->
+  <section style="padding: 3rem 0; background: #0f1117;">
     <div class="container">
-      <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 1rem;"><i class="fas fa-laptop-code"></i> Browse the scripts</h2>
-      <p style="margin-bottom: 2rem; color: #334155;">Each macro includes a working video guide, source code and ready-to-use logic.</p>
+      <h2 style="font-size: 2rem; font-weight: 600; margin-bottom: 1rem; color:white;"><i class="fas fa-laptop-code"></i> Browse the scripts</h2>
+      <p style="margin-bottom: 2rem; color: #9ca3af;">Each macro includes a working video guide, source code and ready-to-use logic.</p>
       <div style="display: flex; flex-direction: column; gap: 2.5rem;">
         
-        <!-- Script 1: CalculateReceivings -->
-        <div class="script-card animate-fadeUp">
+        <div class="script-card">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
             <div>
               <h3 style="font-size: 1.5rem; font-weight: 600;">CalculateReceivings <span class="badge">v1.2.1</span></h3>
-              <p style="margin: 0.5rem 0;">VLOOKUP + multiplier & auto total. Cleans columns in one click.</p>
+              <p style="margin: 0.5rem 0;">VLOOKUP + multiplier & auto total. Cleans columns.</p>
             </div>
             <a href="#" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
           </div>
-          <pre style="background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 1rem 0;">' CalculateReceivings.V1.2.VBA.txt
+          <pre style="background: #07090f; padding: 1rem; border-radius: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 1rem 0;">' CalculateReceivings.V1.2.VBA.txt
 Sub CalculateReceivings()
     Dim wsMain As Worksheet, wsData As Worksheet
     Dim lastRow As Long, finalSum As Double
     ' ... full logic (warehouse cost adjust)
     MsgBox "FINAL TOTAL: " & Format(finalSum, "#,##0.00")
 End Sub</pre>
-          <!-- working guide video -->
           <div class="video-placeholder">
-            <video controls poster="https://placehold.co/640x360/eef2ff/1e293b?text=Working+Guide+Video+%7C+CalculateReceivings">
+            <video controls poster="https://placehold.co/640x360/1e1e2a/ffffff?text=Working+Guide+CalculateReceivings">
               <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-              Your browser does not support the video tag.
             </video>
-            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: CalculateReceivings demo (replace with actual tutorial)</div>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: CalculateReceivings demo</div>
           </div>
         </div>
         
-        <!-- Script 2: GenerateDailyReport -->
-        <div class="script-card animate-fadeUp delay-100">
+        <div class="script-card">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
             <div>
               <h3 style="font-size: 1.5rem; font-weight: 600;">GenerateDailyReport <span class="badge">v1.1</span></h3>
@@ -288,69 +259,65 @@ End Sub</pre>
             </div>
             <a href="#" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
           </div>
-          <pre style="background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 1rem 0;">' GenerateDailyReport macro
+          <pre style="background: #07090f; padding: 1rem; border-radius: 1rem; overflow-x: auto;">' GenerateDailyReport macro
 Sub GenerateDailyReport()
     ' Aggregates picker metrics, success/cancel rates
-    ' Highlights top TG performers, summary block
 End Sub</pre>
           <div class="video-placeholder">
-            <video controls poster="https://placehold.co/640x360/eef2ff/1e293b?text=Working+Guide+Video+%7C+Daily+Report">
+            <video controls poster="https://placehold.co/640x360/1e1e2a/ffffff?text=Daily+Report+Guide">
               <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
             </video>
-            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: GenerateDailyReport (replace later)</div>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: GenerateDailyReport</div>
           </div>
         </div>
         
-        <!-- Script 3: GenerateWeeklyReport -->
-        <div class="script-card animate-fadeUp delay-200">
+        <div class="script-card">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
             <div>
               <h3 style="font-size: 1.5rem; font-weight: 600;">GenerateWeeklyReport <span class="badge">v1.0</span></h3>
-              <p>Groups identical shifts, exports clean schedule with date ranges.</p>
+              <p>Groups identical shifts, exports clean schedule.</p>
             </div>
             <a href="#" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
           </div>
-          <pre style="background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 1rem; overflow-x: auto; font-size: 0.8rem; margin: 1rem 0;">' Weekly shift consolidator
-Sub GenerateWeeklyReport()
+          <pre style="background: #07090f; padding: 1rem; border-radius: 1rem;">Sub GenerateWeeklyReport()
     ' Consecutive shifts grouping, exports final table
 End Sub</pre>
           <div class="video-placeholder">
-            <video controls poster="https://placehold.co/640x360/eef2ff/1e293b?text=Working+Guide+Video+%7C+Weekly+Report">
+            <video controls poster="https://placehold.co/640x360/1e1e2a/ffffff?text=Weekly+Report+Guide">
               <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
             </video>
-            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: GenerateWeeklyReport (replace with real video)</div>
+            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: GenerateWeeklyReport</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Setup guide with added video -->
+  <!-- Setup guide with video -->
   <section style="padding: 4rem 0;">
     <div class="container">
-      <h2 style="font-size: 2rem; font-weight: 600; text-align: center;">Setup guide <span style="color:#2563eb;">🎬 video walkthrough</span></h2>
-      <p style="text-align: center; margin-bottom: 2rem;">Up and running in four steps + watch the full tutorial below.</p>
+      <h2 style="font-size: 2rem; font-weight: 600; text-align: center; color:white;">Setup guide <span style="color:#aaa;">🎬 video walkthrough</span></h2>
+      <p style="text-align: center; margin-bottom: 2rem; color:#b0b7c6;">Up and running in four steps + watch the full tutorial below.</p>
       
-      <!-- added setup video -->
       <div style="max-width: 800px; margin: 0 auto 2rem auto;">
-        <div class="video-placeholder" style="box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);">
-          <video controls poster="https://placehold.co/800x450/ffffff/1e293b?text=Setup+Guide+Video+%7C+How+to+install+macros">
+        <div class="video-placeholder" style="box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);">
+          <video controls poster="https://placehold.co/800x450/1e1e2a/ffffff?text=Setup+Guide+Video">
             <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
           </video>
-          <div class="video-caption"><i class="fas fa-video"></i> Complete setup guide — from Alt+F11 to PERSONAL.XLSB (replace with your video)</div>
+          <div class="video-caption"><i class="fas fa-video"></i> Complete setup guide — Alt+F11 to PERSONAL.XLSB</div>
         </div>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
-        <div class="step animate-fadeUp delay-100"><span style="font-weight:800;">01</span> Open workbook <span style="display:block; font-size:0.9rem;">Match sheet names to script expectations.</span></div>
-        <div class="step animate-fadeUp delay-200"><span style="font-weight:800;">02</span> Alt+F11 → Module <span style="display:block; font-size:0.9rem;">Insert → Module, paste macro code.</span></div>
-        <div class="step animate-fadeUp delay-300"><span style="font-weight:800;">03</span> Save as .xlsm <span style="display:block; font-size:0.9rem;">Enable macros when prompted.</span></div>
-        <div class="step animate-fadeUp delay-400"><span style="font-weight:800;">04</span> Alt+F8 → Run <span style="display:block; font-size:0.9rem;">Select macro name → Run.</span></div>
+        <div class="step"><span style="font-weight:800;">01</span> Open workbook <span style="display:block; font-size:0.9rem;">Match sheet names.</span></div>
+        <div class="step"><span style="font-weight:800;">02</span> Alt+F11 → Module <span style="display:block; font-size:0.9rem;">Insert → Module, paste macro.</span></div>
+        <div class="step"><span style="font-weight:800;">03</span> Save as .xlsm <span style="display:block; font-size:0.9rem;">Enable macros.</span></div>
+        <div class="step"><span style="font-weight:800;">04</span> Alt+F8 → Run <span style="display:block; font-size:0.9rem;">Select macro → Run.</span></div>
       </div>
 
-      <div style="background: #eef2ff; border-radius: 1.5rem; padding: 1.5rem; margin-top: 2.5rem;">
+      <div style="background: #12141c; border-radius: 1.5rem; padding: 1.5rem; margin-top: 2.5rem; border:1px solid #2a2e3a;">
         <h3><i class="fas fa-folder-open"></i> 📁 Make macros global (PERSONAL.XLSB)</h3>
-        <p style="margin-top:0.5rem;">Want these scripts available in any Excel file? Add them to your Personal Macro Workbook. Steps inside VBA editor → locate PERSONAL.XLSB → Insert module → paste scripts. Now run from Alt+F8 anywhere!</p>
+        <p style="margin-top:0.5rem;">Add scripts to Personal Macro Workbook — available in any Excel file.</p>
         <div class="badge" style="margin-top:0.8rem;">💡 Pro tip: assign shortcut keys Ctrl+Shift+letter</div>
       </div>
     </div>
@@ -360,13 +327,11 @@ End Sub</pre>
 <footer style="padding: 2rem 0; text-align: center;">
   <div class="container">
     <p><i class="fas fa-copyright"></i> Automation tools — built by DSU11425 • Excel VBA & Flutter utilities</p>
-    <p style="margin-top: 0.5rem;"><a href="qrforge.html" style="color:#2563eb;">⚡ Discover QR Forge standalone app →</a></p>
+    <p style="margin-top: 0.5rem;"><a href="qrforge.html" style="color:#ffffff;">⚡ Discover QR Forge standalone app →</a></p>
   </div>
 </footer>
 
 <script>
-  // little extra fade/reset for intersection observer – additional micro animation
-  const cards = document.querySelectorAll('.tool-card, .script-card, .step');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -376,7 +341,7 @@ End Sub</pre>
       }
     });
   }, { threshold: 0.1 });
-  cards.forEach(card => {
+  document.querySelectorAll('.tool-card, .script-card, .step').forEach(card => {
     card.style.opacity = '0';
     card.style.transform = 'translateY(20px)';
     card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
