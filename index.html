@@ -19,14 +19,13 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #050506;
+      background: #030304;
       color: #e2e8f0;
       line-height: 1.6;
       overflow-x: hidden;
       font-weight: 300;
     }
 
-    /* Modern Scrollbar */
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -34,14 +33,13 @@
       background: #000;
     }
     ::-webkit-scrollbar-thumb {
-      background: #222;
+      background: #1a1a1a;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #333;
+      background: #252525;
     }
 
-    /* Three.js canvas background — Fixed Layer */
     #bg-canvas {
       position: fixed;
       top: 0;
@@ -50,7 +48,7 @@
       height: 100%;
       z-index: -1;
       pointer-events: none;
-      opacity: 0.8;
+      opacity: 0.85;
     }
 
     .container {
@@ -61,12 +59,11 @@
       z-index: 2;
     }
 
-    /* Navigation styling */
     .glass-nav {
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      background: rgba(5, 5, 6, 0.7);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(3, 3, 4, 0.75);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -104,14 +101,13 @@
     }
     .qr-link:hover {
       background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.25);
       transform: translateY(-1px);
     }
 
-    /* Advanced Outline Button */
     .btn-outline {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.01);
       padding: 0.5rem 1.2rem;
       border-radius: 40px;
       font-weight: 400;
@@ -125,24 +121,23 @@
       font-size: 0.85rem;
     }
     .btn-outline:hover {
-      border-color: rgba(255, 255, 255, 0.4);
-      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.06);
       color: #fff;
     }
 
-    /* Minimalist Cards with Perspective Layer */
     .tool-card {
-      background: rgba(10, 10, 12, 0.4);
+      background: rgba(8, 8, 10, 0.35);
       border-radius: 1.25rem;
       padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.04);
       transform-style: preserve-3d;
       perspective: 1000px;
       transition: border-color 0.5s ease, background 0.5s ease;
     }
     .tool-card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-      background: rgba(15, 15, 18, 0.6);
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(12, 12, 16, 0.55);
     }
     .tool-card h3 {
       font-weight: 500;
@@ -159,7 +154,6 @@
       transform: translateZ(15px);
     }
 
-    /* Advanced Tab Interface */
     .tab-buttons {
       display: flex;
       gap: 0.5rem;
@@ -196,9 +190,6 @@
       transform: scaleX(1);
       transform-origin: left;
     }
-    .tab-btn:hover:not(.active) {
-      color: #94a3b8;
-    }
     
     .tab-content {
       display: none;
@@ -210,31 +201,30 @@
     }
 
     .script-card {
-      background: rgba(8, 8, 10, 0.5);
+      background: rgba(6, 6, 8, 0.45);
       border-radius: 1.5rem;
       padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.04);
       backdrop-filter: blur(8px);
     }
     
     pre {
-      background: #020203 !important;
-      border: 1px solid rgba(255, 255, 255, 0.03);
+      background: #010102 !important;
+      border: 1px solid rgba(255, 255, 255, 0.02);
       color: #cbd5e1;
       padding: 1.25rem;
       border-radius: 0.8rem;
-      overflow-x: auto;
       font-size: 0.8rem;
       font-family: 'Courier New', Courier, monospace;
       margin: 1.5rem 0;
     }
     
     .video-placeholder {
-      background: #020203;
+      background: #010102;
       border-radius: 1rem;
       margin-top: 1.5rem;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.02);
     }
     .video-placeholder video {
       width: 100%;
@@ -248,9 +238,9 @@
     }
     
     .badge {
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.03);
       color: #94a3b8;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 30px;
       padding: 0.25rem 0.8rem;
       font-size: 0.725rem;
@@ -261,19 +251,19 @@
     }
     
     .step {
-      background: rgba(10, 10, 12, 0.3);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(8, 8, 10, 0.25);
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
       padding: 1.5rem;
       border-radius: 1rem;
       transition: border-color 0.3s;
     }
     .step:hover {
-      border-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.12);
     }
     
     footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.03);
-      background: #020203;
+      border-top: 1px solid rgba(255, 255, 255, 0.02);
+      background: #010102;
       text-align: center;
       padding: 3rem 0;
       font-size: 0.85rem;
@@ -285,7 +275,6 @@
       letter-spacing: -0.02em;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 1024px) {
       h1 { font-size: 2.75rem !important; }
     }
@@ -309,20 +298,19 @@
 </div>
 
 <main>
-  <!-- Hero Section -->
   <section style="padding: 6rem 0 4rem 0;" class="hero-section">
     <div class="container">
       <div class="hero-content" style="max-width: 750px;">
-        <span class="badge" class="reveal-item"><i class="fas fa-code"></i> by Pinnexus</span>
-        <h1 style="font-size: 3.5rem; font-weight: 400; margin: 1.2rem 0 0.8rem; letter-spacing: -1.5px; line-height: 1.15;" class="reveal-item">
+        <span class="badge"><i class="fas fa-code"></i> by Pinnexus</span>
+        <h1 style="font-size: 3.5rem; font-weight: 400; margin: 1.2rem 0 0.8rem; letter-spacing: -1.5px; line-height: 1.15;">
           Automation tools<br><span style="color: #64748b;">built for real work</span>
         </h1>
-        <p style="font-size: 1.1rem; color: #94a3b8; max-width: 540px;" class="reveal-item">
-          Excel VBA scripts and utilities that eliminate repetitive tasks <br>— built by DSU11425, designed to save hours every week.
+        <p style="font-size: 1.1rem; color: #94a3b8; max-width: 540px;">
+          Excel VBA scripts and utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.
         </p>
-        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;" class="reveal-item">
-          <span class="badge" style="background:rgba(255,255,255,0.08); color:#fff;">3 VBA Scripts</span>
-          <span class="badge" style="background:rgba(255,255,255,0.08); color:#fff;">v2.0</span>
+        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;">
+          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA Scripts</span>
+          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
         </div>
       </div>
     </div>
@@ -538,7 +526,6 @@ End Function</code></pre>
     </div>
   </section>
 
-  <!-- Setup Guide Section -->
   <section style="padding: 5rem 0;" class="setup-section">
     <div class="container">
       <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">Setup guide <span style="color:#64748b;">🎬 video walkthrough</span></h2>
@@ -560,10 +547,10 @@ End Function</code></pre>
         <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">04</span> Alt+F8 → Run<br><span style="font-size:0.85rem; color:#64748b;">Select macro → Run</span></div>
       </div>
 
-      <div style="background: rgba(10,10,12,0.4); border-radius: 1.25rem; padding: 2rem; margin-top: 3rem; border:1px solid rgba(255,255,255,0.05);" class="pro-tip-card">
+      <div style="background: rgba(10,10,12,0.3); border-radius: 1.25rem; padding: 2rem; margin-top: 3rem; border:1px solid rgba(255,255,255,0.04);" class="pro-tip-card">
         <h3 style="font-weight: 400; color:#fff; display:flex; align-items:center; gap:10px;"><i class="fas fa-folder-open" style="color:#64748b;"></i> Make macros global (PERSONAL.XLSB)</h3>
         <p style="margin-top:0.6rem; font-size:0.95rem; color:#94a3b8;">Add scripts to Personal Macro Workbook — available in any Excel file.</p>
-        <div class="badge" style="margin-top:1rem; background:rgba(255,255,255,0.06);">💡 Pro tip: assign shortcut keys Ctrl+Shift+letter</div>
+        <div class="badge" style="margin-top:1rem; background:rgba(255,255,255,0.05);">💡 Pro tip: assign shortcut keys Ctrl+Shift+letter</div>
       </div>
     </div>
   </section>
@@ -579,9 +566,7 @@ End Function</code></pre>
 <script>
   gsap.registerPlugin(ScrollTrigger);
 
-  // --- 1. ADVANCED INTERACTION: GSAP REVEALS & SCROLLTRIGGER ---
-  
-  // Hero elements staggered reveal on load
+  // --- GSAP REVEALS & SCROLLTRIGGER ---
   const tl = gsap.timeline();
   tl.from('.glass-nav', { y: -20, opacity: 0, duration: 0.8, ease: 'expo.out' })
     .from('.hero-content .badge', { opacity: 0, y: 15, duration: 0.6, ease: 'power3.out' }, '-=0.4')
@@ -589,7 +574,6 @@ End Function</code></pre>
     .from('.hero-content p', { opacity: 0, y: 20, duration: 0.6, ease: 'power3.out' }, '-=0.6')
     .from('.hero-content .badge:not(:first-child)', { opacity: 0, scale: 0.9, stagger: 0.1, duration: 0.4 }, '-=0.4');
 
-  // Staggered reveal for Feature Grid Card elements[cite: 1]
   gsap.from('.feature-grid .tool-card', {
     scrollTrigger: {
       trigger: '.features-section',
@@ -603,7 +587,7 @@ End Function</code></pre>
     ease: 'expo.out'
   });
 
-  // Smooth reveal for Browser and Setup Sections[cite: 1]
+  // Fixed Reveal Target: Animating the entire section container so child tabs initialize cleanly
   gsap.from('.browser-section', {
     scrollTrigger: { 
       trigger: '.browser-section', 
@@ -627,7 +611,7 @@ End Function</code></pre>
   });
 
 
-  // --- 2. ADVANCED TILT EFFECT (3D MOUSE HOVER ON CARDS) ---
+  // --- 3D MOUSE HOVER TILT EFFECT ---
   const cards = document.querySelectorAll('.animate-card, .step-card');
   cards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
@@ -635,8 +619,7 @@ End Function</code></pre>
       const x = e.clientX - rect.left - (rect.width/2);
       const y = e.clientY - rect.top - (rect.height/2);
       
-      // Calculate rotation degree limits
-      const factor = 15; 
+      const factor = 12; 
       const rotateX = -(y / rect.height) * factor;
       const rotateY = (x / rect.width) * factor;
       
@@ -655,7 +638,7 @@ End Function</code></pre>
   });
 
 
-  // --- 3. TAB SWITCHING OPTIMIZED ANIMATION[cite: 1] ---
+  // --- TAB SWITCHING INTERACTION ---
   const tabs = document.querySelectorAll('.tab-btn');
   const contents = document.querySelectorAll('.tab-content');
   tabs.forEach(btn => {
@@ -668,17 +651,16 @@ End Function</code></pre>
 
       const currentActive = document.querySelector('.tab-content.active-tab');
       
-      // Out animation then fade in new tab[cite: 1]
       gsap.to(currentActive, {
-        opacity: 0, y: -10, duration: 0.25, ease: 'power2.in', onComplete: () => {
+        opacity: 0, y: -10, duration: 0.2, ease: 'power2.in', onComplete: () => {
           currentActive.classList.remove('active-tab');
           
           const nextActive = document.getElementById(tabId);
           nextActive.classList.add('active-tab');
           
           gsap.fromTo(nextActive, 
-            { opacity: 0, y: 15 }, 
-            { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }
+            { opacity: 0, y: 12 }, 
+            { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }
           );
         }
       });
@@ -686,53 +668,79 @@ End Function</code></pre>
   });
 
 
-  // --- 4. ADVANCED THREE.JS KINETIC BACKGROUND INTERACTION ---
+  // --- NEW THREE.JS GENERATIVE GRID LANDSCAPE MODEL ---
   const scene = new THREE.Scene();
+  
+  // Fog enhances the landscape's depth perspective, mimicking infinite distance limits
+  scene.fog = new THREE.FogExp2(0x030304, 0.05);
+
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
   const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // Generative space star field particles
-  const particleCount = 1200;
+  // Particle Field Background Layer (Fine Stardust)
+  const particleCount = 600;
   const particleGeo = new THREE.BufferGeometry();
-  const positions = new Float32Array(particleCount * 3);
+  const particlePositions = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
-    positions[i*3] = (Math.random() - 0.5) * 160;
-    positions[i*3+1] = (Math.random() - 0.5) * 90;
-    positions[i*3+2] = (Math.random() - 0.5) * 60 - 20;
+    particlePositions[i*3] = (Math.random() - 0.5) * 120;
+    particlePositions[i*3+1] = (Math.random() - 0.5) * 80;
+    particlePositions[i*3+2] = (Math.random() - 0.5) * 50 - 10;
   }
-  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  const particleMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.11, transparent: true, opacity: 0.25 });
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+  const particleMat = new THREE.PointsMaterial({ color: 0x64748b, size: 0.09, transparent: true, opacity: 0.4 });
   const particles = new THREE.Points(particleGeo, particleMat);
   scene.add(particles);
 
-  // Core Wireframe Object - Abstract Geometric Mesh
-  const knotGeo = new THREE.TorusKnotGeometry(3, 0.5, 140, 18, 3, 4);
-  const knotMat = new THREE.MeshStandardMaterial({ 
-    color: 0x475569, 
-    wireframe: true, 
-    transparent: true, 
-    opacity: 0.12 
+  // Create Matrix Wireframe Plane (The Digital Highway Model)
+  const terrainWidth = 70, terrainHeight = 70;
+  const segmentsX = 45, segmentsY = 45;
+  const gridGeo = new THREE.PlaneGeometry(terrainWidth, terrainHeight, segmentsX, segmentsY);
+  
+  // Modifying the Z-axis vertices mathematically to inject matrix-style terrain wave nodes
+  const posAttribute = gridGeo.attributes.position;
+  for (let i = 0; i < posAttribute.count; i++) {
+    const x = posAttribute.getX(i);
+    const y = posAttribute.getY(i);
+    // Simulating hills and valleys via combined trigonometric frequencies
+    const zNoise = Math.sin(x * 0.2) * Math.cos(y * 0.2) * 1.5 + Math.sin(x * 0.08) * 2.0;
+    posAttribute.setZ(i, zNoise);
+  }
+  gridGeo.computeVertexNormals();
+
+  const gridMat = new THREE.MeshBasicMaterial({
+    color: 0x334155,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.15
   });
-  const knot = new THREE.Mesh(knotGeo, knotMat);
-  scene.add(knot);
+  
+  const terrainMesh = new THREE.Mesh(gridGeo, gridMat);
+  // Orient plane horizontally matching lower viewport baseline orientations
+  terrainMesh.rotation.x = -Math.PI / 2.1; 
+  terrainMesh.position.y = -6;
+  terrainMesh.position.z = -10;
+  scene.add(terrainMesh);
 
-  // Minimal Lighting Array
-  const ambient = new THREE.AmbientLight(0xffffff, 0.2);
-  scene.add(ambient);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-  directionalLight.position.set(5, 5, 5);
-  scene.add(directionalLight);
+  camera.position.z = 15;
+  camera.position.y = 1.0;
 
-  camera.position.z = 14;
-  camera.position.y = 0;
+  // --- CINEMATIC BASE SCROLL TRIGGER CONTROLS ---
+  // Moving the landscape upward and tilting perspective on scroll
+  gsap.to(terrainMesh.position, {
+    z: 2,
+    y: -4,
+    scrollTrigger: {
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 1.5
+    }
+  });
 
-  // Multi-Axis Scroll Parallax Tracking
-  gsap.to(camera.position, {
-    z: 8,
-    y: -3,
-    x: 2,
+  gsap.to(terrainMesh.rotation, {
+    z: 0.25,
     scrollTrigger: {
       trigger: "body",
       start: "top top",
@@ -741,43 +749,39 @@ End Function</code></pre>
     }
   });
 
-  gsap.to(knot.rotation, {
-    z: Math.PI * 0.8,
-    scrollTrigger: {
-      trigger: "body",
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 1
-    }
-  });
-
-  // Mouse interactivity parallax for 3D space
+  // Inertial Floating Mouse Tracker 
   let mouseX = 0, mouseY = 0;
   window.addEventListener('mousemove', (e) => {
-    mouseX = (e.clientX / window.innerWidth - 0.5) * 1.5;
-    mouseY = (e.clientY / window.innerHeight - 0.5) * 1.5;
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 1.2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 0.8;
   });
 
-  // Render Loop
+  // Dynamic Framework Loop
   const clock = new THREE.Clock();
   function animate3d() {
     requestAnimationFrame(animate3d);
     const elapsedTime = clock.getElapsedTime();
 
-    // Constant slow float drift
-    particles.rotation.y = elapsedTime * 0.02;
-    knot.rotation.x = elapsedTime * 0.04;
-    knot.rotation.y = elapsedTime * 0.06;
+    // Subtle persistent spatial drift animation (Wave Pulse Matrix effect)
+    const vertices = gridGeo.attributes.position;
+    for (let i = 0; i < vertices.count; i++) {
+      const x = vertices.getX(i);
+      const y = vertices.getY(i);
+      // Animating the network height structures using delta-time phases
+      const currentZ = Math.sin(x * 0.2 + elapsedTime * 0.4) * Math.cos(y * 0.2 + elapsedTime * 0.4) * 1.2;
+      vertices.setZ(i, currentZ);
+    }
+    gridGeo.attributes.position.needsUpdate = true;
 
-    // Fluid mouse follow delay integration
-    camera.position.x += (mouseX - camera.position.x) * 0.05;
-    camera.position.y += (-mouseY - camera.position.y) * 0.05;
+    // Fluid kinetic mouse tracking interpolations
+    camera.position.x += (mouseX - camera.position.x) * 0.04;
+    camera.position.y += (-mouseY + 1.0 - camera.position.y) * 0.04;
+    camera.lookAt(0, -2, -5);
 
     renderer.render(scene, camera);
   }
   animate3d();
 
-  // Responsive Canvas Viewport Re-calculation
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
