@@ -300,6 +300,42 @@
       h1 { font-size: 2.25rem !important; }
       .setup-steps { grid-template-columns: 1fr !important; }
       .hero-interactive-space { height: 260px; }
+
+      /* Script card header: stack title + download button vertically */
+      .script-card > div[style*="justify-content: space-between"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+      }
+      .script-card > div[style*="justify-content: space-between"] .btn-outline {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Tab buttons: allow wrap + smaller padding */
+      .tab-buttons {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .tab-btn {
+        font-size: 0.8rem !important;
+        padding: 0.6rem 1rem !important;
+      }
+    }
+
+    /* ── Mobile code block fix ── */
+    @media (max-width: 600px) {
+      pre {
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
+        overflow-x: hidden !important;
+        font-size: 0.72rem !important;
+        padding: 1rem !important;
+        line-height: 1.65 !important;
+      }
+      pre code {
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
+      }
     }
   </style>
 </head>
@@ -917,6 +953,45 @@ End Function</code></pre>
     headerObjGroup.position.set(0, -1.2, -3);
     coreLight.position.set(0, -1.2, 3);
   }
+
+  // ── Mobile <br> injection for long code lines ──
+  // Only runs on phones. Inserts <wbr> hints at natural break points
+  // so the browser can wrap dense lines without horizontal scroll.
+  (function () {
+    var LIMIT = 42;
+    function injectBreaks() {
+      if (window.innerWidth > 600) return;
+      document.querySelectorAll('pre code').forEach(function (el) {
+        if (el.dataset.brDone) return;
+        el.dataset.brDone = '1';
+        var lines = el.innerHTML.split('\n');
+        el.innerHTML = lines.map(function (line) {
+          var stripped = line.replace(/<[^>]*>/g, '');
+          if (stripped.length <= LIMIT) return line;
+          // insert <wbr> after break-friendly characters once line is long enough
+          var count = 0, inTag = false, out = '';
+          for (var i = 0; i < line.length; i++) {
+            var c = line[i];
+            if (c === '<') inTag = true;
+            if (!inTag) count++;
+            out += c;
+            if (c === '>') inTag = false;
+            if (!inTag && count >= LIMIT && /[\s,.()\[\]_&]/.test(c)) {
+              out += '<wbr>';
+              count = 0;
+            }
+          }
+          return out;
+        }).join('\n');
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', injectBreaks);
+    } else {
+      injectBreaks();
+    }
+    window.addEventListener('resize', injectBreaks);
+  })();
 </script>
 </body>
 </html>
