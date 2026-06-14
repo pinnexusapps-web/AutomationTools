@@ -1,439 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Automation Tools | Excel VBA & Warehouse Utilities</title>
-  <meta name="description" content="Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Automation Tools | Excel VBA & Warehouse Utilities</title>
+<meta name="description" content="Excel VBA scripts and Android utilities that eliminate repetitive tasks — built by DSU11425.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #030304; color: #e2e8f0; line-height: 1.6; overflow-x: hidden; font-weight: 300; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #252525; }
+#bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.85; }
+.container { max-width: 1280px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+.glass-nav { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(3,3,4,0.75); border-bottom: 1px solid rgba(255,255,255,0.04); position: sticky; top: 0; z-index: 100; }
+.nav-inner { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0; flex-wrap: wrap; gap: 1rem; }
+.logo { font-weight: 500; font-size: 1.25rem; letter-spacing: -0.5px; color: #ffffff; display: flex; align-items: center; gap: 10px; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #030304;
-      color: #e2e8f0;
-      line-height: 1.6;
-      overflow-x: hidden;
-      font-weight: 300;
-    }
+.btn-outline { border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.01); padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: 400; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); display: inline-flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; color: #f1f5f9; font-size: 0.85rem; }
+.btn-outline:hover { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.06); color: #fff; }
 
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #000;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1a1a1a;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #252525;
-    }
+/* ── NEW: Hero download button ── */
+.btn-hero-dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0.65rem 1.5rem;
+  border-radius: 40px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.btn-hero-dl:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.32); transform: translateY(-2px); }
+.hero-dl-hint { display: inline-flex; align-items: center; gap: 6px; color: #475569; font-size: 0.8rem; }
 
-    #bg-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      opacity: 0.85;
-    }
+/* ── NEW: Idea section ── */
+.idea-section { padding: 5rem 0; }
+.idea-inner {
+  background: rgba(6,6,8,0.45);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  backdrop-filter: blur(8px);
+  max-width: 760px;
+  margin: 0 auto;
+}
+.idea-inner h2 { font-size: 1.85rem; font-weight: 400; letter-spacing: -0.03em; margin-bottom: 0.4rem; }
+.idea-sub { color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; }
+.idea-field {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 0.9rem;
+  padding: 1rem 1.2rem;
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 300;
+  resize: vertical;
+  min-height: 110px;
+  outline: none;
+  transition: border-color 0.3s;
+  margin-bottom: 1rem;
+}
+.idea-field:focus { border-color: rgba(255,255,255,0.2); }
+.idea-field::placeholder { color: #475569; }
+.file-upload-zone {
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 0.9rem;
+  padding: 1.4rem 1.2rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+  position: relative;
+  margin-bottom: 1.2rem;
+}
+.file-upload-zone:hover { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.02); }
+.file-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.file-upload-zone .up-icon { font-size: 1.4rem; display: block; margin-bottom: 0.4rem; opacity: 0.4; }
+#file-name-display { font-size: 0.8rem; color: #94a3b8; margin-top: 0.35rem; display: none; }
+.idea-submit {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0.65rem 1.6rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 40px;
+  color: #fff; font-size: 0.9rem; font-weight: 400;
+  cursor: pointer; font-family: 'Inter', sans-serif;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.idea-submit:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.32); transform: translateY(-1px); }
+.idea-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.idea-notice { margin-top: 1rem; font-size: 0.78rem; color: #475569; display: flex; align-items: center; gap: 6px; }
+#idea-success { display: none; margin-top: 1rem; padding: 0.85rem 1.2rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.8rem; color: #94a3b8; font-size: 0.88rem; }
 
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 24px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .glass-nav {
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      background: rgba(3, 3, 4, 0.75);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .nav-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 0;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .logo {
-      font-weight: 500;
-      font-size: 1.25rem;
-      letter-spacing: -0.5px;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .qr-link {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #ffffff;
-      padding: 0.5rem 1.2rem;
-      border-radius: 40px;
-      font-weight: 400;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      font-size: 0.85rem;
-    }
-    .qr-link:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-1px);
-    }
-
-    .btn-outline {
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.01);
-      padding: 0.5rem 1.2rem;
-      border-radius: 40px;
-      font-weight: 400;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      color: #f1f5f9;
-      font-size: 0.85rem;
-    }
-    .btn-outline:hover {
-      border-color: rgba(255, 255, 255, 0.35);
-      background: rgba(255, 255, 255, 0.06);
-      color: #fff;
-    }
-
-    /* Hero Responsive Flex/Grid Split */
-    .hero-split {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      align-items: center;
-      gap: 2rem;
-    }
-
-    .hero-interactive-space {
-      height: 380px;
-      width: 100%;
-      cursor: pointer;
-    }
-
-    .tool-card {
-      background: rgba(8, 8, 10, 0.35);
-      border-radius: 1.25rem;
-      padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      transform-style: preserve-3d;
-      perspective: 1000px;
-      transition: border-color 0.5s ease, background 0.5s ease;
-    }
-    .tool-card:hover {
-      border-color: rgba(255, 255, 255, 0.12);
-      background: rgba(12, 12, 16, 0.55);
-    }
-    .tool-card h3 {
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-      font-size: 1.3rem;
-      color: #fff;
-      transform: translateZ(20px);
-    }
-    .tool-card p {
-      font-weight: 300;
-      color: #94a3b8;
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
-      transform: translateZ(15px);
-    }
-
-    .tab-buttons {
-      display: flex;
-      gap: 0.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      margin-bottom: 2.5rem;
-    }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      padding: 0.8rem 1.5rem;
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: #64748b;
-      cursor: pointer;
-      position: relative;
-      transition: color 0.3s ease;
-    }
-    .tab-btn::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: #fff;
-      transform: scaleX(0);
-      transform-origin: right;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .tab-btn.active {
-      color: #fff;
-    }
-    .tab-btn.active::after {
-      transform: scaleX(1);
-      transform-origin: left;
-    }
-    
-    .tab-content {
-      display: none;
-      opacity: 0;
-    }
-    .tab-content.active-tab {
-      display: block;
-      opacity: 1;
-    }
-
-    .script-card {
-      background: rgba(6, 6, 8, 0.45);
-      border-radius: 1.5rem;
-      padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(8px);
-    }
-    
-    pre {
-      
-      border: 1px solid rgba(255, 255, 255, 0.02);
-      color: #cbd5e1;
-      padding: 1.25rem;
-      border-radius: 0.8rem;
-      font-size: 0.8rem;
-      font-family: 'Courier New', Courier, monospace;
-      margin: 1.5rem 0;
-    }
-    
-    .video-placeholder {
-      background: #010102;
-      border-radius: 1rem;
-      margin-top: 1.5rem;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.02);
-    }
-    .video-placeholder video {
-      width: 100%;
-      display: block;
-    }
-    .video-caption {
-      font-size: 0.75rem;
-      color: #64748b;
-      text-align: center;
-      padding: 0.8rem 0;
-    }
-    
-    .badge {
-      background: rgba(255, 255, 255, 0.03);
-      color: #94a3b8;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 30px;
-      padding: 0.25rem 0.8rem;
-      font-size: 0.725rem;
-      font-weight: 400;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .step {
-      background: rgba(8, 8, 10, 0.25);
-      border-top: 1px solid rgba(255, 255, 255, 0.04);
-      padding: 1.5rem;
-      border-radius: 1rem;
-      transition: border-color 0.3s;
-    }
-    .step:hover {
-      border-color: rgba(255, 255, 255, 0.12);
-    }
-    
-    footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.02);
-      background: #010102;
-      text-align: center;
-      padding: 3rem 0;
-      font-size: 0.85rem;
-      color: #64748b;
-    }
-
-    h1, h2, h3 {
-      font-weight: 400;
-      letter-spacing: -0.02em;
-    }
-
-    @media (max-width: 1024px) {
-      h1 { font-size: 2.75rem !important; }
-    }
-    @media (max-width: 768px) {
-      .nav-inner { flex-direction: column; text-align: center; }
-      .hero-split { grid-template-columns: 1fr; text-align: center; }
-      .hero-content { margin: 0 auto; }
-      .feature-grid { grid-template-columns: 1fr !important; }
-      h1 { font-size: 2.25rem !important; }
-      .setup-steps { grid-template-columns: 1fr !important; }
-      .hero-interactive-space { height: 260px; }
-
-      /* Script card header: stack title + download button vertically */
-      .script-card > div[style*="justify-content: space-between"] {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-      }
-      .script-card > div[style*="justify-content: space-between"] .btn-outline {
-        width: 100%;
-        justify-content: center;
-      }
-
-      /* Tab buttons: allow wrap + smaller padding */
-      .tab-buttons {
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-      .tab-btn {
-        font-size: 0.8rem !important;
-        padding: 0.6rem 1rem !important;
-      }
-    }
-
-    /* ── Mobile code block fix ── */
-    @media (max-width: 600px) {
-      pre {
-        white-space: pre-wrap !important;
-        word-break: break-word !important;
-        overflow-x: hidden !important;
-        font-size: 0.72rem !important;
-        padding: 1rem !important;
-        line-height: 1.65 !important;
-      }
-      pre code {
-        white-space: pre-wrap !important;
-        word-break: break-word !important;
-      }
-    }
-  </style>
+.hero-split { display: grid; grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 2rem; }
+.hero-interactive-space { height: 380px; width: 100%; cursor: pointer; }
+.tool-card { background: rgba(8,8,10,0.35); border-radius: 1.25rem; padding: 2rem; border: 1px solid rgba(255,255,255,0.04); transform-style: preserve-3d; perspective: 1000px; transition: border-color 0.5s ease, background 0.5s ease; }
+.tool-card:hover { border-color: rgba(255,255,255,0.12); background: rgba(12,12,16,0.55); }
+.tool-card h3 { font-weight: 500; margin-bottom: 0.5rem; font-size: 1.3rem; color: #fff; transform: translateZ(20px); }
+.tool-card p { font-weight: 300; color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem; transform: translateZ(15px); }
+.tab-buttons { display: flex; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 2.5rem; }
+.tab-btn { background: transparent; border: none; padding: 0.8rem 1.5rem; font-size: 0.9rem; font-weight: 400; color: #64748b; cursor: pointer; position: relative; transition: color 0.3s ease; }
+.tab-btn::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: #fff; transform: scaleX(0); transform-origin: right; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+.tab-btn.active { color: #fff; }
+.tab-btn.active::after { transform: scaleX(1); transform-origin: left; }
+.tab-content { display: none; opacity: 0; }
+.tab-content.active-tab { display: block; opacity: 1; }
+.script-card { background: rgba(6,6,8,0.45); border-radius: 1.5rem; padding: 2rem; border: 1px solid rgba(255,255,255,0.04); backdrop-filter: blur(8px); }
+pre { border: 1px solid rgba(255,255,255,0.02); color: #cbd5e1; padding: 1.25rem; border-radius: 0.8rem; font-size: 0.8rem; font-family: 'Courier New', Courier, monospace; margin: 1.5rem 0; }
+.video-placeholder { background: #010102; border-radius: 1rem; margin-top: 1.5rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.02); }
+.video-placeholder video { width: 100%; display: block; }
+.video-caption { font-size: 0.75rem; color: #64748b; text-align: center; padding: 0.8rem 0; }
+.badge { background: rgba(255,255,255,0.03); color: #94a3b8; border: 1px solid rgba(255,255,255,0.05); border-radius: 30px; padding: 0.25rem 0.8rem; font-size: 0.725rem; font-weight: 400; display: inline-flex; align-items: center; gap: 6px; }
+.step { background: rgba(8,8,10,0.25); border-top: 1px solid rgba(255,255,255,0.04); padding: 1.5rem; border-radius: 1rem; transition: border-color 0.3s; }
+.step:hover { border-color: rgba(255,255,255,0.12); }
+footer { border-top: 1px solid rgba(255,255,255,0.02); background: #010102; text-align: center; padding: 3rem 0; font-size: 0.85rem; color: #64748b; }
+h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
+@media (max-width: 1024px) { h1 { font-size: 2.75rem !important; } }
+@media (max-width: 768px) {
+  .nav-inner { flex-direction: column; text-align: center; }
+  .hero-split { grid-template-columns: 1fr; text-align: center; }
+  .hero-content { margin: 0 auto; }
+  .feature-grid { grid-template-columns: 1fr !important; }
+  h1 { font-size: 2.25rem !important; }
+  .setup-steps { grid-template-columns: 1fr !important; }
+  .hero-interactive-space { height: 260px; }
+  .hero-cta-row { justify-content: center !important; flex-direction: column; align-items: center; }
+  .script-card > div[style*="justify-content: space-between"] { flex-direction: column !important; align-items: flex-start !important; }
+  .script-card > div[style*="justify-content: space-between"] .btn-outline { width: 100%; justify-content: center; }
+  .tab-buttons { flex-wrap: wrap; gap: 4px; }
+  .tab-btn { font-size: 0.8rem !important; padding: 0.6rem 1rem !important; }
+  .idea-inner { padding: 2rem 1.2rem; }
+}
+@media (max-width: 600px) {
+  pre { white-space: pre-wrap !important; word-break: break-word !important; overflow-x: hidden !important; font-size: 0.72rem !important; padding: 1rem !important; line-height: 1.65 !important; }
+  pre code { white-space: pre-wrap !important; word-break: break-word !important; }
+}
+</style>
 </head>
 <body>
-
 <canvas id="bg-canvas"></canvas>
 
 <div class="glass-nav">
   <div class="container nav-inner">
     <div class="logo"><i class="fas fa-microchip"></i> AutomationTools</div>
-    <a href="qrforge.html" class="qr-link"><i class="fas fa-qrcode"></i> QR Forge <i class="fas fa-external-link-alt fa-xs"></i></a>
   </div>
 </div>
 
 <main>
-  <!-- Hero Section -->
-  <section style="padding: 5rem 0 4rem 0;" class="hero-section">
-    <div class="container">
-      <div class="hero-split">
-        <div class="hero-content" style="max-width: 750px;">
-          <span class="badge"><i class="fas fa-code"></i> by Pinnexus</span>
-          <h1 style="font-size: 3.5rem; font-weight: 400; margin: 1.2rem 0 0.8rem; letter-spacing: -1.5px; line-height: 1.15;">
-            Automation tools<br><span style="color: #64748b;">built for real work</span>
-          </h1>
-          <p style="font-size: 1.1rem; color: #94a3b8; max-width: 540px;">
-            Excel VBA scripts and utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.
-          </p>
-          <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;">
-            <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA Scripts</span>
-            <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
-          </div>
+
+<!-- Hero Section -->
+<section style="padding: 5rem 0 4rem 0;" class="hero-section">
+  <div class="container">
+    <div class="hero-split">
+      <div class="hero-content" style="max-width: 750px;">
+        <span class="badge"><i class="fas fa-code"></i> by Pinnexus</span>
+        <h1 style="font-size: 3.5rem; font-weight: 400; margin: 1.2rem 0 0.8rem; letter-spacing: -1.5px; line-height: 1.15;">
+          Automation tools<br><span style="color: #64748b;">built for real work</span>
+        </h1>
+        <p style="font-size: 1.1rem; color: #94a3b8; max-width: 540px;">
+          Excel VBA scripts and utilities that eliminate repetitive tasks — built by DSU11425, designed to save hours every week.
+        </p>
+
+        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;" class="hero-cta-row">
+          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA Scripts</span>
+          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
         </div>
-        <!-- Spatial placeholder container triggering direct cursor hover dependencies -->
-        <div class="hero-interactive-space" id="hero-trigger"></div>
+
+        <!-- NEW: one-click install zip download -->
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.6rem;" class="hero-cta-row hero-dl-wrap">
+          <a href="AutomationTools_Install.zip" download class="btn-hero-dl">
+            <i class="fas fa-file-archive"></i>
+            Download All Scripts
+            <span style="opacity:0.45; font-size:0.78rem;">.zip</span>
+          </a>
+          <span class="hero-dl-hint">
+            <i class="fas fa-terminal" style="font-size:0.75rem;"></i>
+            includes install.bat &middot; run once, macros ready
+          </span>
+        </div>
+
+      </div>
+      <div class="hero-interactive-space" id="hero-trigger"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature Cards Overview -->
+<section style="padding: 4rem 0 4rem;" class="features-section">
+  <div class="container">
+    <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Three tools, <span style="color:#64748b;">one workflow.</span></h2>
+    <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.8rem;">
+      <div class="tool-card animate-card">
+        <i class="fas fa-calculator" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+        <h3>Calculate Receivings</h3>
+        <p>VLOOKUP &middot; cost &middot; Tax multiplier &middot; auto-clean columns &middot; final total</p>
+        <div><span class="badge">VBA &middot; Excel</span></div>
+      </div>
+      <div class="tool-card animate-card">
+        <i class="fas fa-chart-line" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+        <h3>Generate Daily Report</h3>
+        <p>Picker &middot; success/cancel counts &middot; top Inhouse/Suplier &middot; modified orders flag</p>
+        <div><span class="badge">VBA &middot; Excel</span></div>
+      </div>
+      <div class="tool-card animate-card">
+        <i class="fas fa-calendar-week" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+        <h3>Generate Bio Time</h3>
+        <p>Groups consecutive identical shifts &middot; exports clean schedule</p>
+        <div><span class="badge">VBA &middot; Excel</span></div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Feature Cards -->
-  <!-- Feature Cards Overview -->
-  <section style="padding: 4rem 0 4rem;" class="features-section">
-    <div class="container">
-      <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Three tools, <span style="color:#64748b;">one workflow.</span></h2>
-      <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.8rem;">
-        
-        <div class="tool-card animate-card">
-          <i class="fas fa-calculator" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
-          <h3>Calculate Receivings</h3>
-          <p>VLOOKUP · cost · Tax multiplier · auto-clean columns · final total</p>
-          <div><span class="badge">VBA · Excel</span></div>
-        </div>
-
-        <div class="tool-card animate-card">
-          <i class="fas fa-chart-line" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
-          <h3>Generate Daily Report</h3>
-          <p>Picker · success/cancel counts · top Inhouse/Suplier · modified orders flag</p>
-          <div><span class="badge">VBA · Excel</span></div>
-        </div>
-
-        <div class="tool-card animate-card">
-          <i class="fas fa-calendar-week" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
-          <h3>Generate Bio Time</h3>
-          <p>Groups consecutive identical shifts · exports clean schedule</p>
-          <div><span class="badge">VBA · Excel</span></div>
-        </div>
-
-      </div>
+<!-- Script Browser -->
+<section style="padding: 5rem 0;" class="browser-section">
+  <div class="container">
+    <h2 style="margin-bottom: 0.5rem; font-size: 2rem;"><i class="fas fa-laptop-code"></i> Browse the scripts</h2>
+    <p style="margin-bottom: 2.5rem; color: #64748b;">Each macro includes a working video guide and source code.</p>
+    <div class="tab-buttons">
+      <button class="tab-btn active" data-tab="tab1">Calculate Receivings</button>
+      <button class="tab-btn" data-tab="tab2">Generate Daily Report</button>
+      <button class="tab-btn" data-tab="tab3">Generate Bio Time</button>
     </div>
-  </section>
 
-  <!-- Script Browser[cite: 1] -->
-  <section style="padding: 5rem 0;" class="browser-section">
-    <div class="container">
-      <h2 style="margin-bottom: 0.5rem; font-size: 2rem;"><i class="fas fa-laptop-code"></i> Browse the scripts</h2>
-      <p style="margin-bottom: 2.5rem; color: #64748b;">Each macro includes a working video guide and source code.</p>
-      
-      <div class="tab-buttons">
-        <button class="tab-btn active" data-tab="tab1">Calculate Receivings</button>
-        <button class="tab-btn" data-tab="tab2">Generate Daily Report</button>
-        <button class="tab-btn" data-tab="tab3">Generate Bio Time</button>
-      </div>
-
-      <!-- Tab 1 -->
-      <div id="tab1" class="tab-content active-tab">
-        <div class="script-card">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-            <div>
-              <h3 style="font-weight: 500; color: #fff;">Calculate Receivings <span class="badge">v1.2.2</span></h3>
-              <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">VLOOKUP · cost · Tax multiplier · auto-clean columns · final total</p>
-            </div>
-            <a href="Calculate Receivings V1.2.2 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+    <!-- Tab 1 -->
+    <div id="tab1" class="tab-content active-tab">
+      <div class="script-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-weight: 500; color: #fff;">Calculate Receivings <span class="badge">v1.2.2</span></h3>
+            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">VLOOKUP &middot; cost &middot; Tax multiplier &middot; auto-clean columns &middot; final total</p>
           </div>
-          <pre><code>' Calculate Receivings V1.2.2 VBA.txt
+          <a href="Calculate Receivings V1.2.2 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+        </div>
+        <pre><code>' Calculate Receivings V1.2.2 VBA.txt
+
 Sub CalculateReceivings()
     Dim wsMain As Worksheet, wsData As Worksheet
     Dim lastRow As Long, finalSum As Double
 
-    If lastRow <= skuRow Then
+    If lastRow &lt;= skuRow Then
         If retryCount = 0 Then
             wsMain.Cells(skuRow, skuCol).Insert Shift:=xlToRight
             retryCount = 1
@@ -447,551 +268,452 @@ Sub CalculateReceivings()
     ' ... full logic (Download the .txt)
 
     wsMain.Range(wsMain.Cells(1, skuCol + 1), wsMain.Cells(1, skuCol + 13)).ColumnWidth = 2.5
-    
     prodNameColLetter = Split(wsMain.Cells(1, skuCol + 1).Address, "$")(1)
     wsMain.Columns(prodNameColLetter).AutoFit
-    
     pColLetter = Split(wsMain.Cells(1, skuCol + 14).Address, "$")(1)
-
     wsMain.Columns(qColLetter).AutoFit
-    
-    MsgBox "Process completed successfully!" & vbCrLf & vbCrLf & _
-           "==============================" & vbCrLf & _
-           " FINAL TOTAL AMOUNT: " & Format(finalSum, "#,##0.00") & vbCrLf & _
+
+    MsgBox "Process completed successfully!" &amp; vbCrLf &amp; vbCrLf &amp; _
+           "==============================" &amp; vbCrLf &amp; _
+           " FINAL TOTAL AMOUNT: " &amp; Format(finalSum, "#,##0.00") &amp; vbCrLf &amp; _
            "==============================", vbInformation, "Success"
 End Sub</code></pre>
-          <div class="video-placeholder">
-            <video controls poster="https://placehold.co/640x360/111/ffffff?text=Working+Guide+CalculateReceivings">
-              <source src="PORecieving.mp4" type="video/mp4">
-            </video>
-            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Calculate Receivings demo</div>
-          </div>
+        <div class="video-placeholder">
+          <video controls poster="https://placehold.co/640x360/111/ffffff?text=Working+Guide+CalculateReceivings">
+            <source src="PORecieving.mp4" type="video/mp4">
+          </video>
+          <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Calculate Receivings demo</div>
         </div>
       </div>
+    </div>
 
-      <!-- Tab 2 -->
-      <div id="tab2" class="tab-content">
-        <div class="script-card">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-            <div>
-              <h3 style="font-weight: 500; color: #fff;">Generate Daily Report <span class="badge">v1.2</span></h3>
-              <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Picker · success/cancel counts · top Inhouse/Suplier · modified orders flag</p>
-            </div>
-            <a href="Generate Daily Report V1.2 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+    <!-- Tab 2 -->
+    <div id="tab2" class="tab-content">
+      <div class="script-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-weight: 500; color: #fff;">Generate Daily Report <span class="badge">v1.2</span></h3>
+            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Picker &middot; success/cancel counts &middot; top Inhouse/Suplier &middot; modified orders flag</p>
           </div>
-          <pre><code>' Generate Daily Report V1.2 VBA.txt
-  Sub GenerateDailyReport()
-      Dim wsData As Worksheet, wsReport As Worksheet
-      Dim lastRow As Long, reportRow As Long, lastReportRow As Long
-      Dim pickerDict As Object
+          <a href="Generate Daily Report V1.2 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+        </div>
+        <pre><code>' Generate Daily Report V1.2 VBA.txt
+Sub GenerateDailyReport()
+    Dim wsData As Worksheet, wsReport As Worksheet
+    Dim lastRow As Long, reportRow As Long, lastReportRow As Long
+    Dim pickerDict As Object
 
-      Set wsData = ActiveSheet
+    Set wsData = ActiveSheet
 
-      lastRow = wsData.Cells(wsData.Rows.Count, "A").End(xlUp).Row
-      If lastRow <= 1 Then
-          MsgBox "The active sheet seems to be empty or has no data rows. Please open the correct file first!", vbCritical, "Error"
-          Exit Sub
-      End If
-      
+    lastRow = wsData.Cells(wsData.Rows.Count, "A").End(xlUp).Row
+    If lastRow &lt;= 1 Then
+        MsgBox "The active sheet seems to be empty or has no data rows.", vbCritical, "Error"
+        Exit Sub
+    End If
+
     ' ... full logic (Download the .txt)
 
-     summaryRow = modifiedRow + 3
-        
-      .Cells(summaryRow, 2).Value = "Good morning team,"
-      .Cells(summaryRow + 2, 2).Value = "Daily sales report " & formattedDate
-      
-      .Cells(summaryRow + 3, 2).Value = "Orders:"
-      .Cells(summaryRow + 3, 3).Formula = "=SUM(D3:D" & reportRow - 1 & ")"
+    summaryRow = modifiedRow + 3
+    .Cells(summaryRow, 2).Value = "Good morning team,"
+    .Cells(summaryRow + 2, 2).Value = "Daily sales report " &amp; formattedDate
+    .Cells(summaryRow + 3, 2).Value = "Orders:"
+    .Cells(summaryRow + 3, 3).Formula = "=SUM(D3:D" &amp; reportRow - 1 &amp; ")"
 
-      End With
-    
     Application.ScreenUpdating = True
     Application.DisplayAlerts = True
-  End Sub </code></pre>
-          <div class="video-placeholder">
-            <video controls poster="https://placehold.co/640x360/111/ffffff?text=Daily+Report+Guide">
-              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-            </video>
-            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Generate Daily Report</div>
-          </div>
+End Sub</code></pre>
+        <div class="video-placeholder">
+          <video controls poster="https://placehold.co/640x360/111/ffffff?text=Daily+Report+Guide">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          </video>
+          <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Generate Daily Report</div>
         </div>
       </div>
+    </div>
 
-      <!-- Tab 3 -->
-      <div id="tab3" class="tab-content">
-        <div class="script-card">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-            <div>
-              <h3 style="font-weight: 500; color: #fff;">Generate Bio Time <span class="badge">v1.1</span></h3>
-              <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Groups consecutive identical shifts · exports clean schedule</p>
-            </div>
-            <a href="Generate Bio Time V1.1 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+    <!-- Tab 3 -->
+    <div id="tab3" class="tab-content">
+      <div class="script-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-weight: 500; color: #fff;">Generate Bio Time <span class="badge">v1.1</span></h3>
+            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Groups consecutive identical shifts &middot; exports clean schedule</p>
           </div>
-          <pre><code>' Generate Bio Time V1.1 VBA.txt
-  Sub Generate Bio Time()
+          <a href="Generate Bio Time V1.1 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+        </div>
+        <pre><code>' Generate Bio Time V1.1 VBA.txt
+Sub GenerateBioTime()
     Dim srcBook As Workbook
     Dim srcSheet As Worksheet
 
     lastRow = srcSheet.Cells(srcSheet.Rows.Count, 1).End(xlUp).Row
     lastCol = srcSheet.Cells(17, srcSheet.Columns.Count).End(xlToLeft).Column
-    If lastCol < 5 Then lastCol = 15
-    
+    If lastCol &lt; 5 Then lastCol = 15
+
     foundRoster = False
     For r = 1 To lastRow
         For c = 1 To lastCol
-            If InStr(UCase(CStr(srcSheet.Cells(r, c).Value)), "MONDAY") > 0 Then
-                rosterRow = r
-                startCol = c
-                foundRoster = True
-                Exit For
+            If InStr(UCase(CStr(srcSheet.Cells(r, c).Value)), "MONDAY") &gt; 0 Then
+                rosterRow = r : startCol = c : foundRoster = True : Exit For
             End If
         Next c
         If foundRoster Then Exit For
     Next r
-    
-    Function AdvancedShiftParser(ByVal rawShift As String) As String
-      rawShift = UCase(WorksheetFunction.Trim(rawShift))
-      rawShift = Replace(rawShift, Chr(160), " ")
-    
-       If InStr(cleanStr, "-") = 0 Then
-        Dim p1 As Long, p2 As Long, a1 As Long, a2 As Long
-        Dim cutPos As Long
-        
+
     ' ... full logic (Download the .txt)
 
-        p1 = InStr(1, cleanStr, "PM")
-        p2 = InStr(p1 + 2, cleanStr, "PM")
-        a1 = InStr(1, cleanStr, "AM")
-        a2 = InStr(a1 + 2, cleanStr, "AM")
+    AdvancedShiftParser = prefix &amp; " " &amp; Format(displayHour, "00") &amp; " (" &amp; Format(duration, "00") &amp; ")"
+End Sub</code></pre>
+        <div class="video-placeholder">
+          <video controls poster="https://placehold.co/640x360/111/ffffff?text=Weekly+Report+Guide">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          </video>
+          <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Generate Bio Time</div>
+        </div>
+      </div>
+    </div>
 
-      Dim displayHour As Integer
-    displayHour = startHour
-    If displayHour = 0 Then displayHour = 12
-    
-    AdvancedShiftParser = prefix & " " & Format(displayHour, "00") & " (" & Format(duration, "00") & ")"
-    Exit Function
+  </div>
+</section>
 
-  ParserFallback:
-      AdvancedShiftParser = rawShift
-End Function</code></pre>
-          <div class="video-placeholder">
-            <video controls poster="https://placehold.co/640x360/111/ffffff?text=Weekly+Report+Guide">
-              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-            </video>
-            <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Generate Bio Time</div>
+<!-- Install Guide Section -->
+<section style="padding: 5rem 0;" class="setup-section">
+  <div class="container">
+    <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">Install guide <span style="color:#64748b;">one click setup</span></h2>
+    <p style="text-align: center; margin-bottom: 3rem; color:#64748b;">Extract the zip and run the installer — all 3 macros land in PERSONAL.XLSB automatically.</p>
+
+    <div class="setup-steps" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; max-width: 960px; margin: 0 auto;">
+      <div class="step-card step animate-card">
+        <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">01</span>
+        Download the zip<br>
+        <span style="font-size:0.85rem; color:#64748b;">Click <em>Download All Scripts</em> above</span>
+      </div>
+      <div class="step-card step animate-card">
+        <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">02</span>
+        Extract all files<br>
+        <span style="font-size:0.85rem; color:#64748b;">Right-click the zip → <em>Extract All</em> — keep all files in the same folder</span>
+      </div>
+      <div class="step-card step animate-card">
+        <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">03</span>
+        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install_All_Vba_Codes.bat</code><br>
+        <span style="font-size:0.85rem; color:#64748b;">Right-click → <em>Run as administrator</em></span>
+      </div>
+      <div class="step-card step animate-card">
+        <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">04</span>
+        Done &mdash; open any Excel file<br>
+        <span style="font-size:0.85rem; color:#64748b;">Alt+F8 → pick a macro → Run</span>
+      </div>
+    </div>
+
+    <!-- What the installer does -->
+    <div style="background: rgba(10,10,12,0.3); border-radius: 1.25rem; padding: 2rem; margin-top: 2.5rem; border:1px solid rgba(255,255,255,0.04); max-width: 960px; margin-left:auto; margin-right:auto;" class="pro-tip-card">
+      <h3 style="font-weight: 400; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:1.2rem;">
+        <i class="fas fa-terminal" style="color:#64748b;"></i> What the installer does
+      </h3>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:1rem;">
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <i class="fas fa-shield-alt" style="color:#64748b; margin-top:3px; flex-shrink:0;"></i>
+          <div>
+            <span style="color:#e2e8f0; font-size:0.88rem; font-weight:500;">Enables VBA access</span><br>
+            <span style="color:#64748b; font-size:0.82rem;">Updates Windows registry so Excel can load macro modules (Office 2010 / 2013 / 2016+)</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <i class="fas fa-file-import" style="color:#64748b; margin-top:3px; flex-shrink:0;"></i>
+          <div>
+            <span style="color:#e2e8f0; font-size:0.88rem; font-weight:500;">Imports 3 modules into PERSONAL.XLSB</span><br>
+            <span style="color:#64748b; font-size:0.82rem;">DailyReportModule &nbsp;&middot;&nbsp; BioTimeModule &nbsp;&middot;&nbsp; ReceivingModule</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <i class="fas fa-globe" style="color:#64748b; margin-top:3px; flex-shrink:0;"></i>
+          <div>
+            <span style="color:#e2e8f0; font-size:0.88rem; font-weight:500;">Macros available everywhere</span><br>
+            <span style="color:#64748b; font-size:0.82rem;">PERSONAL.XLSB loads with Excel — macros work in any workbook, no copy-paste needed</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <i class="fas fa-recycle" style="color:#64748b; margin-top:3px; flex-shrink:0;"></i>
+          <div>
+            <span style="color:#e2e8f0; font-size:0.88rem; font-weight:500;">Safe to re-run</span><br>
+            <span style="color:#64748b; font-size:0.82rem;">Existing modules are removed before re-importing — always installs the latest version</span>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Setup Guide Section -->
-  <section style="padding: 5rem 0;" class="setup-section">
-    <div class="container">
-      <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">Setup guide <span style="color:#64748b;">🎬 video walkthrough</span></h2>
-      <p style="text-align: center; margin-bottom: 3rem; color:#64748b;">Up and running in four steps + watch the full tutorial below.</p>
-      
-      <div style="max-width: 760px; margin: 0 auto 3rem auto;" class="setup-video-wrapper">
-        <div class="video-placeholder">
-          <video controls poster="https://placehold.co/800x450/111/ffffff?text=Setup+Guide+Video">
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-          </video>
-          <div class="video-caption"><i class="fas fa-video"></i> Complete setup guide — Alt+F11 to PERSONAL.XLSB</div>
-        </div>
-      </div>
-
-      <div class="setup-steps" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
-        <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">01</span> Open workbook<br><span style="font-size:0.85rem; color:#64748b;">Match sheet names</span></div>
-        <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">02</span> Alt+F11 → Module<br><span style="font-size:0.85rem; color:#64748b;">Insert → Module, paste macro</span></div>
-        <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">03</span> Save as .xlsm<br><span style="font-size:0.85rem; color:#64748b;">Enable macros</span></div>
-        <div class="step-card step"><span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">04</span> Alt+F8 → Run<br><span style="font-size:0.85rem; color:#64748b;">Select macro → Run</span></div>
-      </div>
-
-      <div style="background: rgba(10,10,12,0.3); border-radius: 1.25rem; padding: 2rem; margin-top: 3rem; border:1px solid rgba(255,255,255,0.04);" class="pro-tip-card">
-        <h3 style="font-weight: 400; color:#fff; display:flex; align-items:center; gap:10px;"><i class="fas fa-folder-open" style="color:#64748b;"></i> Make macros global (PERSONAL.XLSB)</h3>
-        <p style="margin-top:0.6rem; font-size:0.95rem; color:#94a3b8;">Add scripts to Personal Macro Workbook — available in any Excel file.</p>
-        <div class="badge" style="margin-top:1rem; background:rgba(255,255,255,0.05);">💡 Pro tip: assign shortcut keys Ctrl+Shift+letter</div>
+      <div style="margin-top:1.5rem; padding:1rem 1.2rem; background:rgba(255,255,255,0.02); border-radius:0.8rem; border:1px solid rgba(255,255,255,0.04);">
+        <span style="font-size:0.78rem; color:#475569; display:flex; align-items:flex-start; gap:8px;">
+          <i class="fas fa-info-circle" style="margin-top:2px; flex-shrink:0;"></i>
+          Windows may show a SmartScreen prompt because the .bat file isn't signed. Click <em style="color:#94a3b8;">More info → Run anyway</em> to proceed — the installer only writes to your Excel XLSTART folder and registry security keys.
+        </span>
       </div>
     </div>
-  </section>
+
+  </div>
+</section>
+
+<!-- NEW: Got an idea section -->
+<section class="idea-section">
+  <div class="container">
+    <div class="idea-inner animate-card">
+      <h2><i class="fas fa-lightbulb" style="color:#64748b; margin-right:10px;"></i>Got an automation idea?</h2>
+      <p class="idea-sub">Spot a repetitive task that could be scripted? Drop a comment and attach a sample file — helps scope the build accurately.</p>
+
+      <textarea class="idea-field" id="idea-text" placeholder="Describe the task you want automated — what data goes in, what you need out…" rows="5"></textarea>
+
+      <div class="file-upload-zone" id="upload-zone">
+        <input type="file" id="idea-file" accept=".xlsx,.xls,.csv,.txt,.pdf,.png,.jpg" onchange="handleFileSelect(event)">
+        <span class="up-icon"><i class="fas fa-paperclip"></i></span>
+        Attach a sample file <span style="opacity:0.5;">(optional &middot; xlsx, csv, txt, pdf, image)</span>
+        <div id="file-name-display"></div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+        <button class="idea-submit" id="idea-btn" onclick="submitIdea()">
+          <i class="fas fa-paper-plane"></i> Send Idea
+        </button>
+        <span style="font-size:0.78rem; color:#475569;">No account needed</span>
+      </div>
+
+      <div class="idea-notice">
+        <i class="fas fa-info-circle" style="font-size:0.75rem;"></i>
+        Ideas are sent via email to DSU11425. Sample files help scope the build accurately.
+      </div>
+
+      <div id="idea-success">
+        <i class="fas fa-check-circle" style="margin-right:8px; opacity:0.7;"></i>
+        Thanks — idea received! We'll review and may reach out if we build it.
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>
   <div class="container">
-    <p>Automation tools — built by DSU11425 • Excel VBA & Flutter utilities</p>
-    <p style="margin-top: 0.6rem;"><a href="qrforge.html" style="color:#fff; transition: opacity 0.3s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">⚡ Discover QR Forge standalone app →</a></p>
+    <p>Automation tools — built by DSU11425 &bull; Excel VBA &amp; Flutter utilities</p>
+
   </div>
 </footer>
 
 <script>
-  gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger);
 
-  // --- GSAP REVEALS & SCROLLTRIGGER ---
-  const tl = gsap.timeline();
-  tl.from('.glass-nav', { y: -20, opacity: 0, duration: 0.8, ease: 'expo.out' })
-    .from('.hero-content .badge', { opacity: 0, y: 15, duration: 0.6, ease: 'power3.out' }, '-=0.4')
-    .from('.hero-content h1', { opacity: 0, y: 30, duration: 0.8, ease: 'power4.out' }, '-=0.5')
-    .from('.hero-content p', { opacity: 0, y: 20, duration: 0.6, ease: 'power3.out' }, '-=0.6')
-    .from('.hero-content .badge:not(:first-child)', { opacity: 0, scale: 0.9, stagger: 0.1, duration: 0.4 }, '-=0.4');
+const tl = gsap.timeline();
+tl.from('.glass-nav', { y: -20, opacity: 0, duration: 0.8, ease: 'expo.out' })
+  .from('.hero-content .badge', { opacity: 0, y: 15, duration: 0.6, ease: 'power3.out' }, '-=0.4')
+  .from('.hero-content h1', { opacity: 0, y: 30, duration: 0.8, ease: 'power4.out' }, '-=0.5')
+  .from('.hero-content p', { opacity: 0, y: 20, duration: 0.6, ease: 'power3.out' }, '-=0.6')
+  .from('.hero-content .badge:not(:first-child)', { opacity: 0, scale: 0.9, stagger: 0.1, duration: 0.4 }, '-=0.4')
+  .from('.hero-dl-wrap', { opacity: 0, y: 12, duration: 0.5, ease: 'power3.out' }, '-=0.3');
 
-  gsap.from('.feature-grid .tool-card', {
-    scrollTrigger: {
-      trigger: '.features-section',
-      start: 'top 75%',
-      toggleActions: 'play none none reverse'
-    },
-    opacity: 0,
-    y: 40,
-    stagger: 0.15,
-    duration: 1,
-    ease: 'expo.out'
+gsap.from('.feature-grid .tool-card', {
+  scrollTrigger: { trigger: '.features-section', start: 'top 75%', toggleActions: 'play none none reverse' },
+  opacity: 0, y: 40, stagger: 0.15, duration: 1, ease: 'expo.out'
+});
+gsap.from('.browser-section', {
+  scrollTrigger: { trigger: '.browser-section', start: 'top 85%', toggleActions: 'play none none reverse' },
+  opacity: 0, y: 30, duration: 0.8, ease: 'power3.out'
+});
+gsap.from('.setup-steps .step', {
+  scrollTrigger: { trigger: '.setup-steps', start: 'top 85%' },
+  opacity: 0, y: 25, stagger: 0.1, duration: 0.8, ease: 'power2.out'
+});
+gsap.from('.idea-inner', {
+  scrollTrigger: { trigger: '.idea-section', start: 'top 80%' },
+  opacity: 0, y: 30, duration: 0.8, ease: 'power3.out'
+});
+
+const cards = document.querySelectorAll('.animate-card, .step-card');
+cards.forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left - (rect.width/2);
+    const y = e.clientY - rect.top - (rect.height/2);
+    const factor = 12;
+    gsap.to(card, { rotateX: -(y/rect.height)*factor, rotateY: (x/rect.width)*factor, transformOrigin:"center center", duration:0.3, ease:"power2.out" });
   });
-
-  gsap.from('.browser-section', {
-    scrollTrigger: { 
-      trigger: '.browser-section', 
-      start: 'top 85%',
-      toggleActions: 'play none none reverse'
-    },
-    opacity: 0, 
-    y: 30, 
-    duration: 0.8, 
-    ease: 'power3.out'
+  card.addEventListener('mouseleave', () => {
+    gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.6, ease: "power4.out" });
   });
+});
 
-  gsap.from('.setup-video-wrapper', {
-    scrollTrigger: { trigger: '.setup-section', start: 'top 75%' },
-    opacity: 0, scale: 0.98, duration: 0.8, ease: 'power3.out'
-  });
-
-  gsap.from('.setup-steps .step', {
-    scrollTrigger: { trigger: '.setup-steps', start: 'top 85%' },
-    opacity: 0, y: 25, stagger: 0.1, duration: 0.8, ease: 'power2.out'
-  });
-
-
-  // --- 3D MOUSE HOVER TILT EFFECT ---
-  const cards = document.querySelectorAll('.animate-card, .step-card');
-  cards.forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left - (rect.width/2);
-      const y = e.clientY - rect.top - (rect.height/2);
-      
-      const factor = 12; 
-      const rotateX = -(y / rect.height) * factor;
-      const rotateY = (x / rect.width) * factor;
-      
-      gsap.to(card, {
-        rotateX: rotateX,
-        rotateY: rotateY,
-        transformOrigin: "center center",
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    });
-
-    card.addEventListener('mouseleave', () => {
-      gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.6, ease: "power4.out" });
+const tabs = document.querySelectorAll('.tab-btn');
+tabs.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tabId = btn.getAttribute('data-tab');
+    if(btn.classList.contains('active')) return;
+    tabs.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const currentActive = document.querySelector('.tab-content.active-tab');
+    gsap.to(currentActive, {
+      opacity: 0, y: -10, duration: 0.2, ease: 'power2.in', onComplete: () => {
+        currentActive.classList.remove('active-tab');
+        const nextActive = document.getElementById(tabId);
+        nextActive.classList.add('active-tab');
+        gsap.fromTo(nextActive, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' });
+      }
     });
   });
+});
 
+// ── Idea form ──
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  const display = document.getElementById('file-name-display');
+  if (file) {
+    display.textContent = '\uD83D\uDCCE ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+    display.style.display = 'block';
+  }
+}
 
-  // --- TAB SWITCHING INTERACTION ---
-  const tabs = document.querySelectorAll('.tab-btn');
-  const contents = document.querySelectorAll('.tab-content');
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tabId = btn.getAttribute('data-tab');
-      if(btn.classList.contains('active')) return;
+function submitIdea() {
+  const text = document.getElementById('idea-text').value.trim();
+  const file = document.getElementById('idea-file').files[0];
+  if (!text) {
+    document.getElementById('idea-text').focus();
+    gsap.to('#idea-text', { borderColor: 'rgba(255,255,255,0.3)', duration: 0.2, yoyo: true, repeat: 3 });
+    return;
+  }
+  const btn = document.getElementById('idea-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending\u2026';
 
-      tabs.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+  const subject = encodeURIComponent('Automation Idea \u2014 Pinnexus');
+  const body = encodeURIComponent('Idea:\n' + text + (file ? '\n\nSample file: ' + file.name + ' (please attach manually)' : ''));
+  window.location.href = 'mailto:dsu11425@pinnexus.dev?subject=' + subject + '&body=' + body;
 
-      const currentActive = document.querySelector('.tab-content.active-tab');
-      
-      gsap.to(currentActive, {
-        opacity: 0, y: -10, duration: 0.2, ease: 'power2.in', onComplete: () => {
-          currentActive.classList.remove('active-tab');
-          
-          const nextActive = document.getElementById(tabId);
-          nextActive.classList.add('active-tab');
-          
-          gsap.fromTo(nextActive, 
-            { opacity: 0, y: 12 }, 
-            { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }
-          );
-        }
-      });
-    });
-  });
+  setTimeout(() => {
+    btn.style.display = 'none';
+    document.getElementById('idea-text').value = '';
+    const success = document.getElementById('idea-success');
+    success.style.display = 'block';
+    gsap.from(success, { opacity: 0, y: 8, duration: 0.4, ease: 'power3.out' });
+  }, 800);
+}
 
+// ── THREE.JS ──
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x030304, 0.04);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // --- THREE.JS ADVANCED QUANTUM CORE WEBGL ENGINE ---
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x030304, 0.04);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+scene.add(ambientLight);
+const coreLight = new THREE.PointLight(0xffffff, 1.8, 15);
+coreLight.position.set(5.5, 2.5, 2);
+scene.add(coreLight);
 
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
+const gridGeo = new THREE.PlaneGeometry(75, 75, 45, 45);
+const posAttribute = gridGeo.attributes.position;
+for (let i = 0; i < posAttribute.count; i++) {
+  const x = posAttribute.getX(i), y = posAttribute.getY(i);
+  posAttribute.setZ(i, Math.sin(x*0.2)*Math.cos(y*0.2)*1.5 + Math.sin(x*0.08)*2.0);
+}
+gridGeo.computeVertexNormals();
+const gridMat = new THREE.MeshBasicMaterial({ color: 0x334155, wireframe: true, transparent: true, opacity: 0.13 });
+const terrainMesh = new THREE.Mesh(gridGeo, gridMat);
+terrainMesh.rotation.x = -Math.PI/2.1; terrainMesh.position.y = -6; terrainMesh.position.z = -10;
+scene.add(terrainMesh);
+
+const headerObjGroup = new THREE.Group();
+const coreMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.4,0), new THREE.MeshPhongMaterial({ color:0x0f172a, emissive:0x1e293b, specular:0xffffff, shininess:40, flatShading:true, transparent:true, opacity:0.85 }));
+headerObjGroup.add(coreMesh);
+const shellMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.45,0), new THREE.MeshBasicMaterial({ color:0xffffff, wireframe:true, transparent:true, opacity:0.25 }));
+headerObjGroup.add(shellMesh);
+const ringA = new THREE.Mesh(new THREE.TorusGeometry(2.4,0.03,8,50), new THREE.MeshBasicMaterial({ color:0x64748b, transparent:true, opacity:0.3 }));
+ringA.rotation.x = Math.PI/2; headerObjGroup.add(ringA);
+const ringB = new THREE.Mesh(new THREE.TorusGeometry(2.6,0.02,6,40), new THREE.MeshBasicMaterial({ color:0xffffff, transparent:true, opacity:0.15 }));
+ringB.rotation.y = Math.PI/4; headerObjGroup.add(ringB);
+
+const satelliteCount = 25;
+const satGeo = new THREE.BufferGeometry();
+const satPositions = new Float32Array(satelliteCount*3);
+for (let i=0;i<satelliteCount;i++){
+  const d=2.0+Math.random()*2.5, t=Math.random()*Math.PI*2, p=Math.acos(Math.random()*2-1);
+  satPositions[i*3]=d*Math.sin(p)*Math.cos(t); satPositions[i*3+1]=d*Math.sin(p)*Math.sin(t); satPositions[i*3+2]=d*Math.cos(p);
+}
+satGeo.setAttribute('position', new THREE.BufferAttribute(satPositions, 3));
+const satelliteParticles = new THREE.Points(satGeo, new THREE.PointsMaterial({ color:0xffffff, size:0.08, transparent:true, opacity:0.6 }));
+headerObjGroup.add(satelliteParticles);
+headerObjGroup.position.set(5.5, 2.0, -1);
+scene.add(headerObjGroup);
+camera.position.z = 15; camera.position.y = 1.0;
+
+gsap.to(terrainMesh.position, { z:2, y:-4, scrollTrigger:{ trigger:"body", start:"top top", end:"bottom bottom", scrub:1.5 } });
+gsap.to(headerObjGroup.position, { y:8, z:-6, x:7, scrollTrigger:{ trigger:".hero-section", start:"top top", end:"bottom top", scrub:1 } });
+
+let rotationVelocity=1.0, targetScale=1.0;
+const triggerSpace = document.getElementById('hero-trigger');
+triggerSpace.addEventListener('mouseenter', ()=>{ rotationVelocity=3.5; targetScale=1.15; });
+triggerSpace.addEventListener('mouseleave', ()=>{ rotationVelocity=1.0; targetScale=1.0; });
+
+let mouseX=0, mouseY=0;
+window.addEventListener('mousemove', (e)=>{ mouseX=(e.clientX/window.innerWidth-0.5)*1.2; mouseY=(e.clientY/window.innerHeight-0.5)*0.8; });
+
+const clock = new THREE.Clock();
+function animate3d() {
+  requestAnimationFrame(animate3d);
+  const t = clock.getElapsedTime();
+  const v = gridGeo.attributes.position;
+  for(let i=0;i<v.count;i++){
+    const x=v.getX(i), y=v.getY(i);
+    v.setZ(i, Math.sin(x*0.2+t*0.4)*Math.cos(y*0.2+t*0.4)*1.1);
+  }
+  gridGeo.attributes.position.needsUpdate=true;
+  coreMesh.rotation.y=t*0.25*rotationVelocity; coreMesh.rotation.z=t*0.1*rotationVelocity;
+  shellMesh.rotation.y=-t*0.4*rotationVelocity; shellMesh.rotation.x=t*0.15;
+  ringA.rotation.z=t*0.12*rotationVelocity; ringB.rotation.x=-t*0.18*rotationVelocity;
+  const cs=headerObjGroup.scale.x, ss=cs+(targetScale-cs)*0.1;
+  headerObjGroup.scale.set(ss,ss,ss);
+  const sp=satelliteParticles.geometry.attributes.position.array;
+  for(let i=0;i<satelliteCount;i++){ sp[i*3]+=Math.sin(t+i)*0.003; sp[i*3+1]+=Math.cos(t+i)*0.003; }
+  satelliteParticles.geometry.attributes.position.needsUpdate=true;
+  headerObjGroup.position.y=2.0+Math.sin(t*1.2)*0.25;
+  headerObjGroup.rotation.y+=(mouseX*0.4-headerObjGroup.rotation.y)*0.05;
+  headerObjGroup.rotation.x+=(-mouseY*0.4-headerObjGroup.rotation.x)*0.05;
+  camera.position.x+=(mouseX-camera.position.x)*0.04;
+  camera.position.y+=(-mouseY+1.0-camera.position.y)*0.04;
+  camera.lookAt(0,-2,-5);
+  renderer.render(scene, camera);
+}
+animate3d();
+
+window.addEventListener('resize', ()=>{
+  camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  if(window.innerWidth<768){ headerObjGroup.position.set(0,-1.2,-3); coreLight.position.set(0,-1.2,3); }
+  else { headerObjGroup.position.set(5.5,2.0,-1); coreLight.position.set(5.5,2.5,2); }
+});
+if(window.innerWidth<768){ headerObjGroup.position.set(0,-1.2,-3); coreLight.position.set(0,-1.2,3); }
 
-  // Lighting configuration needed for depth textures
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-  scene.add(ambientLight);
-
-  const coreLight = new THREE.PointLight(0xffffff, 1.8, 15);
-  coreLight.position.set(5.5, 2.5, 2);
-  scene.add(coreLight);
-
-  // Background Terrain Layer Matrix
-  const terrainWidth = 75, terrainHeight = 75;
-  const segmentsX = 45, segmentsY = 45;
-  const gridGeo = new THREE.PlaneGeometry(terrainWidth, terrainHeight, segmentsX, segmentsY);
-  
-  const posAttribute = gridGeo.attributes.position;
-  for (let i = 0; i < posAttribute.count; i++) {
-    const x = posAttribute.getX(i);
-    const y = posAttribute.getY(i);
-    const zNoise = Math.sin(x * 0.2) * Math.cos(y * 0.2) * 1.5 + Math.sin(x * 0.08) * 2.0;
-    posAttribute.setZ(i, zNoise);
+(function(){
+  var LIMIT=42;
+  function injectBreaks(){
+    if(window.innerWidth>600)return;
+    document.querySelectorAll('pre code').forEach(function(el){
+      if(el.dataset.brDone)return; el.dataset.brDone='1';
+      var lines=el.innerHTML.split('\n');
+      el.innerHTML=lines.map(function(line){
+        var stripped=line.replace(/<[^>]*>/g,'');
+        if(stripped.length<=LIMIT)return line;
+        var count=0,inTag=false,out='';
+        for(var i=0;i<line.length;i++){
+          var c=line[i];
+          if(c==='<')inTag=true; if(!inTag)count++; out+=c;
+          if(c==='>')inTag=false;
+          if(!inTag&&count>=LIMIT&&/[\s,.()\[\]_&]/.test(c)){out+='<wbr>';count=0;}
+        }
+        return out;
+      }).join('\n');
+    });
   }
-  gridGeo.computeVertexNormals();
-
-  const gridMat = new THREE.MeshBasicMaterial({
-    color: 0x334155,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.13
-  });
-  
-  const terrainMesh = new THREE.Mesh(gridGeo, gridMat);
-  terrainMesh.rotation.x = -Math.PI / 2.1; 
-  terrainMesh.position.y = -6;
-  terrainMesh.position.z = -10;
-  scene.add(terrainMesh);
-
-
-  // --- ADVANCED ADVANCED SYSTEM GENERATION B: ADVANCED QUANTUM CORE ---
-  const headerObjGroup = new THREE.Group();
-
-  // Layer 1: Solid Inner Shaded Facets (Icosahedron Core)
-  const coreGeo = new THREE.IcosahedronGeometry(1.4, 0);
-  const coreMat = new THREE.MeshPhongMaterial({
-    color: 0x0f172a,
-    emissive: 0x1e293b,
-    specular: 0xffffff,
-    shininess: 40,
-    flatShading: true,
-    transparent: true,
-    opacity: 0.85
-  });
-  const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-  headerObjGroup.add(coreMesh);
-
-  // Layer 2: External Wireframe Lattice Shell
-  const shellGeo = new THREE.IcosahedronGeometry(1.45, 0);
-  const shellMat = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.25
-  });
-  const shellMesh = new THREE.Mesh(shellGeo, shellMat);
-  headerObjGroup.add(shellMesh);
-
-  // Layer 3: Gyroscopic Node Ring System (Horizontal Orbit)
-  const ringA_Geo = new THREE.TorusGeometry(2.4, 0.03, 8, 50);
-  const ringA_Mat = new THREE.MeshBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.3 });
-  const ringA = new THREE.Mesh(ringA_Geo, ringA_Mat);
-  ringA.rotation.x = Math.PI / 2;
-  headerObjGroup.add(ringA);
-
-  // Layer 4: Gyroscopic Node Ring System (Vertical Intersecting Axis)
-  const ringB_Geo = new THREE.TorusGeometry(2.6, 0.02, 6, 40);
-  const ringB_Mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
-  const ringB = new THREE.Mesh(ringB_Geo, ringB_Mat);
-  ringB.rotation.y = Math.PI / 4;
-  headerObjGroup.add(ringB);
-
-  // Layer 5: Attracting Satellite Quantum Points Array
-  const satelliteCount = 25;
-  const satGeo = new THREE.BufferGeometry();
-  const satPositions = new Float32Array(satelliteCount * 3);
-  const satSpeeds = [];
-
-  for (let i = 0; i < satelliteCount; i++) {
-    // Spatial configuration localized around core vector parameters
-    const distance = 2.0 + Math.random() * 2.5;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos((Math.random() * 2) - 1);
-
-    satPositions[i*3] = distance * Math.sin(phi) * Math.cos(theta);
-    satPositions[i*3+1] = distance * Math.sin(phi) * Math.sin(theta);
-    satPositions[i*3+2] = distance * Math.cos(phi);
-    satSpeeds.push(0.01 + Math.random() * 0.02);
-  }
-
-  satGeo.setAttribute('position', new THREE.BufferAttribute(satPositions, 3));
-  const satMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.6 });
-  const satelliteParticles = new THREE.Points(satGeo, satMat);
-  headerObjGroup.add(satelliteParticles);
-
-  // Default coordinate initialization vector points for desktop environments
-  headerObjGroup.position.set(5.5, 2.0, -1);
-  scene.add(headerObjGroup);
-
-  camera.position.z = 15;
-  camera.position.y = 1.0;
-
-
-  // --- PARALLAX SCROLL MANAGEMENT ---
-  gsap.to(terrainMesh.position, {
-    z: 2, y: -4,
-    scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1.5 }
-  });
-
-  gsap.to(headerObjGroup.position, {
-    y: 8, z: -6, x: 7,
-    scrollTrigger: { trigger: ".hero-section", start: "top top", end: "bottom top", scrub: 1 }
-  });
-
-
-  // --- RUNTIME INTERACTIVE ACTIONS ON HERO HOVER ---
-  let rotationVelocity = 1.0;
-  let targetScale = 1.0;
-  const triggerSpace = document.getElementById('hero-trigger');
-
-  triggerSpace.addEventListener('mouseenter', () => {
-    rotationVelocity = 3.5; // Acceleration metrics switch
-    targetScale = 1.15;
-  });
-
-  triggerSpace.addEventListener('mouseleave', () => {
-    rotationVelocity = 1.0;
-    targetScale = 1.0;
-  });
-
-  let mouseX = 0, mouseY = 0;
-  window.addEventListener('mousemove', (e) => {
-    mouseX = (e.clientX / window.innerWidth - 0.5) * 1.2;
-    mouseY = (e.clientY / window.innerHeight - 0.5) * 0.8;
-  });
-
-
-  // --- GEN ACTIVE CORE RENDER CLOCK LOOP ---
-  const clock = new THREE.Clock();
-  
-  function animate3d() {
-    requestAnimationFrame(animate3d);
-    const elapsedTime = clock.getElapsedTime();
-
-    // 1. Structural terrain array dynamic wave motion calculations
-    const vertices = gridGeo.attributes.position;
-    for (let i = 0; i < vertices.count; i++) {
-      const x = vertices.getX(i);
-      const y = vertices.getY(i);
-      const currentZ = Math.sin(x * 0.2 + elapsedTime * 0.4) * Math.cos(y * 0.2 + elapsedTime * 0.4) * 1.1;
-      vertices.setZ(i, currentZ);
-    }
-    gridGeo.attributes.position.needsUpdate = true;
-
-    // 2. Multilayered Complex Spin Matrices
-    coreMesh.rotation.y = elapsedTime * 0.25 * rotationVelocity;
-    coreMesh.rotation.z = elapsedTime * 0.1 * rotationVelocity;
-    
-    shellMesh.rotation.y = -elapsedTime * 0.4 * rotationVelocity;
-    shellMesh.rotation.x = elapsedTime * 0.15;
-
-    ringA.rotation.z = elapsedTime * 0.12 * rotationVelocity;
-    ringB.rotation.x = -elapsedTime * 0.18 * rotationVelocity;
-
-    // Scale Interpolation transitions based on cursor detection
-    const currentScale = headerObjGroup.scale.x;
-    const stepScale = currentScale + (targetScale - currentScale) * 0.1;
-    headerObjGroup.scale.set(stepScale, stepScale, stepScale);
-
-    // Dynamic Micro-Satellite Core Accretion physics logic loops
-    const positions = satelliteParticles.geometry.attributes.position.array;
-    for(let i=0; i<satelliteCount; i++) {
-      positions[i*3]   += Math.sin(elapsedTime + i) * 0.003;
-      positions[i*3+1] += Math.cos(elapsedTime + i) * 0.003;
-    }
-    satelliteParticles.geometry.attributes.position.needsUpdate = true;
-    
-    // Constant physical hover float system dynamics equations
-    headerObjGroup.position.y = 2.0 + Math.sin(elapsedTime * 1.2) * 0.25;
-
-    // Smooth camera lookAt coordinate interpolation metrics
-    headerObjGroup.rotation.y += (mouseX * 0.4 - headerObjGroup.rotation.y) * 0.05;
-    headerObjGroup.rotation.x += (-mouseY * 0.4 - headerObjGroup.rotation.x) * 0.05;
-
-    camera.position.x += (mouseX - camera.position.x) * 0.04;
-    camera.position.y += (-mouseY + 1.0 - camera.position.y) * 0.04;
-    camera.lookAt(0, -2, -5);
-
-    renderer.render(scene, camera);
-  }
-  animate3d();
-
-  // Clean viewport layout transformations handler
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    if(window.innerWidth < 768) {
-      headerObjGroup.position.set(0, -1.2, -3);
-      coreLight.position.set(0, -1.2, 3);
-    } else {
-      headerObjGroup.position.set(5.5, 2.0, -1);
-      coreLight.position.set(5.5, 2.5, 2);
-    }
-  });
-  
-  if(window.innerWidth < 768) {
-    headerObjGroup.position.set(0, -1.2, -3);
-    coreLight.position.set(0, -1.2, 3);
-  }
-
-  // ── Mobile <br> injection for long code lines ──
-  // Only runs on phones. Inserts <wbr> hints at natural break points
-  // so the browser can wrap dense lines without horizontal scroll.
-  (function () {
-    var LIMIT = 42;
-    function injectBreaks() {
-      if (window.innerWidth > 600) return;
-      document.querySelectorAll('pre code').forEach(function (el) {
-        if (el.dataset.brDone) return;
-        el.dataset.brDone = '1';
-        var lines = el.innerHTML.split('\n');
-        el.innerHTML = lines.map(function (line) {
-          var stripped = line.replace(/<[^>]*>/g, '');
-          if (stripped.length <= LIMIT) return line;
-          // insert <wbr> after break-friendly characters once line is long enough
-          var count = 0, inTag = false, out = '';
-          for (var i = 0; i < line.length; i++) {
-            var c = line[i];
-            if (c === '<') inTag = true;
-            if (!inTag) count++;
-            out += c;
-            if (c === '>') inTag = false;
-            if (!inTag && count >= LIMIT && /[\s,.()\[\]_&]/.test(c)) {
-              out += '<wbr>';
-              count = 0;
-            }
-          }
-          return out;
-        }).join('\n');
-      });
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', injectBreaks);
-    } else {
-      injectBreaks();
-    }
-    window.addEventListener('resize', injectBreaks);
-  })();
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',injectBreaks);}else{injectBreaks();}
+  window.addEventListener('resize',injectBreaks);
+})();
 </script>
 </body>
 </html>
