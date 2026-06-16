@@ -6,6 +6,8 @@ import easyocr
 import numpy as np
 import cv2
 
+# Software Version 1.0
+# developed by DSU11425
 reader = easyocr.Reader(['en'])
 
 CN_PATTERN = r"(CN-[A-Za-z0-9]+-[0-9]+)"
