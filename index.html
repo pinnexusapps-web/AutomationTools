@@ -177,13 +177,13 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
         </p>
 
         <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;" class="hero-cta-row">
-          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA Scripts</span>
+          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA + 1 Python</span>
           <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
         </div>
 
         <!-- NEW: one-click install zip download -->
         <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.6rem;" class="hero-cta-row hero-dl-wrap">
-          <a href="AutomationTools_Installer.zip" download class="btn-hero-dl">
+          <a href="AutomationTools_Install.zip" download class="btn-hero-dl">
             <i class="fas fa-file-archive"></i>
             Download All Scripts
             <span style="opacity:0.45; font-size:0.78rem;">.zip</span>
@@ -203,7 +203,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
 <!-- Feature Cards Overview -->
 <section style="padding: 4rem 0 4rem;" class="features-section">
   <div class="container">
-    <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Three tools, <span style="color:#64748b;">one workflow.</span></h2>
+    <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Four tools, <span style="color:#64748b;">one workflow.</span></h2>
     <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.8rem;">
       <div class="tool-card animate-card">
         <i class="fas fa-calculator" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
@@ -223,7 +223,12 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
         <p>Groups consecutive identical shifts &middot; exports clean schedule</p>
         <div><span class="badge">VBA &middot; Excel</span></div>
       </div>
-    </div>
+      <div class="tool-card animate-card">
+        <i class="fas fa-file-pdf" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+        <h3>PDF Auto Rename</h3>
+        <p>Scans PDFs via OCR &middot; extracts CN / PO number &middot; renames files automatically</p>
+        <div><span class="badge">Python &middot; Windows</span></div>
+      </div>
   </div>
 </section>
 
@@ -236,6 +241,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
       <button class="tab-btn active" data-tab="tab1">Calculate Receivings</button>
       <button class="tab-btn" data-tab="tab2">Generate Daily Report</button>
       <button class="tab-btn" data-tab="tab3">Generate Bio Time</button>
+      <button class="tab-btn" data-tab="tab4">PDF Auto Rename</button>
     </div>
 
     <!-- Tab 1 -->
@@ -373,10 +379,113 @@ End Sub</code></pre>
       </div>
     </div>
 
+    <!-- Tab 4 -->
+    <div id="tab4" class="tab-content">
+      <div class="script-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-weight: 500; color: #fff;">PDF Auto Rename <span class="badge">v1.0</span></h3>
+            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">OCR scans every PDF in a folder &middot; extracts CN / PO number &middot; renames automatically</p>
+          </div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <a href="rename_docs.py" class="btn-outline" download><i class="fas fa-download"></i> rename_docs.py</a>
+            <a href="AutoRename.bat" class="btn-outline" download><i class="fas fa-download"></i> AutoRename.bat</a>
+          </div>
+        </div>
+
+        <pre><code># rename_docs.py  —  PDF Auto Rename v1.0
+import os, sys, re, fitz, easyocr, numpy as np, cv2
+
+reader = easyocr.Reader(['en'])
+CN_PATTERN = r"(CN-[A-Za-z0-9]+-[0-9]+)"
+PO_PATTERN = r"(PO[0-9]+)"
+
+def extract_id_from_pdf(pdf_path):
+    doc  = fitz.open(pdf_path)
+    page = doc[0]
+    pix  = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+    img  = np.frombuffer(pix.samples, dtype=np.uint8).reshape((pix.h, pix.w, pix.n))
+    text = " ".join(easyocr.Reader(['en']).readtext(
+               cv2.cvtColor(img, cv2.COLOR_BGR2RGB), detail=0)).upper()
+    m = re.search(CN_PATTERN, text) or re.search(PO_PATTERN, text)
+    return m.group(1).replace(" ", "") if m else None
+
+def process_and_rename_pdfs(folder):
+    for f in [x for x in os.listdir(folder) if x.lower().endswith('.pdf')]:
+        path   = os.path.join(folder, f)
+        doc_id = extract_id_from_pdf(path)
+        if doc_id:
+            new_path = os.path.join(folder, f"{doc_id}.pdf")
+            if not os.path.exists(new_path):
+                os.rename(path, new_path)
+                print(f"--> SUCCESS: {f}  →  {doc_id}.pdf")
+            else:
+                print(f"--> SKIPPED: {doc_id}.pdf already exists")
+        else:
+            print(f"--> FAILED : no CN/PO pattern found in {f}")
+
+process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
+
+        <!-- Python setup steps -->
+        <div style="margin-top: 2rem;">
+          <h3 style="font-weight:400; color:#fff; font-size:1.1rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-python" style="color:#64748b;"></i> Python setup <span style="color:#64748b; font-size:0.85rem; font-weight:300;">(one-time)</span>
+          </h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:1rem;">
+
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">01 &nbsp; Install Python</span>
+              <span style="font-size:0.82rem; color:#64748b;">Download from <em style="color:#94a3b8;">python.org</em> → check <strong style="color:#e2e8f0;">"Add Python to PATH"</strong> during install</span>
+            </div>
+
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">02 &nbsp; Install libraries</span>
+              <code style="display:block; background:rgba(255,255,255,0.04); border-radius:6px; padding:0.6rem 0.9rem; font-size:0.78rem; color:#cbd5e1; margin-top:0.4rem; word-break:break-all;">pip install pymupdf easyocr opencv-python numpy</code>
+            </div>
+
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">03 &nbsp; Place the files</span>
+              <span style="font-size:0.82rem; color:#64748b;">Put <em style="color:#94a3b8;">rename_docs.py</em> and <em style="color:#94a3b8;">AutoRename.bat</em> in the same folder</span>
+            </div>
+
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">04 &nbsp; Run</span>
+              <span style="font-size:0.82rem; color:#64748b;">Drag a PDF folder onto <em style="color:#94a3b8;">AutoRename.bat</em> — or use the Send To shortcut below</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Send To shortcut tip -->
+        <div style="margin-top:1.5rem; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1.4rem 1.6rem;">
+          <h4 style="font-weight:400; color:#fff; display:flex; align-items:center; gap:9px; margin-bottom:0.9rem;">
+            <i class="fas fa-bolt" style="color:#64748b;"></i> Faster way — Send To shortcut
+          </h4>
+          <div style="display:flex; flex-direction:column; gap:0.55rem;">
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
+              <span style="color:#475569; min-width:20px; font-weight:500;">1.</span>
+              <span style="color:#94a3b8;">Copy <code style="background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:0.8rem;">AutoRename.bat</code></span>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
+              <span style="color:#475569; min-width:20px; font-weight:500;">2.</span>
+              <span style="color:#94a3b8;">Press <code style="background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:0.8rem;">Win + R</code> → type <code style="background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:0.8rem;">shell:sendto</code> → Enter</span>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
+              <span style="color:#475569; min-width:20px; font-weight:500;">3.</span>
+              <span style="color:#94a3b8;">Inside the opened folder → Right-click → <em>Paste Shortcut</em></span>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
+              <span style="color:#475569; min-width:20px; font-weight:500;">✓</span>
+              <span style="color:#e2e8f0;">Now: Right-click any PDF folder → <em>Send to</em> → <em>AutoRename</em> — done</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </section>
-
-<!-- Install Guide Section -->
 <section style="padding: 5rem 0;" class="setup-section">
   <div class="container">
     <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">Install guide <span style="color:#64748b;">one click setup</span></h2>
@@ -386,17 +495,17 @@ End Sub</code></pre>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">01</span>
         Download the zip<br>
-        <span style="font-size:0.85rem; color:#64748b;">Click <em>Download Scripts Installer</em> above</span>
+        <span style="font-size:0.85rem; color:#64748b;">Click <em>Download All Scripts</em> above</span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">02</span>
         Extract all files<br>
-        <span style="font-size:0.85rem; color:#64748b;">Double-click the zip → <em>Open</em> — keep all files in the same folder</span>
+        <span style="font-size:0.85rem; color:#64748b;">Right-click the zip → <em>Extract All</em> — keep all files in the same folder</span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">03</span>
-        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install Codes.bat</code><br>
-        <span style="font-size:0.85rem; color:#64748b;">Double-click → <em>Click-Run</em></span>
+        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install_All_Vba_Codes.bat</code><br>
+        <span style="font-size:0.85rem; color:#64748b;">Right-click → <em>Run as administrator</em></span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">04</span>
@@ -405,43 +514,21 @@ End Sub</code></pre>
       </div>
     </div>
 
-    <!-- What the installer does -->
-    <div style="background: rgba(10,10,12,0.3); border-radius: 1.25rem; padding: 2rem; margin-top: 2.5rem; border:1px solid rgba(255,255,255,0.04); max-width: 960px; margin-left:auto; margin-right:auto;" class="pro-tip-card">
-      <h3 style="font-weight: 400; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:1.2rem;">
-        <i class="fas fa-terminal" style="color:#64748b;"></i> What the installer does
-      </h3>
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:1rem;">
-        <div style="display:flex; gap:10px; align-items:flex-start;">
-          <i class="fas fa-shield-alt" style="color:#64748b; margin-top:3px; flex-shrink:0;"></i>
-          <div>
-            <span style="color:#e2e8f0; font-size:0.88rem; font-weight:500;">Enables VBA access</span><br>
-            <span style="color:#64748b; font-size:0.82rem;">Updates Windows registry so Excel can load macro modules (Office 2010 / 2013 / 2016+)</span>
-          </div>
+    <!-- Animated Terminal -->
+    <div class="terminal-wrap" style="max-width:960px; margin: 2.5rem auto 0 auto;">
+      <div class="terminal-window">
+        <!-- title bar -->
+        <div class="term-bar">
+          <span class="term-dot" style="background:#ff5f57;"></span>
+          <span class="term-dot" style="background:#febc2e;"></span>
+          <span class="term-dot" style="background:#28c840;"></span>
+          <span class="term-title">Excel Multi-Macro Auto-Installer</span>
         </div>
-        <div style="display:flex; gap:10px; align-items:flex-start;">
-          <i class="fas fa-file-import" style="color:#64748b; margin-top:3px; flex-shrink:0;"></i>
-          <div>
-            <span style="color:#e2e8f0; font-size:0.88rem; font-weight:500;">Imports 3 modules into PERSONAL.XLSB</span><br>
-            <span style="color:#64748b; font-size:0.82rem;">DailyReportModule &nbsp;&middot;&nbsp; BioTimeModule &nbsp;&middot;&nbsp; ReceivingModule</span>
-          </div>
-        </div>
-        <div style="display:flex; gap:10px; align-items:flex-start;">
-          <i class="fas fa-globe" style="color:#64748b; margin-top:3px; flex-shrink:0;"></i>
-          <div>
-            <span style="color:#e2e8f0; font-size:0.88rem; font-weight:500;">Macros available everywhere</span><br>
-            <span style="color:#64748b; font-size:0.82rem;">PERSONAL.XLSB loads with Excel — macros work in any workbook, no copy-paste needed</span>
-          </div>
-        </div>
-        <div style="display:flex; gap:10px; align-items:flex-start;">
-          <i class="fas fa-recycle" style="color:#64748b; margin-top:3px; flex-shrink:0;"></i>
-          <div>
-            <span style="color:#e2e8f0; font-size:0.88rem; font-weight:500;">Safe to re-run</span><br>
-            <span style="color:#64748b; font-size:0.82rem;">Existing modules are removed before re-importing — always installs the latest version</span>
-          </div>
-        </div>
+        <!-- output lines -->
+        <div class="term-body" id="term-body"></div>
       </div>
 
-      <div style="margin-top:1.5rem; padding:1rem 1.2rem; background:rgba(255,255,255,0.02); border-radius:0.8rem; border:1px solid rgba(255,255,255,0.04);">
+      <div style="margin-top:1.2rem; padding:1rem 1.2rem; background:rgba(255,255,255,0.02); border-radius:0.8rem; border:1px solid rgba(255,255,255,0.04);">
         <span style="font-size:0.78rem; color:#475569; display:flex; align-items:flex-start; gap:8px;">
           <i class="fas fa-info-circle" style="margin-top:2px; flex-shrink:0;"></i>
           Windows may show a SmartScreen prompt because the .bat file isn't signed. Click <em style="color:#94a3b8;">More info → Run anyway</em> to proceed — the installer only writes to your Excel XLSTART folder and registry security keys.
