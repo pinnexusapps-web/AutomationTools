@@ -183,14 +183,14 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
 
         <!-- NEW: one-click install zip download -->
         <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.6rem;" class="hero-cta-row hero-dl-wrap">
-          <a href="AutomationTools_Install.zip" download class="btn-hero-dl">
+          <a href="AutomationTools_Installer.zip" download class="btn-hero-dl">
             <i class="fas fa-file-archive"></i>
-            Download All Scripts
+            Download Scripts Installer
             <span style="opacity:0.45; font-size:0.78rem;">.zip</span>
           </a>
           <span class="hero-dl-hint">
             <i class="fas fa-terminal" style="font-size:0.75rem;"></i>
-            includes install.bat &middot; run once, macros ready
+            includes installer.bat &middot; run once, macros ready
           </span>
         </div>
 
@@ -436,11 +436,14 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
             <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
               <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">01 &nbsp; Install Python</span>
               <span style="font-size:0.82rem; color:#64748b;">Download from <em style="color:#94a3b8;">python.org</em> → check <strong style="color:#e2e8f0;">"Add Python to PATH"</strong> during install</span>
+              <a href="https://www.python.org/ftp/python/pymanager/python-manager-26.2.msix" class="btn-outline" style="margin-top:0.9rem; font-size:0.8rem; padding:0.45rem 1rem;" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download Python
+              </a>
             </div>
 
             <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
               <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">02 &nbsp; Install libraries</span>
-              <code style="display:block; background:rgba(255,255,255,0.04); border-radius:6px; padding:0.6rem 0.9rem; font-size:0.78rem; color:#cbd5e1; margin-top:0.4rem; word-break:break-all;">pip install pymupdf easyocr opencv-python numpy</code>
+              <code style="display:block; background:rgba(255,255,255,0.04); border-radius:6px; padding:0.6rem 0.9rem; font-size:0.78rem; color:#cbd5e1; margin-top:0.4rem; word-break:break-all;">python -m pip install pymupdf opencv-python easyocr</code>
             </div>
 
             <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
@@ -495,7 +498,7 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">01</span>
         Download the zip<br>
-        <span style="font-size:0.85rem; color:#64748b;">Click <em>Download All Scripts</em> above</span>
+        <span style="font-size:0.85rem; color:#64748b;">Click <em>Download Scripts Installer</em> above</span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">02</span>
@@ -504,8 +507,8 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">03</span>
-        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install_All_Vba_Codes.bat</code><br>
-        <span style="font-size:0.85rem; color:#64748b;">Right-click → <em>Run as administrator</em></span>
+        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install_Codes.bat</code><br>
+        <span style="font-size:0.85rem; color:#64748b;">Double-click → <em>Click-Run</em></span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">04</span>
