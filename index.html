@@ -177,7 +177,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
         </p>
 
         <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;" class="hero-cta-row">
-          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA + 1 Python</span>
+          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">3 VBA + 1 Python + 1 Android</span>
           <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
         </div>
 
@@ -203,7 +203,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
 <!-- Feature Cards Overview -->
 <section style="padding: 4rem 0 4rem;" class="features-section">
   <div class="container">
-    <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Four tools, <span style="color:#64748b;">one workflow.</span></h2>
+    <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Five tools, <span style="color:#64748b;">one workflow.</span></h2>
     <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.8rem;">
       <div class="tool-card animate-card">
         <i class="fas fa-calculator" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
@@ -229,6 +229,12 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
         <p>Scans PDFs via OCR &middot; extracts CN / PO number &middot; renames files automatically</p>
         <div><span class="badge">Python &middot; Windows</span></div>
       </div>
+      <div class="tool-card animate-card">
+        <i class="fas fa-qrcode" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+        <h3>QR Forge</h3>
+        <p>Generate &amp; scan QR codes on Android &middot; batch export &middot; offline &middot; no ads</p>
+        <div><span class="badge">Android &middot; APK</span></div>
+      </div>
   </div>
 </section>
 
@@ -242,6 +248,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
       <button class="tab-btn" data-tab="tab2">Generate Daily Report</button>
       <button class="tab-btn" data-tab="tab3">Generate Bio Time</button>
       <button class="tab-btn" data-tab="tab4">PDF Auto Rename</button>
+      <button class="tab-btn" data-tab="tab5">QR Forge</button>
     </div>
 
     <!-- Tab 1 -->
@@ -443,7 +450,7 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
 
             <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
               <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">02 &nbsp; Install libraries</span>
-              <code style="display:block; background:rgba(255,255,255,0.04); border-radius:6px; padding:0.6rem 0.9rem; font-size:0.78rem; color:#cbd5e1; margin-top:0.4rem; word-break:break-all;">python -m pip install pymupdf opencv-python easyocr</code>
+              <code style="display:block; background:rgba(255,255,255,0.04); border-radius:6px; padding:0.6rem 0.9rem; font-size:0.78rem; color:#cbd5e1; margin-top:0.4rem; word-break:break-all;">python -m pip install pymupdf easyocr opencv-python numpy</code>
             </div>
 
             <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
@@ -487,6 +494,89 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       </div>
     </div>
 
+    <!-- Tab 5 -->
+    <div id="tab5" class="tab-content">
+      <div class="script-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-weight: 500; color: #fff;">QR Forge <span class="badge">Android</span></h3>
+            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Generate &amp; scan QR codes &middot; batch export &middot; fully offline &middot; no ads</p>
+          </div>
+        </div>
+
+        <!-- APK cards -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:1rem; margin-top:1.8rem;">
+
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:1rem; padding:1.4rem;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.6rem;">
+              <i class="fas fa-mobile-alt" style="color:#64748b;"></i>
+              <span style="color:#fff; font-size:0.9rem; font-weight:500;">arm64-v8a</span>
+              <span class="badge" style="margin-left:auto;">Recommended</span>
+            </div>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:1rem;">Most modern Android phones (2018+) — Snapdragon, MediaTek, Exynos 64-bit chips</p>
+            <a href="https://drive.google.com/uc?export=download&id=1RtK2bdqxbDWxVPlz_0-rneaFdARXcv-A" class="btn-outline" style="font-size:0.82rem; padding:0.45rem 1rem; width:100%; justify-content:center;">
+              <i class="fas fa-download"></i> Download arm64-v8a
+            </a>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:1rem; padding:1.4rem;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.6rem;">
+              <i class="fas fa-mobile-alt" style="color:#64748b;"></i>
+              <span style="color:#fff; font-size:0.9rem; font-weight:500;">armeabi-v7a</span>
+            </div>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:1rem;">Older Android phones (32-bit ARM) — pre-2016 devices or low-end phones</p>
+            <a href="https://drive.google.com/uc?export=download&id=1hB4NXKnVIUGe3yO450YVrPW0OW71rRyR" class="btn-outline" style="font-size:0.82rem; padding:0.45rem 1rem; width:100%; justify-content:center;">
+              <i class="fas fa-download"></i> Download armeabi-v7a
+            </a>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:1rem; padding:1.4rem;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.6rem;">
+              <i class="fas fa-desktop" style="color:#64748b;"></i>
+              <span style="color:#fff; font-size:0.9rem; font-weight:500;">x86_64</span>
+            </div>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:1rem;">Android emulators &amp; Intel-based devices — BlueStacks, Android Studio AVD</p>
+            <a href="https://drive.google.com/uc?export=download&id=1qTaRkez11paqbmiKd1qFnuzrU3efygdj" class="btn-outline" style="font-size:0.82rem; padding:0.45rem 1rem; width:100%; justify-content:center;">
+              <i class="fas fa-download"></i> Download x86_64
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Sideload guide -->
+        <div style="margin-top:2rem;">
+          <h3 style="font-weight:400; color:#fff; font-size:1.1rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-shield-alt" style="color:#64748b;"></i> Install guide <span style="color:#64748b; font-size:0.85rem; font-weight:300;">sideload APK</span>
+          </h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:1rem;">
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">01 &nbsp; Download the APK</span>
+              <span style="font-size:0.82rem; color:#64748b;">Pick the right version above — <em style="color:#94a3b8;">arm64-v8a</em> works for most phones</span>
+            </div>
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">02 &nbsp; Allow unknown sources</span>
+              <span style="font-size:0.82rem; color:#64748b;">Settings → Apps → Special app access → <em style="color:#94a3b8;">Install unknown apps</em> → enable for your browser or file manager</span>
+            </div>
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">03 &nbsp; Open the APK</span>
+              <span style="font-size:0.82rem; color:#64748b;">Tap the downloaded file from notifications or file manager → tap <em style="color:#94a3b8;">Install</em></span>
+            </div>
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">04 &nbsp; Open QR Forge</span>
+              <span style="font-size:0.82rem; color:#64748b;">Launch from home screen — no sign-in, no internet required</span>
+            </div>
+          </div>
+          <div style="margin-top:1.2rem; padding:1rem 1.2rem; background:rgba(255,255,255,0.02); border-radius:0.8rem; border:1px solid rgba(255,255,255,0.04);">
+            <span style="font-size:0.78rem; color:#475569; display:flex; align-items:flex-start; gap:8px;">
+              <i class="fas fa-info-circle" style="margin-top:2px; flex-shrink:0;"></i>
+              "Unknown sources" only needs to be enabled once. Android may warn about the file — this is normal for any APK outside the Play Store. QR Forge contains no trackers or network requests.
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </section>
 <section style="padding: 5rem 0;" class="setup-section">
@@ -498,7 +588,7 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">01</span>
         Download the zip<br>
-        <span style="font-size:0.85rem; color:#64748b;">Click <em>Download Scripts Installer</em> above</span>
+        <span style="font-size:0.85rem; color:#64748b;">Click <em>Download All Scripts</em> above</span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">02</span>
@@ -507,7 +597,7 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">03</span>
-        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install_Codes.bat</code><br>
+        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install Codes.bat</code><br>
         <span style="font-size:0.85rem; color:#64748b;">Double-click → <em>Click-Run</em></span>
       </div>
       <div class="step-card step animate-card">
