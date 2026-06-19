@@ -5,34 +5,30 @@ import fitz  # PyMuPDF
 import easyocr
 import numpy as np
 import cv2
+from datetime import datetime
 
 reader = easyocr.Reader(['en'])
 
-# 🛠️ Date සහ Time කොටස් හඳුනාගෙන ඉවත් කිරීමට සාදන ලද Regex රටාවන්:
-# 16/06/2026 හෝ 16-06-2026 වැනි Dates
 DATE_PATTERN = r"\b\d{1,2}[-/\s]\d{1,2}[-/\s]\d{2,4}\b"
-# 12:22 හෝ 14:35:00 වැනි Times
 TIME_PATTERN = r"\b\d{1,2}:\d{2}(:\d{2})?\b"
 
-# Document ID Regex Patterns
 CN_PATTERN = r"(CN[-_\s]?[A-Z0-9]+[-_\s]?[0-9]+)"
-PO_STANDARD_PATTERN = r"(PO[0-9]{7,8})"
+PO_STANDARD_PATTERN = r"(P[O|0][0-9]{7,8})"
 PO_CUT_PATTERN = r"([O|0][0-9]{7})"
 
-def clean_and_extract_id(results):
-    # 1. OCR වචන සියල්ල එකතු කර තනි පේළියක් සාදා ගැනීම
-    full_text = " ".join(results).upper()
+def clean_and_extract_id(page_text, filename):
+    top_rows = page_text[:12]
+    full_text = " ".join(top_rows).upper()
     
-    # 2. Date සහ Time කොටස් තිබේ නම් ඒවා සම්පූර්ණයෙන්ම ඉවත් කිරීම (Cleaning)
+    print(f"   [OCR Text inside {filename}]: {full_text if full_text.strip() else '[No Text]'}")
+    
     full_text = re.sub(DATE_PATTERN, "", full_text)
     full_text = re.sub(TIME_PATTERN, "", full_text)
     
-    # 3. Standard CN Pattern එක සෙවීම
     cn_match = re.search(CN_PATTERN, full_text)
     if cn_match:
         return cn_match.group(1).replace(" ", "")
         
-    # 4. Standard PO Pattern එක සෙවීම (උදා: PO4198698)
     po_match = re.search(PO_STANDARD_PATTERN, full_text)
     if po_match:
         clean_po = po_match.group(1).replace(" ", "")
@@ -40,7 +36,6 @@ def clean_and_extract_id(results):
             clean_po = "PO" + clean_po[2:]
         return clean_po
         
-    # 5. Border කැපී ඉතිරි වූ 'O' + ඉලක්කම් 7 රටාව සෙවීම (උදා: O4200077)
     po_cut_match = re.search(PO_CUT_PATTERN, full_text)
     if po_cut_match:
         captured_id = po_cut_match.group(1).replace(" ", "")
@@ -48,33 +43,39 @@ def clean_and_extract_id(results):
         
     return None
 
-def extract_id_from_pdf(pdf_path):
+def extract_id_from_pdf(pdf_path, filename):
     try:
         doc = fitz.open(pdf_path)
         if len(doc) == 0:
             return None
             
         page = doc[0]
-        zoom = 3  # High resolution for precise scanning
+        zoom = 3  
         mat = fitz.Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
         
         img_data = np.frombuffer(pix.samples, dtype=np.uint8).reshape((pix.h, pix.w, pix.n))
         img_rgb = cv2.cvtColor(img_data, cv2.COLOR_BGR2RGB)
         
-        results = reader.readtext(img_rgb, detail=0)
-        return clean_and_extract_id(results)
-            
-    except Exception as e:
-        print(f"Error inside OCR processing: {e}")
+        page_text = reader.readtext(img_rgb, detail=0)
+        doc.close()
         
+        return clean_and_extract_id(page_text, filename)
+    except Exception as e:
+        print(f"Error reading {filename}: {e}")
     return None
 
-def process_and_rename_pdfs(target_folder):
+def main(target_folder):
     if not os.path.exists(target_folder):
         print(f"Error: Folder not found at {target_folder}")
         return
 
+    today_str = datetime.now().strftime("%d %B")
+    output_folder = os.path.join(target_folder, today_str)
+    
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+        
     pdf_files = [f for f in os.listdir(target_folder) if f.lower().endswith('.pdf')]
     
     if not pdf_files:
@@ -82,25 +83,34 @@ def process_and_rename_pdfs(target_folder):
         return
 
     print(f"Target Folder: {target_folder}")
-    print(f"Processing {len(pdf_files)} PDFs using Date/Time Filtering OCR...")
+    print(f"Output Directory: {output_folder}")
+    print(f"Processing {len(pdf_files)} single PDFs...\n")
 
     for filename in pdf_files:
+        if filename == today_str:
+            continue
+            
         file_path = os.path.join(target_folder, filename)
-        print(f"\nScanning PDF: {filename}...")
+        print(f"Scanning: {filename}...")
         
-        doc_id = extract_id_from_pdf(file_path)
+        doc_id = extract_id_from_pdf(file_path, filename)
         
         if doc_id:
             new_filename = f"{doc_id}.pdf"
-            new_file_path = os.path.join(target_folder, new_filename)
+            new_file_path = os.path.join(output_folder, new_filename)
             
-            if not os.path.exists(new_file_path):
-                os.rename(file_path, new_file_path)
-                print(f"--> SUCCESS: Renamed to -> {new_filename}")
-            else:
-                print(f"--> SKIPPED: {new_filename} already exists.")
+            counter = 1
+            while os.path.exists(new_file_path):
+                new_filename = f"{doc_id}_{counter}.pdf"
+                new_file_path = os.path.join(output_folder, new_filename)
+                counter += 1
+                
+            os.rename(file_path, new_file_path)
+            print(f"--> SUCCESS: Moved & Renamed to -> {today_str}/{new_filename}\n")
         else:
-            print(f"--> FAILED: No valid ID pattern found in this document.")
+            print(f"--> FAILED: No valid ID found in this file.\n")
+            
+    print("All single documents processed successfully.")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -108,6 +118,5 @@ if __name__ == "__main__":
     else:
         folder_to_process = "./"
         
-    process_and_rename_pdfs(folder_to_process)
-    print("\nProcessing complete.")
+    main(folder_to_process)
     os.system("pause")
