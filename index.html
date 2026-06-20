@@ -150,6 +150,47 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
   pre { white-space: pre-wrap !important; word-break: break-word !important; overflow-x: hidden !important; font-size: 0.72rem !important; padding: 1rem !important; line-height: 1.65 !important; }
   pre code { white-space: pre-wrap !important; word-break: break-word !important; }
 }
+
+/* ── Terminal animation ── */
+.terminal-window {
+  background: #0a0a0c;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+}
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.7rem 1rem;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.term-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; opacity: 0.85; }
+.term-title { margin-left: 10px; font-size: 0.78rem; color: #64748b; font-family: 'Courier New', monospace; }
+.term-body {
+  padding: 1.3rem 1.4rem 1.5rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.82rem;
+  line-height: 1.85;
+  min-height: 220px;
+  color: #94a3b8;
+}
+.term-line { opacity: 0; white-space: pre-wrap; }
+.term-line.show { opacity: 1; }
+.term-prompt { color: #64748b; }
+.term-ok { color: #6ee7b7; }
+.term-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  background: #e2e8f0;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: term-blink 1s step-end infinite;
+}
+@keyframes term-blink { 50% { opacity: 0; } }
 </style>
 </head>
 <body>
@@ -181,18 +222,17 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
           <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
         </div>
 
-        <!-- NEW: one-click install zip download -->
-        <!--<div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.6rem;" class="hero-cta-row hero-dl-wrap">
-          <a href="AutomationTools_Install.zip" download class="btn-hero-dl">
-            <i class="fas fa-file-archive"></i>
-            Download All Scripts
-            <span style="opacity:0.45; font-size:0.78rem;">.zip</span>
+        <!-- Browse scripts CTA -->
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.6rem;" class="hero-cta-row hero-dl-wrap">
+          <a href="#tab1" onclick="document.querySelector('.browser-section').scrollIntoView({behavior:'smooth'}); return false;" class="btn-hero-dl">
+            <i class="fas fa-laptop-code"></i>
+            Browse Scripts
           </a>
           <span class="hero-dl-hint">
-            <i class="fas fa-terminal" style="font-size:0.75rem;"></i>
-            includes install.bat &middot; run once, macros ready
+            <i class="fas fa-info-circle" style="font-size:0.75rem;"></i>
+            VBA macros need a quick manual setup &middot; see install guide below
           </span>
-        </div> -->
+        </div>
 
       </div>
       <div class="hero-interactive-space" id="hero-trigger"></div>
@@ -475,26 +515,22 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
         </div>
 
         <!-- Send To shortcut tip -->
-        <div style="margin-top:1.5rem; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1.4rem 1.6rem;">
+        <div style="margin-top:1.5rem;">
           <h4 style="font-weight:400; color:#fff; display:flex; align-items:center; gap:9px; margin-bottom:0.7rem;">
             <i class="fas fa-bolt" style="color:#64748b;"></i> Send To shortcut <span style="color:#64748b; font-size:0.78rem; font-weight:300;">(set up automatically)</span>
           </h4>
           <p style="font-size:0.8rem; color:#64748b; margin-bottom:1rem; line-height:1.6;">
             AutoRename.bat sets up the Windows Send To shortcut for you in Step 02 — nothing to configure by hand.
           </p>
-          <div style="display:flex; flex-direction:column; gap:0.55rem;">
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
-              <span style="color:#475569; min-width:20px; font-weight:500;">1.</span>
-              <span style="color:#94a3b8;">Right-click any folder containing your PDFs</span>
+
+          <div class="terminal-window">
+            <div class="term-bar">
+              <span class="term-dot" style="background:#ff5f57;"></span>
+              <span class="term-dot" style="background:#febc2e;"></span>
+              <span class="term-dot" style="background:#28c840;"></span>
+              <span class="term-title">Send To &middot; AutoRename</span>
             </div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
-              <span style="color:#475569; min-width:20px; font-weight:500;">2.</span>
-              <span style="color:#94a3b8;">Navigate to <strong style="color:#e2e8f0;">Send to</strong> → select <strong style="color:#e2e8f0;">AutoRename</strong></span>
-            </div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
-              <span style="color:#475569; min-width:20px; font-weight:500;">✓</span>
-              <span style="color:#6ee7b7; font-weight:500;">Done!</span><span style="color:#94a3b8;">&nbsp;Check your folder for the renamed PDF files</span>
-            </div>
+            <div class="term-body" id="term-body-sendto"></div>
           </div>
         </div>
 
@@ -663,29 +699,39 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
 </section>
 <section style="padding: 5rem 0;" class="setup-section">
   <div class="container">
-    <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">Install guide <span style="color:#64748b;">one click setup</span></h2>
-    <p style="text-align: center; margin-bottom: 3rem; color:#64748b;">Extract the zip and run the installer — all 3 macros land in PERSONAL.XLSB automatically.</p>
+    <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 2rem;">Install guide <span style="color:#64748b;">manual setup</span></h2>
+    <p style="text-align: center; margin-bottom: 3rem; color:#64748b;">Add each macro to your Personal Macro Workbook — six quick steps, one-time setup.</p>
 
     <div class="setup-steps" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; max-width: 960px; margin: 0 auto;">
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">01</span>
-        Download the zip<br>
-        <span style="font-size:0.85rem; color:#64748b;">Click <em>Download All Scripts</em> above</span>
+        Create PERSONAL.XLSB<br>
+        <span style="font-size:0.85rem; color:#64748b;">Excel → <em>Developer</em> tab → record a dummy macro, then stop recording — this creates your Personal Macro Workbook</span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">02</span>
-        Extract all files<br>
-        <span style="font-size:0.85rem; color:#64748b;">Right-click the zip → <em>Extract All</em> — keep all files in the same folder</span>
+        Open VB Editor<br>
+        <span style="font-size:0.85rem; color:#64748b;">Alt+F11 → right-click PERSONAL.XLSB → <em>Insert → Module</em>, one new module for each macro</span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">03</span>
-        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install_All_Vba_Codes.bat</code><br>
-        <span style="font-size:0.85rem; color:#64748b;">Right-click → <em>Run as administrator</em></span>
+        Copy the code<br>
+        <span style="font-size:0.85rem; color:#64748b;">Download each script below → copy the VBA code → paste into its own module</span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">04</span>
-        Done &mdash; open any Excel file<br>
-        <span style="font-size:0.85rem; color:#64748b;">Alt+F8 → pick a macro → Run</span>
+        Save<br>
+        <span style="font-size:0.85rem; color:#64748b;">Ctrl+S inside the VB Editor — keep file type as .XLSB</span>
+      </div>
+      <div class="step-card step animate-card">
+        <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">05</span>
+        Restart Excel<br>
+        <span style="font-size:0.85rem; color:#64748b;">Close and reopen Excel so PERSONAL.XLSB loads with the new macros</span>
+      </div>
+      <div class="step-card step animate-card">
+        <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">06</span>
+        Check it works<br>
+        <span style="font-size:0.85rem; color:#64748b;">Alt+F8 → your macros should be listed → select one → Run</span>
       </div>
     </div>
 
@@ -697,7 +743,7 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
           <span class="term-dot" style="background:#ff5f57;"></span>
           <span class="term-dot" style="background:#febc2e;"></span>
           <span class="term-dot" style="background:#28c840;"></span>
-          <span class="term-title">Excel Multi-Macro Auto-Installer</span>
+          <span class="term-title">PERSONAL.XLSB — VB Editor</span>
         </div>
         <!-- output lines -->
         <div class="term-body" id="term-body"></div>
@@ -706,7 +752,7 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       <div style="margin-top:1.2rem; padding:1rem 1.2rem; background:rgba(255,255,255,0.02); border-radius:0.8rem; border:1px solid rgba(255,255,255,0.04);">
         <span style="font-size:0.78rem; color:#475569; display:flex; align-items:flex-start; gap:8px;">
           <i class="fas fa-info-circle" style="margin-top:2px; flex-shrink:0;"></i>
-          Windows may show a SmartScreen prompt because the .bat file isn't signed. Click <em style="color:#94a3b8;">More info → Run anyway</em> to proceed — the installer only writes to your Excel XLSTART folder and registry security keys.
+          If the Developer tab isn't visible: File → Options → Customize Ribbon → check <em style="color:#94a3b8;">Developer</em>. Macros only need to be added once — they stay available in every workbook you open afterward.
         </span>
       </div>
     </div>
@@ -975,6 +1021,100 @@ if(window.innerWidth<768){ headerObjGroup.position.set(0,-1.2,-3); coreLight.pos
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',injectBreaks);}else{injectBreaks();}
   window.addEventListener('resize',injectBreaks);
+})();
+
+// ── Terminal typing animation (reusable for multiple terminals) ──
+(function () {
+  function initTerminal(elementId, lines) {
+    const termBody = document.getElementById(elementId);
+    if (!termBody) return;
+
+    let lineIndex = 0;
+    let started = false;
+
+    function typeLine(line, container, onDone) {
+      const el = document.createElement('div');
+      el.className = 'term-line show' + (line.cls ? ' ' + line.cls : '');
+      container.appendChild(el);
+
+      if (!line.text) { onDone(); return; }
+
+      let i = 0;
+      const speed = 14;
+      function step() {
+        el.textContent = line.text.slice(0, i);
+        i++;
+        if (i <= line.text.length) {
+          setTimeout(step, speed);
+        } else {
+          onDone();
+        }
+      }
+      step();
+    }
+
+    function runSequence() {
+      termBody.innerHTML = '';
+      const cursorHost = document.createElement('span');
+      cursorHost.className = 'term-cursor';
+
+      function next() {
+        if (lineIndex >= lines.length) {
+          termBody.appendChild(cursorHost);
+          return;
+        }
+        typeLine(lines[lineIndex], termBody, () => {
+          lineIndex++;
+          setTimeout(next, lines[lineIndex - 1].text ? 220 : 80);
+        });
+      }
+      next();
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !started) {
+          started = true;
+          runSequence();
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    observer.observe(termBody);
+  }
+
+  initTerminal('term-body', [
+    { text: 'Developer tab \u2192 Record Macro \u2192 Stop Recording', cls: 'term-prompt' },
+    { text: '\u2713 PERSONAL.XLSB created', cls: 'term-ok' },
+    { text: '' },
+    { text: 'Alt+F11 \u2192 Insert \u2192 Module', cls: 'term-prompt' },
+    { text: '\u2713 Module1, Module2, Module3 added', cls: 'term-ok' },
+    { text: '' },
+    { text: 'Pasting VBA code into each module...', cls: 'term-prompt' },
+    { text: '\u2713 CalculateReceivings()', cls: 'term-ok' },
+    { text: '\u2713 GenerateDailyReport()', cls: 'term-ok' },
+    { text: '\u2713 GenerateBioTime()', cls: 'term-ok' },
+    { text: '' },
+    { text: 'Ctrl+S \u2192 Keep as .XLSB \u2192 Restart Excel', cls: 'term-prompt' },
+    { text: '\u2713 Macros ready \u2014 Alt+F8 to run', cls: 'term-ok' },
+  ]);
+
+  initTerminal('term-body-sendto', [
+    { text: 'AutoRename.bat \u2192 installing Python...', cls: 'term-prompt' },
+    { text: '\u2713 Python + libraries installed', cls: 'term-ok' },
+    { text: '\u2713 rename_docs.py copied to safe location', cls: 'term-ok' },
+    { text: '' },
+    { text: 'Registering Windows Send To shortcut...', cls: 'term-prompt' },
+    { text: '\u2713 AutoRename added to Send To menu', cls: 'term-ok' },
+    { text: '' },
+    { text: 'Right-click PDF folder \u2192 Send to \u2192 AutoRename', cls: 'term-prompt' },
+    { text: '\u2713 Scanning PDFs via OCR...', cls: 'term-ok' },
+    { text: '\u2713 CN-AB-001.pdf renamed', cls: 'term-ok' },
+    { text: '\u2713 PO48213.pdf renamed', cls: 'term-ok' },
+    { text: '' },
+    { text: 'Done \u2014 files renamed in place', cls: 'term-prompt' },
+  ]);
 })();
 </script>
 </body>
