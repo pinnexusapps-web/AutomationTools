@@ -182,15 +182,15 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
         </div>
 
         <!-- NEW: one-click install zip download -->
-        <!-- <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.6rem;" class="hero-cta-row hero-dl-wrap">
-          <a href="AutomationTools_Installer.zip" download class="btn-hero-dl"> <!-- AutomationTools_Installer.zip --/>
+        <!--<div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.6rem;" class="hero-cta-row hero-dl-wrap">
+          <a href="AutomationTools_Install.zip" download class="btn-hero-dl">
             <i class="fas fa-file-archive"></i>
-            Download Scripts Installer
+            Download All Scripts
             <span style="opacity:0.45; font-size:0.78rem;">.zip</span>
           </a>
           <span class="hero-dl-hint">
             <i class="fas fa-terminal" style="font-size:0.75rem;"></i>
-            includes installer.bat &middot; run once, macros ready
+            includes install.bat &middot; run once, macros ready
           </span>
         </div> -->
 
@@ -434,62 +434,68 @@ def process_and_rename_pdfs(folder):
 process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
 
         <!-- Python setup steps -->
-        <div class="mb-12 class bg-neutral-900 border border-neutral-800 rounded-xl p-6">
-            <div class="text-lg font-semibold mb-6 flex items-center gap-2">
-                <span class="text-neutral-400">☑</span> Python setup <span class="text-sm font-normal text-neutral-500">(one-time)</span>
+        <div style="margin-top: 2rem;">
+          <h3 style="font-weight:400; color:#fff; font-size:1.1rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-check-square" style="color:#64748b;"></i> Setup <span style="color:#64748b; font-size:0.85rem; font-weight:300;">(one-time)</span>
+          </h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:1rem;">
+
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05); display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">01 &nbsp; Download both files</span>
+                <span style="font-size:0.82rem; color:#64748b;">Download <strong style="color:#e2e8f0;">AutoRename.bat</strong> and <strong style="color:#e2e8f0;">rename_docs.py</strong> and keep them in the same folder — no zip needed</span>
+              </div>
+              <div style="display:flex; gap:0.5rem; margin-top:0.9rem; flex-wrap:wrap;">
+                <a href="AutoRename.bat" download class="btn-outline" style="font-size:0.78rem; padding:0.4rem 0.9rem;">
+                  <i class="fas fa-download"></i> AutoRename.bat
+                </a>
+                <a href="rename_docs.py" download class="btn-outline" style="font-size:0.78rem; padding:0.4rem 0.9rem;">
+                  <i class="fas fa-download"></i> rename_docs.py
+                </a>
+              </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-neutral-950 border border-neutral-900 rounded-xl p-5 flex flex-col justify-between">
-                    <div>
-                        <div class="font-medium text-sm mb-2 text-neutral-200">01 Download Package</div>
-                        <p class="text-xs text-neutral-400 leading-relaxed">
-                            Download the <strong class="text-neutral-200 font-medium">AutoRename.zip</strong> package from our web app and extract it to any folder on your computer.
-                        </p>
-                    </div>
-                    <a href="#" class="mt-4 inline-flex items-center justify-center gap-2 bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-xs font-medium py-2 px-4 rounded-lg transition-colors text-neutral-300">
-                        <span>📥</span> Download Package
-                    </a>
-                </div>
-
-                <div class="bg-neutral-950 border border-neutral-900 rounded-xl p-5">
-                    <div class="font-medium text-sm mb-2 text-neutral-200">02 Run Installer</div>
-                    <p class="text-xs text-neutral-400 leading-relaxed mb-3">
-                        Double-click on <strong class="text-neutral-200 font-medium">Setup.bat</strong>. This will automatically check/install Python and all required AI components.
-                    </p>
-                    <div class="font-mono text-[11px] bg-neutral-900 border border-neutral-800 px-2 py-1.5 rounded text-neutral-400 select-all text-center">
-                        Double-click Setup.bat
-                    </div>
-                </div>
-
-                <div class="bg-neutral-950 border border-neutral-900 rounded-xl p-5">
-                    <div class="font-medium text-sm mb-2 text-neutral-200">03 Ready to Go</div>
-                    <p class="text-xs text-neutral-400 leading-relaxed">
-                        Once completed, the system is deployed safely in background. <strong class="text-neutral-200 font-medium">You can now delete the downloaded ZIP/Folder</strong> if you want.
-                    </p>
-                </div>
-
-                <div class="bg-neutral-950 border border-neutral-900 rounded-xl p-5">
-                    <div class="font-medium text-sm mb-2 text-neutral-200">04 Direct Drag (Optional)</div>
-                    <p class="text-xs text-neutral-400 leading-relaxed">
-                        You can easily drag and drop any PDF folder directly onto the <strong class="text-neutral-200 font-medium">AutoRename.bat</strong> file to start processing instantly.
-                    </p>
-                </div>
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">02 &nbsp; Run AutoRename.bat once</span>
+              <span style="font-size:0.82rem; color:#64748b;">Double-click <strong style="color:#e2e8f0;">AutoRename.bat</strong>. It checks/installs Python, installs the required libraries, copies <strong style="color:#e2e8f0;">rename_docs.py</strong> to a safe location, and sets up the Send To shortcut — all automatically</span>
+              <code style="display:block; background:rgba(255,255,255,0.04); border-radius:6px; padding:0.6rem 0.9rem; font-size:0.78rem; color:#cbd5e1; margin-top:0.7rem; text-align:center;">Double-click AutoRename.bat</code>
             </div>
 
-            <div class="mt-6 border-t border-neutral-800/50 pt-6">
-                <div class="text-sm font-medium mb-3 flex items-center gap-2 text-neutral-200">
-                    <span>⚡</span> Faster way — Send To shortcut <span class="text-xs font-normal text-neutral-500">(Automated)</span>
-                </div>
-                <p class="text-xs text-neutral-500 mb-4 leading-relaxed">
-                    The installer automatically configures the Windows SendTo shortcut for you during Step 02! No manual file copying required.
-                </p>
-                <ol class="list-decimal list-inside text-xs text-neutral-400 space-y-2">
-                    <li>Right-click any folder containing your single PDFs.</li>
-                    <li>Navigate to <strong class="text-neutral-300 font-medium">Send to</strong> &rarr; Select <strong class="text-neutral-300 font-medium">AutoRename</strong>.</li>
-                    <li><strong class="text-emerald-400 font-medium">Done!</strong> Check your folder for the newly organized and renamed files with execution times.</li>
-                </ol>
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">03 &nbsp; Setup complete</span>
+              <span style="font-size:0.82rem; color:#64748b;">Python, libraries, and the script are now installed in a safe location and the <strong style="color:#e2e8f0;">Send To</strong> shortcut is ready. You won't need to run this step again</span>
             </div>
+
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">04 &nbsp; Use it</span>
+              <span style="font-size:0.82rem; color:#64748b;">Right-click any PDF folder → <em style="color:#94a3b8;">Send to</em> → <em style="color:#94a3b8;">AutoRename</em> — files rename instantly</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Send To shortcut tip -->
+        <div style="margin-top:1.5rem; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1.4rem 1.6rem;">
+          <h4 style="font-weight:400; color:#fff; display:flex; align-items:center; gap:9px; margin-bottom:0.7rem;">
+            <i class="fas fa-bolt" style="color:#64748b;"></i> Send To shortcut <span style="color:#64748b; font-size:0.78rem; font-weight:300;">(set up automatically)</span>
+          </h4>
+          <p style="font-size:0.8rem; color:#64748b; margin-bottom:1rem; line-height:1.6;">
+            AutoRename.bat sets up the Windows Send To shortcut for you in Step 02 — nothing to configure by hand.
+          </p>
+          <div style="display:flex; flex-direction:column; gap:0.55rem;">
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
+              <span style="color:#475569; min-width:20px; font-weight:500;">1.</span>
+              <span style="color:#94a3b8;">Right-click any folder containing your PDFs</span>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
+              <span style="color:#475569; min-width:20px; font-weight:500;">2.</span>
+              <span style="color:#94a3b8;">Navigate to <strong style="color:#e2e8f0;">Send to</strong> → select <strong style="color:#e2e8f0;">AutoRename</strong></span>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
+              <span style="color:#475569; min-width:20px; font-weight:500;">✓</span>
+              <span style="color:#6ee7b7; font-weight:500;">Done!</span><span style="color:#94a3b8;">&nbsp;Check your folder for the renamed PDF files</span>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -500,13 +506,88 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       <div class="script-card">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h3 style="font-weight: 500; color: #fff;">QR Forge <span class="badge">Android</span></h3>
-            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Generate &amp; scan QR codes &middot; batch export &middot; fully offline &middot; no ads</p>
+            <span class="badge" style="margin-bottom:0.6rem;"><i class="fab fa-android"></i> Android 8+</span>
+            <h3 style="font-weight: 500; color: #fff;">QR Forge <span class="badge">v2.0</span></h3>
+            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Smart QR generator for warehouse ops &mdash; offline, autocomplete, batch print &amp; PDF export</p>
           </div>
         </div>
 
-        <!-- APK cards -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:1rem; margin-top:1.8rem;">
+        <!-- Smart keyboard demo strip -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1.2rem 1.5rem; margin-top:1.5rem; display:flex; flex-wrap:wrap; align-items:center; gap:1.5rem;">
+          <div>
+            <i class="fas fa-keyboard" style="color:#64748b; margin-right:8px;"></i>
+            <span style="color:#fff; font-size:0.9rem; font-weight:500;">Smart keyboard + auto-dash</span>
+            <p style="font-size:0.82rem; color:#64748b; margin-top:0.3rem;">Alphanumeric → numpad switch automatically &middot; formats <em style="color:#94a3b8;">AA0-00-000</em> or <em style="color:#94a3b8;">A-00</em> on the fly</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:0.6rem; padding:0.6rem 1.1rem; font-family:'Courier New',monospace; font-size:0.9rem; color:#a5f3c3; white-space:nowrap;">
+            AA0-12-345 &nbsp;<i class="fas fa-qrcode" style="color:#fff;"></i>
+          </div>
+        </div>
+
+        <!-- QR code types -->
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:1rem; padding:1.2rem 1.5rem; margin-top:1rem; display:flex; flex-wrap:wrap; gap:2rem;">
+          <div><i class="fas fa-archive" style="color:#64748b; margin-right:6px;"></i><strong style="color:#e2e8f0;">Shelves</strong><span style="color:#64748b; font-size:0.85rem; margin-left:6px;">AA0-00-000 &nbsp;(2 letters + 6 digits)</span></div>
+          <div><i class="fas fa-truck" style="color:#64748b; margin-right:6px;"></i><strong style="color:#e2e8f0;">Dispatch</strong><span style="color:#64748b; font-size:0.85rem; margin-left:6px;">A-00 &nbsp;(letter + 2 digits)</span></div>
+        </div>
+
+        <!-- Feature grid -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; margin-top:1.5rem;">
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:0.9rem; padding:1.1rem 1.2rem;">
+            <i class="fas fa-magic" style="color:#64748b; margin-bottom:0.5rem; display:block;"></i>
+            <span style="color:#fff; font-size:0.88rem; font-weight:500;">Instant QR preview</span>
+            <p style="font-size:0.8rem; color:#64748b; margin-top:0.3rem;">Updates the moment code is complete — live rendering</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:0.9rem; padding:1.1rem 1.2rem;">
+            <i class="fas fa-history" style="color:#64748b; margin-bottom:0.5rem; display:block;"></i>
+            <span style="color:#fff; font-size:0.88rem; font-weight:500;">Autocomplete + 200 history</span>
+            <p style="font-size:0.8rem; color:#64748b; margin-top:0.3rem;">Dropdown from previous entries, speeds up repeat scanning</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:0.9rem; padding:1.1rem 1.2rem;">
+            <i class="fas fa-print" style="color:#64748b; margin-bottom:0.5rem; display:block;"></i>
+            <span style="color:#fff; font-size:0.88rem; font-weight:500;">Multi-select batch print</span>
+            <p style="font-size:0.8rem; color:#64748b; margin-top:0.3rem;">Long-press to select &amp; print multiple QR codes at once</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:0.9rem; padding:1.1rem 1.2rem;">
+            <i class="fas fa-wifi" style="color:#64748b; margin-bottom:0.5rem; display:block;"></i>
+            <span style="color:#fff; font-size:0.88rem; font-weight:500;">WiFi printing</span>
+            <p style="font-size:0.8rem; color:#64748b; margin-top:0.3rem;">Native system dialog — works with any network printer</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:0.9rem; padding:1.1rem 1.2rem;">
+            <i class="fas fa-file-pdf" style="color:#64748b; margin-bottom:0.5rem; display:block;"></i>
+            <span style="color:#fff; font-size:0.88rem; font-weight:500;">PDF export + A4 layout</span>
+            <p style="font-size:0.8rem; color:#64748b; margin-top:0.3rem;">Adjustable QR size (0.6″–3.0″) with live preview &amp; auto grid</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:0.9rem; padding:1.1rem 1.2rem;">
+            <i class="fas fa-share-alt" style="color:#64748b; margin-bottom:0.5rem; display:block;"></i>
+            <span style="color:#fff; font-size:0.88rem; font-weight:500;">Share &amp; save PNG</span>
+            <p style="font-size:0.8rem; color:#64748b; margin-top:0.3rem;">Export to gallery or share via any installed app</p>
+          </div>
+        </div>
+
+        <!-- How to use steps -->
+        <div style="margin-top:1.5rem;">
+          <h3 style="font-weight:400; color:#fff; font-size:1rem; margin-bottom:1rem; color:#64748b;">How it works</h3>
+          <div style="display:flex; flex-wrap:wrap; gap:0.6rem;">
+            <span style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:40px; padding:0.35rem 0.9rem; font-size:0.8rem; color:#94a3b8;">1️⃣ Select type: Shelf / Dispatch</span>
+            <span style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:40px; padding:0.35rem 0.9rem; font-size:0.8rem; color:#94a3b8;">2️⃣ Type code → auto-format + suggestions</span>
+            <span style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:40px; padding:0.35rem 0.9rem; font-size:0.8rem; color:#94a3b8;">3️⃣ QR appears instantly</span>
+            <span style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:40px; padding:0.35rem 0.9rem; font-size:0.8rem; color:#94a3b8;">4️⃣ Save / print PNG, PDF or WiFi</span>
+            <span style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:40px; padding:0.35rem 0.9rem; font-size:0.8rem; color:#94a3b8;">5️⃣ History up to 200 records</span>
+          </div>
+        </div>
+
+        <!-- Tech stack badges -->
+        <div style="margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:0.5rem;">
+          <span class="badge"><i class="fas fa-check-circle"></i> Offline ready</span>
+          <span class="badge"><i class="fas fa-check-circle"></i> Auto-dash formatting</span>
+          <span class="badge"><i class="fas fa-check-circle"></i> Live QR render</span>
+          <span class="badge"><i class="fas fa-check-circle"></i> 200-item history</span>
+          <span class="badge"><i class="fas fa-check-circle"></i> PDF batch layouts</span>
+          <span class="badge"><i class="fas fa-cubes"></i> Flutter 3 &middot; Dart &middot; Material 3</span>
+        </div>
+
+        <!-- APK download cards -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:1rem; margin-top:2rem;">
 
           <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:1rem; padding:1.4rem;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.6rem;">
@@ -598,8 +679,8 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">03</span>
-        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install Codes.bat</code><br>
-        <span style="font-size:0.85rem; color:#64748b;">Double-click → <em>Click-Run</em></span>
+        Run <code style="font-size:0.8rem; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:5px; color:#e2e8f0;">Install_All_Vba_Codes.bat</code><br>
+        <span style="font-size:0.85rem; color:#64748b;">Right-click → <em>Run as administrator</em></span>
       </div>
       <div class="step-card step animate-card">
         <span style="font-weight:500; color:#fff; font-size:1.2rem; display:block; margin-bottom:0.5rem;">04</span>
