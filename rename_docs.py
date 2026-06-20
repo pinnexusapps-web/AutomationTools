@@ -7,8 +7,10 @@ import numpy as np
 import cv2
 from datetime import datetime
 
+# EasyOCR Reader (English පමණක් load වේ)
 reader = easyocr.Reader(['en'])
 
+# Regex Patterns
 DATE_PATTERN = r"\b\d{1,2}[-/\s]\d{1,2}[-/\s]\d{2,4}\b"
 TIME_PATTERN = r"\b\d{1,2}:\d{2}(:\d{2})?\b"
 
@@ -17,6 +19,7 @@ PO_STANDARD_PATTERN = r"(P[O|0][0-9]{7,8})"
 PO_CUT_PATTERN = r"([O|0][0-9]{7})"
 
 def clean_and_extract_id(page_text, filename):
+    # මුල් වචන 12 පමණක් ලබා ගනී
     top_rows = page_text[:12]
     full_text = " ".join(top_rows).upper()
     
@@ -25,10 +28,12 @@ def clean_and_extract_id(page_text, filename):
     full_text = re.sub(DATE_PATTERN, "", full_text)
     full_text = re.sub(TIME_PATTERN, "", full_text)
     
+    # 1. Standard CN Pattern
     cn_match = re.search(CN_PATTERN, full_text)
     if cn_match:
         return cn_match.group(1).replace(" ", "")
         
+    # 2. Standard PO Pattern
     po_match = re.search(PO_STANDARD_PATTERN, full_text)
     if po_match:
         clean_po = po_match.group(1).replace(" ", "")
@@ -36,6 +41,7 @@ def clean_and_extract_id(page_text, filename):
             clean_po = "PO" + clean_po[2:]
         return clean_po
         
+    # 3. Border කැපී ඉතිරි වූ 'O' + ඉලක්කම් 7 රටාව
     po_cut_match = re.search(PO_CUT_PATTERN, full_text)
     if po_cut_match:
         captured_id = po_cut_match.group(1).replace(" ", "")
@@ -54,9 +60,15 @@ def extract_id_from_pdf(pdf_path, filename):
         mat = fitz.Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
         
+        # 🖼️ IMAGE CROPPING (Top 1/3 part only):
+        # පින්තූරයේ සම්පූර්ණ උසින් 1/3 ක් පමණක් වෙන් කර ගනී (Processing Area Optimization)
         img_data = np.frombuffer(pix.samples, dtype=np.uint8).reshape((pix.h, pix.w, pix.n))
-        img_rgb = cv2.cvtColor(img_data, cv2.COLOR_BGR2RGB)
+        crop_height = int(pix.h / 3)
+        cropped_img = img_data[0:crop_height, 0:pix.w]
         
+        img_rgb = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)
+        
+        # EasyOCR එකට දෙන්නේ කපපු කුඩා පින්තූරය පමණි
         page_text = reader.readtext(img_rgb, detail=0)
         doc.close()
         
@@ -88,6 +100,18 @@ def main(target_folder):
 
     for filename in pdf_files:
         if filename == today_str:
+            continue
+            
+        # ⏱️ FAST SKIP: ෆයිල් එකේ නම දැනටමත් PO හෝ CN රටාවට තිබේ නම් ස්කෑන් නොකර Skip කරයි
+        name_upper = filename.upper()
+        if name_upper.startswith("PO") or name_upper.startswith("CN"):
+            print(f"Skipping: {filename} (Already renamed)")
+            
+            # දැනටමත් rename වී ඇති ෆයිල් එකද අද දවසේ ෆෝල්ඩරය තුළට Move කිරීම
+            src_path = os.path.join(target_folder, filename)
+            dst_path = os.path.join(output_folder, filename)
+            if not os.path.exists(dst_path):
+                os.rename(src_path, dst_path)
             continue
             
         file_path = os.path.join(target_folder, filename)
