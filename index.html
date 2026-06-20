@@ -434,61 +434,60 @@ def process_and_rename_pdfs(folder):
 process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
 
         <!-- Python setup steps -->
-        <div style="margin-top: 2rem;">
-          <h3 style="font-weight:400; color:#fff; font-size:1.1rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:8px;">
-            <i class="fas fa-python" style="color:#64748b;"></i> Python setup <span style="color:#64748b; font-size:0.85rem; font-weight:300;">(one-time)</span>
-          </h3>
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:1rem;">
-
-            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
-              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">01 &nbsp; Install Python</span>
-              <span style="font-size:0.82rem; color:#64748b;">Download from <em style="color:#94a3b8;">python.org</em> → check <strong style="color:#e2e8f0;">"Add Python to PATH"</strong> during install</span>
-              <a href="https://www.python.org/ftp/python/pymanager/python-manager-26.2.msix" class="btn-outline" style="margin-top:0.9rem; font-size:0.8rem; padding:0.45rem 1rem;" target="_blank" rel="noopener">
-                <i class="fas fa-download"></i> Download Python
-              </a>
+        <div class="setup-section">
+            <div class="section-title">
+                <i class="content-icon">🗂️</i> Python setup (one-time)
             </div>
 
-            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
-              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">02 &nbsp; Install libraries</span>
-              <code style="display:block; background:rgba(255,255,255,0.04); border-radius:6px; padding:0.6rem 0.9rem; font-size:0.78rem; color:#cbd5e1; margin-top:0.4rem; word-break:break-all;">python -m pip install pymupdf easyocr opencv-python numpy</code>
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">01 Download Package</div>
+                    <p class="step-desc">
+                        Download the <strong>AutoRename.zip</strong> package from our web app and extract it to any folder on your computer.
+                    </p>
+                    <a href="#" class="download-btn">
+                        <i>📥</i> Download Package
+                    </a>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">02 Run Installer</div>
+                    <p class="step-desc">
+                        Double-click on <strong>Setup.bat</strong>. This will automatically check/install Python, required AI components, and secure the system.
+                    </p>
+                    <div class="code-snippet">
+                        Double-click Setup.bat
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">03 Ready to Go</div>
+                    <p class="step-desc">
+                        Once the setup is completed, the system is deployed safely. <strong>You can now delete the downloaded ZIP/Folder</strong> if you want.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">04 Direct Drag (Optional)</div>
+                    <p class="step-desc">
+                        You can easily drag and drop any PDF folder directly onto the <strong>AutoRename.bat</strong> file to start processing instantly.
+                    </p>
+                </div>
             </div>
 
-            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
-              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">03 &nbsp; Place the files</span>
-              <span style="font-size:0.82rem; color:#64748b;">Put <em style="color:#94a3b8;">rename_docs.py</em> and <em style="color:#94a3b8;">AutoRename.bat</em> in the same folder</span>
+            <div class="faster-way-container">
+                <div class="faster-way-title">
+                    <i>⚡</i> Faster way — Send To shortcut (Automated)
+                </div>
+                <p class="faster-way-desc" style="margin-bottom: 15px; color: #aaa;">
+                    The installer automatically configures Windows SendTo shortcut for you during Step 02! No manual file copying required.
+                </p>
+                <ol class="faster-steps">
+                    <li>Right-click any folder containing your single PDFs.</li>
+                    <li>Navigate to <strong>Send to</strong> &rarr; Select <strong>AutoRename</strong>.</li>
+                    <li><strong>Done!</strong> Check your folder for the newly organized and renamed files with execution times.</li>
+                </ol>
             </div>
-
-            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
-              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">04 &nbsp; Run</span>
-              <span style="font-size:0.82rem; color:#64748b;">Drag a PDF folder onto <em style="color:#94a3b8;">AutoRename.bat</em> — or use the Send To shortcut below</span>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Send To shortcut tip -->
-        <div style="margin-top:1.5rem; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1.4rem 1.6rem;">
-          <h4 style="font-weight:400; color:#fff; display:flex; align-items:center; gap:9px; margin-bottom:0.9rem;">
-            <i class="fas fa-bolt" style="color:#64748b;"></i> Faster way — Send To shortcut
-          </h4>
-          <div style="display:flex; flex-direction:column; gap:0.55rem;">
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
-              <span style="color:#475569; min-width:20px; font-weight:500;">1.</span>
-              <span style="color:#94a3b8;">Copy <code style="background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:0.8rem;">AutoRename.bat</code></span>
-            </div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
-              <span style="color:#475569; min-width:20px; font-weight:500;">2.</span>
-              <span style="color:#94a3b8;">Press <code style="background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:0.8rem;">Win + R</code> → type <code style="background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:0.8rem;">shell:sendto</code> → Enter</span>
-            </div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
-              <span style="color:#475569; min-width:20px; font-weight:500;">3.</span>
-              <span style="color:#94a3b8;">Inside the opened folder → Right-click → <em>Paste Shortcut</em></span>
-            </div>
-            <div style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem;">
-              <span style="color:#475569; min-width:20px; font-weight:500;">✓</span>
-              <span style="color:#e2e8f0;">Now: Right-click any PDF folder → <em>Send to</em> → <em>AutoRename</em> — done</span>
-            </div>
-          </div>
         </div>
 
       </div>
