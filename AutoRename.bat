@@ -34,11 +34,9 @@ python -m pip install pymupdf easyocr numpy opencv-python
 
 echo.
 echo Deploying script to a safe location...
-:: C:\ProgramData ඇතුළේ ආරක්ෂිත ෆෝල්ඩර් එකක් සෑදීම
 SET "SAFE_DIR=%ProgramData%\AutoRename"
 if not exist "%SAFE_DIR%" mkdir "%SAFE_DIR%"
 
-:: දැනට මේ Setup.bat එක තියෙන තැනින් Python script එක safe තැනට කොපි කිරීම
 SET "CURRENT_DIR=%~dp0"
 if exist "%CURRENT_DIR%rename_docs.py" (
     copy /Y "%CURRENT_DIR%rename_docs.py" "%SAFE_DIR%\rename_docs.py" >nul
@@ -55,7 +53,6 @@ SET "PY_SCRIPT_PATH=%SAFE_DIR%\rename_docs.py"
 SET "SENDTO_DIR=%APPDATA%\Microsoft\Windows\SendTo"
 SET "BAT_SHORTCUT=%SENDTO_DIR%\AutoRename.bat"
 
-:: SendTo ඇතුළත රන් වන බැට් එක නිර්මාණය කිරීම (Safe path එකට ලින්ක් කරමින්)
 (
 echo @echo off
 echo python "%PY_SCRIPT_PATH%" "%%~1"
@@ -64,12 +61,8 @@ echo python "%PY_SCRIPT_PATH%" "%%~1"
 echo.
 echo ===================================================
 echo SETUP COMPLETED SUCCESSFULLY!
-echo.
 echo settings are deployed safely in C:\ProgramData\AutoRename
 echo You can now delete the downloaded zip/folder if you want.
-echo.
-echo How to use:
-echo Right-Click any folder containing PDFs -^> Send To -^> AutoRename
 echo ===================================================
 echo.
 pause
