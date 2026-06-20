@@ -434,58 +434,60 @@ def process_and_rename_pdfs(folder):
 process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
 
         <!-- Python setup steps -->
-        <div class="setup-section">
-            <div class="section-title">
-                <i class="content-icon">🗂️</i> Python setup (one-time)
+        <div class="mb-12 class bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+            <div class="text-lg font-semibold mb-6 flex items-center gap-2">
+                <span class="text-neutral-400">☑</span> Python setup <span class="text-sm font-normal text-neutral-500">(one-time)</span>
             </div>
 
-            <div class="steps-container">
-                <div class="step-card">
-                    <div class="step-number">01 Download Package</div>
-                    <p class="step-desc">
-                        Download the <strong>AutoRename.zip</strong> package from our web app and extract it to any folder on your computer.
-                    </p>
-                    <a href="#" class="download-btn">
-                        <i>📥</i> Download Package
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-neutral-950 border border-neutral-900 rounded-xl p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="font-medium text-sm mb-2 text-neutral-200">01 Download Package</div>
+                        <p class="text-xs text-neutral-400 leading-relaxed">
+                            Download the <strong class="text-neutral-200 font-medium">AutoRename.zip</strong> package from our web app and extract it to any folder on your computer.
+                        </p>
+                    </div>
+                    <a href="#" class="mt-4 inline-flex items-center justify-center gap-2 bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 text-xs font-medium py-2 px-4 rounded-lg transition-colors text-neutral-300">
+                        <span>📥</span> Download Package
                     </a>
                 </div>
 
-                <div class="step-card">
-                    <div class="step-number">02 Run Installer</div>
-                    <p class="step-desc">
-                        Double-click on <strong>Setup.bat</strong>. This will automatically check/install Python, required AI components, and secure the system.
+                <div class="bg-neutral-950 border border-neutral-900 rounded-xl p-5">
+                    <div class="font-medium text-sm mb-2 text-neutral-200">02 Run Installer</div>
+                    <p class="text-xs text-neutral-400 leading-relaxed mb-3">
+                        Double-click on <strong class="text-neutral-200 font-medium">Setup.bat</strong>. This will automatically check/install Python and all required AI components.
                     </p>
-                    <div class="code-snippet">
+                    <div class="font-mono text-[11px] bg-neutral-900 border border-neutral-800 px-2 py-1.5 rounded text-neutral-400 select-all text-center">
                         Double-click Setup.bat
                     </div>
                 </div>
 
-                <div class="step-card">
-                    <div class="step-number">03 Ready to Go</div>
-                    <p class="step-desc">
-                        Once the setup is completed, the system is deployed safely. <strong>You can now delete the downloaded ZIP/Folder</strong> if you want.
+                <div class="bg-neutral-950 border border-neutral-900 rounded-xl p-5">
+                    <div class="font-medium text-sm mb-2 text-neutral-200">03 Ready to Go</div>
+                    <p class="text-xs text-neutral-400 leading-relaxed">
+                        Once completed, the system is deployed safely in background. <strong class="text-neutral-200 font-medium">You can now delete the downloaded ZIP/Folder</strong> if you want.
                     </p>
                 </div>
 
-                <div class="step-card">
-                    <div class="step-number">04 Direct Drag (Optional)</div>
-                    <p class="step-desc">
-                        You can easily drag and drop any PDF folder directly onto the <strong>AutoRename.bat</strong> file to start processing instantly.
+                <div class="bg-neutral-950 border border-neutral-900 rounded-xl p-5">
+                    <div class="font-medium text-sm mb-2 text-neutral-200">04 Direct Drag (Optional)</div>
+                    <p class="text-xs text-neutral-400 leading-relaxed">
+                        You can easily drag and drop any PDF folder directly onto the <strong class="text-neutral-200 font-medium">AutoRename.bat</strong> file to start processing instantly.
                     </p>
                 </div>
             </div>
 
-            <div class="faster-way-container">
-                <div class="faster-way-title">
-                    <i>⚡</i> Faster way — Send To shortcut (Automated)
+            <div class="mt-6 border-t border-neutral-800/50 pt-6">
+                <div class="text-sm font-medium mb-3 flex items-center gap-2 text-neutral-200">
+                    <span>⚡</span> Faster way — Send To shortcut <span class="text-xs font-normal text-neutral-500">(Automated)</span>
                 </div>
-                <p class="faster-way-desc" style="margin-bottom: 15px; color: #aaa;">
-                    The installer automatically configures Windows SendTo shortcut for you during Step 02! No manual file copying required.
+                <p class="text-xs text-neutral-500 mb-4 leading-relaxed">
+                    The installer automatically configures the Windows SendTo shortcut for you during Step 02! No manual file copying required.
                 </p>
-                <ol class="faster-steps">
+                <ol class="list-decimal list-inside text-xs text-neutral-400 space-y-2">
                     <li>Right-click any folder containing your single PDFs.</li>
-                    <li>Navigate to <strong>Send to</strong> &rarr; Select <strong>AutoRename</strong>.</li>
-                    <li><strong>Done!</strong> Check your folder for the newly organized and renamed files with execution times.</li>
+                    <li>Navigate to <strong class="text-neutral-300 font-medium">Send to</strong> &rarr; Select <strong class="text-neutral-300 font-medium">AutoRename</strong>.</li>
+                    <li><strong class="text-emerald-400 font-medium">Done!</strong> Check your folder for the newly organized and renamed files with execution times.</li>
                 </ol>
             </div>
         </div>
