@@ -1,7 +1,7 @@
 import os
 import sys
 import re
-import time  # ⏱️ ගතවන කාලය මැනීම සඳහා
+import time
 import fitz  # PyMuPDF
 import easyocr
 import numpy as np
@@ -20,18 +20,17 @@ PO_STANDARD_PATTERN = r"(P[O|0][0-9]{7,8})"
 PO_CUT_PATTERN = r"([O|0][0-9]{7})"
 
 def clean_and_extract_id(page_text, filename):
-    top_rows = page_text[:12]
-    full_text = " ".join(top_rows).upper()
-    
-    print(f"   [OCR Text inside {filename}]: {full_text if full_text.strip() else '[No Text]'}")
+    full_text = " ".join(page_text).upper()
     
     full_text = re.sub(DATE_PATTERN, "", full_text)
     full_text = re.sub(TIME_PATTERN, "", full_text)
     
+    # 1. Standard CN Pattern
     cn_match = re.search(CN_PATTERN, full_text)
     if cn_match:
         return cn_match.group(1).replace(" ", "")
         
+    # 2. Standard PO Pattern
     po_match = re.search(PO_STANDARD_PATTERN, full_text)
     if po_match:
         clean_po = po_match.group(1).replace(" ", "")
@@ -39,6 +38,7 @@ def clean_and_extract_id(page_text, filename):
             clean_po = "PO" + clean_po[2:]
         return clean_po
         
+    # 3. Border කැපී ඉතිරි වූ 'O' + ඉලක්කම් 7 රටාව
     po_cut_match = re.search(PO_CUT_PATTERN, full_text)
     if po_cut_match:
         captured_id = po_cut_match.group(1).replace(" ", "")
@@ -57,18 +57,36 @@ def extract_id_from_pdf(pdf_path, filename):
         mat = fitz.Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
         
+        # මුළු පින්තූරයම NumPy Array එකක් කර ගැනීම
         img_data = np.frombuffer(pix.samples, dtype=np.uint8).reshape((pix.h, pix.w, pix.n))
-        crop_height = int(pix.h / 3)
-        cropped_img = img_data[0:crop_height, 0:pix.w]
-        
-        img_rgb = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)
-        
-        page_text = reader.readtext(img_rgb, detail=0)
         doc.close()
         
-        return clean_and_extract_id(page_text, filename)
+        # ✂️ පිටුවේ උස සමාන කොටස් 8කට බෙදීම
+        part_height = int(pix.h / 8)
+        
+        # පිටුවේ භාගයක් (කොටස් 4ක්) යනතුරු පමණක් පියවරෙන් පියවර පරික්ෂා කරයි
+        for i in range(4):
+            start_y = i * part_height
+            end_y = (i + 1) * part_height
+            
+            # අදාළ කොටස පමණක් Crop කර ගැනීම
+            cropped_img = img_data[start_y:end_y, 0:pix.w]
+            img_rgb = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)
+            
+            # EasyOCR මඟින් එම කොටස පමණක් කියවීම
+            page_text = reader.readtext(img_rgb, detail=0)
+            
+            if page_text:
+                # Debugging සඳහා CMD එකේ පෙන්වීම
+                print(f"   [OCR Part {i+1} inside {filename}]: {' '.join(page_text)[:50]}...")
+                
+                detected_id = clean_and_extract_id(page_text, filename)
+                # ID එකක් හමු වූ සැනින් ඉතිරි කොටස් ස්කෑන් නොකර වහාම පිටතට පැමිණේ (Super Fast)
+                if detected_id:
+                    return detected_id
+                    
     except Exception as e:
-        print(f"Error reading {filename}: {e}")
+        print(f"   Error reading {filename}: {e}")
     return None
 
 def main(target_folder):
@@ -76,7 +94,6 @@ def main(target_folder):
         print(f"Error: Folder not found at {target_folder}")
         return
 
-    # ⏱️ මුළු ක්‍රියාවලියම ආරම්භ වන වෙලාව
     start_all_time = time.time()
 
     today_str = datetime.now().strftime("%d %B")
@@ -102,7 +119,6 @@ def main(target_folder):
         if filename == today_str:
             continue
             
-        # ⏱️ තනි ෆයිල් එකක් ස්කෑන් කරන්න පටන් ගන්නා වෙලාව
         start_file_time = time.time()
             
         name_upper = filename.upper()
@@ -120,7 +136,6 @@ def main(target_folder):
         
         doc_id = extract_id_from_pdf(file_path, filename)
         
-        # ⏱️ තනි ෆයිල් එකක් අවසන් වූ වෙලාව සහ ගතවූ කාලය මැනීම
         end_file_time = time.time()
         file_elapsed = end_file_time - start_file_time
         
@@ -141,7 +156,6 @@ def main(target_folder):
             print(f"--> FAILED: No valid ID found in this file. [Time: {file_elapsed:.2f}s]\n")
             processed_count += 1
             
-    # ⏱️ මුළු ක්‍රියාවලියම අවසන් වූ කාලය
     end_all_time = time.time()
     total_elapsed_time = end_all_time - start_all_time
     
