@@ -8,10 +8,10 @@ import numpy as np
 import cv2
 from datetime import datetime
 
-# EasyOCR Reader
+# Initialize EasyOCR Reader for English language
 reader = easyocr.Reader(['en'])
 
-# Regex Patterns
+# Regex Patterns for extracting IDs and filtering dates/times
 DATE_PATTERN = r"\b\d{1,2}[-/\s]\d{1,2}[-/\s]\d{2,4}\b"
 TIME_PATTERN = r"\b\d{1,2}:\d{2}(:\d{2})?\b"
 
@@ -22,15 +22,16 @@ PO_CUT_PATTERN = r"([O|0][0-9]{7})"
 def clean_and_extract_id(page_text, filename):
     full_text = " ".join(page_text).upper()
     
+    # Remove dates and times to avoid incorrect pattern matching
     full_text = re.sub(DATE_PATTERN, "", full_text)
     full_text = re.sub(TIME_PATTERN, "", full_text)
     
-    # 1. Standard CN Pattern
+    # 1. Match Standard CN Pattern
     cn_match = re.search(CN_PATTERN, full_text)
     if cn_match:
         return cn_match.group(1).replace(" ", "")
         
-    # 2. Standard PO Pattern
+    # 2. Match Standard PO Pattern
     po_match = re.search(PO_STANDARD_PATTERN, full_text)
     if po_match:
         clean_po = po_match.group(1).replace(" ", "")
@@ -38,7 +39,7 @@ def clean_and_extract_id(page_text, filename):
             clean_po = "PO" + clean_po[2:]
         return clean_po
         
-    # 3. Border කැපී ඉතිරි වූ 'O' + ඉලක්කම් 7 රටාව
+    # 3. Match Cut-off PO Pattern ('O' + 7 digits) due to scanning borders
     po_cut_match = re.search(PO_CUT_PATTERN, full_text)
     if po_cut_match:
         captured_id = po_cut_match.group(1).replace(" ", "")
@@ -57,34 +58,40 @@ def extract_id_from_pdf(pdf_path, filename):
         mat = fitz.Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
         
-        # මුළු පින්තූරයම NumPy Array එකක් කර ගැනීම
+        # Convert page layout to a NumPy Array
         img_data = np.frombuffer(pix.samples, dtype=np.uint8).reshape((pix.h, pix.w, pix.n))
         doc.close()
         
-        # ✂️ පිටුවේ උස සමාන කොටස් 8කට බෙදීම
-        part_height = int(pix.h / 8)
+        # Grid Calculation based on A4 dimensions (Height: ~30cm split into 1cm steps, Width: 3 columns)
+        cm_height_pixels = int(pix.h / 29.7) 
+        col_width_pixels = int(pix.w / 3)    
         
-        # පිටුවේ භාගයක් (කොටස් 4ක්) යනතුරු පමණක් පියවරෙන් පියවර පරික්ෂා කරයි
-        for i in range(4):
-            start_y = i * part_height
-            end_y = (i + 1) * part_height
+        # Scan only up to the upper half of the page (Top 15cm / 15 Rows) for speed optimization
+        for row in range(15): 
+            start_y = row * cm_height_pixels
+            end_y = (row + 1) * cm_height_pixels
             
-            # අදාළ කොටස පමණක් Crop කර ගැනීම
-            cropped_img = img_data[start_y:end_y, 0:pix.w]
-            img_rgb = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)
-            
-            # EasyOCR මඟින් එම කොටස පමණක් කියවීම
-            page_text = reader.readtext(img_rgb, detail=0)
-            
-            if page_text:
-                # Debugging සඳහා CMD එකේ පෙන්වීම
-                print(f"   [OCR Part {i+1} inside {filename}]: {' '.join(page_text)[:50]}...")
+            for col in range(3):
+                start_x = col * col_width_pixels
+                end_x = (col + 1) * col_width_pixels
                 
-                detected_id = clean_and_extract_id(page_text, filename)
-                # ID එකක් හමු වූ සැනින් ඉතිරි කොටස් ස්කෑන් නොකර වහාම පිටතට පැමිණේ (Super Fast)
-                if detected_id:
-                    return detected_id
-                    
+                # Crop the specific grid cell
+                cropped_cell = img_data[start_y:end_y, start_x:end_x]
+                img_rgb = cv2.cvtColor(cropped_cell, cv2.COLOR_BGR2RGB)
+                
+                # Perform OCR on the small cropped cell
+                page_text = reader.readtext(img_rgb, detail=0)
+                
+                if page_text:
+                    combined_word = " ".join(page_text).strip()
+                    if combined_word:
+                        print(f"   [Grid Row {row+1} Col {col+1}]: {combined_word[:30]}")
+                        
+                        detected_id = clean_and_extract_id(page_text, filename)
+                        # Return immediately when a valid ID is detected to save time
+                        if detected_id:
+                            return detected_id
+                            
     except Exception as e:
         print(f"   Error reading {filename}: {e}")
     return None
@@ -94,8 +101,10 @@ def main(target_folder):
         print(f"Error: Folder not found at {target_folder}")
         return
 
+    # Track overall processing execution time
     start_all_time = time.time()
 
+    # Create an output directory named after today's date (e.g., "21 June")
     today_str = datetime.now().strftime("%d %B")
     output_folder = os.path.join(target_folder, today_str)
     
@@ -119,8 +128,10 @@ def main(target_folder):
         if filename == today_str:
             continue
             
+        # Track individual file processing time
         start_file_time = time.time()
             
+        # Fast Skip: If the file is already named properly with PO or CN, move it without scanning
         name_upper = filename.upper()
         if name_upper.startswith("PO") or name_upper.startswith("CN"):
             print(f"Skipping: {filename} (Already renamed)")
@@ -143,6 +154,7 @@ def main(target_folder):
             new_filename = f"{doc_id}.pdf"
             new_file_path = os.path.join(output_folder, new_filename)
             
+            # Add a numeric suffix if a file with the same name already exists
             counter = 1
             while os.path.exists(new_file_path):
                 new_filename = f"{doc_id}_{counter}.pdf"
