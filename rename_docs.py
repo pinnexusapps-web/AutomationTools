@@ -8,10 +8,10 @@ import numpy as np
 import cv2
 from datetime import datetime
 
-# Initialize EasyOCR Reader for English language
+# Initialize EasyOCR Reader once
 reader = easyocr.Reader(['en'])
 
-# Regex Patterns for extracting IDs and filtering dates/times
+# Regex Patterns
 DATE_PATTERN = r"\b\d{1,2}[-/\s]\d{1,2}[-/\s]\d{2,4}\b"
 TIME_PATTERN = r"\b\d{1,2}:\d{2}(:\d{2})?\b"
 
@@ -19,28 +19,31 @@ CN_PATTERN = r"(CN[-_\s]?[A-Z0-9]+[-_\s]?[0-9]+)"
 PO_STANDARD_PATTERN = r"(P[O|0][0-9]{7,8})"
 PO_CUT_PATTERN = r"([O|0][0-9]{7})"
 
-def clean_and_extract_id(page_text, filename):
-    full_text = " ".join(page_text).upper()
-    
-    # Remove dates and times to avoid incorrect pattern matching
-    full_text = re.sub(DATE_PATTERN, "", full_text)
-    full_text = re.sub(TIME_PATTERN, "", full_text)
+def clean_and_extract_id(text_string):
+    """ Centralized extraction logic for a single string of text """
+    if not text_string:
+        return None
+        
+    upper_text = text_string.upper()
+    # Remove dates and times to prevent false matching
+    upper_text = re.sub(DATE_PATTERN, "", upper_text)
+    upper_text = re.sub(TIME_PATTERN, "", upper_text)
     
     # 1. Match Standard CN Pattern
-    cn_match = re.search(CN_PATTERN, full_text)
+    cn_match = re.search(CN_PATTERN, upper_text)
     if cn_match:
         return cn_match.group(1).replace(" ", "")
         
     # 2. Match Standard PO Pattern
-    po_match = re.search(PO_STANDARD_PATTERN, full_text)
+    po_match = re.search(PO_STANDARD_PATTERN, upper_text)
     if po_match:
         clean_po = po_match.group(1).replace(" ", "")
         if clean_po.startswith("P0"):
             clean_po = "PO" + clean_po[2:]
         return clean_po
         
-    # 3. Match Cut-off PO Pattern ('O' + 7 digits) due to scanning borders
-    po_cut_match = re.search(PO_CUT_PATTERN, full_text)
+    # 3. Match Cut-off PO Pattern
+    po_cut_match = re.search(PO_CUT_PATTERN, upper_text)
     if po_cut_match:
         captured_id = po_cut_match.group(1).replace(" ", "")
         return f"PO{captured_id[1:]}"
@@ -53,44 +56,49 @@ def extract_id_from_pdf(pdf_path, filename):
         if len(doc) == 0:
             return None
             
+        # 🏎️ STRATEGY 1: Digital Text Fast-Scan (Takes ~0.005 seconds)
+        # If the PDF contains embedded text layer, grab it instantly without OCR
+        raw_text = ""
+        for page in doc:
+            raw_text += page.get_text()
+            
+        digital_id = clean_and_extract_id(raw_text)
+        if digital_id:
+            doc.close()
+            print("   [Fast-Track]: ID found instantly via Digital Text Layer!")
+            return digital_id
+            
+        # 📷 STRATEGY 2: Single-Shot Smart Image OCR (If digital text layer fails)
         page = doc[0]
         zoom = 3  
         mat = fitz.Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
         
-        # Convert page layout to a NumPy Array
         img_data = np.frombuffer(pix.samples, dtype=np.uint8).reshape((pix.h, pix.w, pix.n))
         doc.close()
         
-        # Grid Calculation based on A4 dimensions (Height: ~30cm split into 1cm steps, Width: 3 columns)
-        cm_height_pixels = int(pix.h / 29.7) 
-        col_width_pixels = int(pix.w / 3)    
+        # We divide into stable 2cm blocks vertically, but keep FULL WIDTH (No column splitting)
+        # 15 rows total for A4 height. We only scan the top 4 rows (~8cm total space)
+        chunk_height = int(pix.h / 15) 
         
-        # Scan only up to the upper half of the page (Top 15cm / 15 Rows) for speed optimization
-        for row in range(15): 
-            start_y = row * cm_height_pixels
-            end_y = (row + 1) * cm_height_pixels
+        for row in range(4): 
+            start_y = row * chunk_height
+            end_y = (row + 1) * chunk_height
             
-            for col in range(3):
-                start_x = col * col_width_pixels
-                end_x = (col + 1) * col_width_pixels
-                
-                # Crop the specific grid cell
-                cropped_cell = img_data[start_y:end_y, start_x:end_x]
-                img_rgb = cv2.cvtColor(cropped_cell, cv2.COLOR_BGR2RGB)
-                
-                # Perform OCR on the small cropped cell
-                page_text = reader.readtext(img_rgb, detail=0)
-                
-                if page_text:
-                    combined_word = " ".join(page_text).strip()
-                    if combined_word:
-                        print(f"   [Grid Row {row+1} Col {col+1}]: {combined_word[:30]}")
-                        
-                        detected_id = clean_and_extract_id(page_text, filename)
-                        # Return immediately when a valid ID is detected to save time
-                        if detected_id:
-                            return detected_id
+            # Crop Full Width to keep the layout unbroken
+            cropped_cell = img_data[start_y:end_y, 0:pix.w]
+            img_rgb = cv2.cvtColor(cropped_cell, cv2.COLOR_BGR2RGB)
+            
+            # Single OCR pass per block
+            page_text = reader.readtext(img_rgb, detail=0)
+            
+            if page_text:
+                combined_word = " ".join(page_text).strip()
+                if combined_word:
+                    print(f"   [Scan Block {row+1}]: {combined_word[:40]}")
+                    detected_id = clean_and_extract_id(combined_word)
+                    if detected_id:
+                        return detected_id
                             
     except Exception as e:
         print(f"   Error reading {filename}: {e}")
@@ -101,10 +109,8 @@ def main(target_folder):
         print(f"Error: Folder not found at {target_folder}")
         return
 
-    # Track overall processing execution time
     start_all_time = time.time()
 
-    # Create an output directory named after today's date (e.g., "21 June")
     today_str = datetime.now().strftime("%d %B")
     output_folder = os.path.join(target_folder, today_str)
     
@@ -119,26 +125,32 @@ def main(target_folder):
 
     print(f"Target Folder: {target_folder}")
     print(f"Output Directory: {output_folder}")
-    print(f"Processing {len(pdf_files)} single PDFs...\n")
+    print(f"Processing {len(pdf_files)} PDFs with Digital Hybrid Engine...\n")
 
-    processed_count = 0
+    table_data = []
     skipped_count = 0
 
     for filename in pdf_files:
         if filename == today_str:
             continue
             
-        # Track individual file processing time
         start_file_time = time.time()
-            
-        # Fast Skip: If the file is already named properly with PO or CN, move it without scanning
         name_upper = filename.upper()
+        
         if name_upper.startswith("PO") or name_upper.startswith("CN"):
             print(f"Skipping: {filename} (Already renamed)")
             src_path = os.path.join(target_folder, filename)
             dst_path = os.path.join(output_folder, filename)
             if not os.path.exists(dst_path):
                 os.rename(src_path, dst_path)
+            
+            end_file_time = time.time()
+            table_data.append({
+                "original": filename,
+                "renamed": filename,
+                "time": f"{end_file_time - start_file_time:.2f}s",
+                "status": "Skipped"
+            })
             skipped_count += 1
             continue
             
@@ -154,7 +166,6 @@ def main(target_folder):
             new_filename = f"{doc_id}.pdf"
             new_file_path = os.path.join(output_folder, new_filename)
             
-            # Add a numeric suffix if a file with the same name already exists
             counter = 1
             while os.path.exists(new_file_path):
                 new_filename = f"{doc_id}_{counter}.pdf"
@@ -162,21 +173,39 @@ def main(target_folder):
                 counter += 1
                 
             os.rename(file_path, new_file_path)
-            print(f"--> SUCCESS: Moved & Renamed to -> {today_str}/{new_filename} [Time: {file_elapsed:.2f}s]\n")
-            processed_count += 1
+            print(f"--> SUCCESS: Renamed to -> {today_str}/{new_filename} [Time: {file_elapsed:.2f}s]\n")
+            
+            table_data.append({
+                "original": filename,
+                "renamed": new_filename,
+                "time": f"{file_elapsed:.2f}s",
+                "status": "Success"
+            })
         else:
-            print(f"--> FAILED: No valid ID found in this file. [Time: {file_elapsed:.2f}s]\n")
-            processed_count += 1
+            print(f"--> FAILED: No ID found. [Time: {file_elapsed:.2f}s]\n")
+            table_data.append({
+                "original": filename,
+                "renamed": "FAILED (No ID)",
+                "time": f"{file_elapsed:.2f}s",
+                "status": "Failed"
+            })
             
     end_all_time = time.time()
     total_elapsed_time = end_all_time - start_all_time
     
-    print("===================================================")
-    print(" All single documents processed successfully.")
-    print(f" Total Files Scanned: {processed_count}")
-    print(f" Total Files Skipped: {skipped_count}")
-    print(f" Total Time Taken   : {total_elapsed_time:.2f} seconds")
-    print("===================================================")
+    # Print Final Summary Table
+    print("\n" + "="*85)
+    print(f" {'ORIGINAL FILE NAME':<25} | {'RENAMED FILE NAME':<30} | {'TIME TAKEN':<12} | {'STATUS':<10}")
+    print("="*85)
+    for row in table_data:
+        orig = row['original'][:23] + ".." if len(row['original']) > 25 else row['original']
+        renamed = row['renamed'][:28] + ".." if len(row['renamed']) > 30 else row['renamed']
+        print(f" {orig:<25} | {renamed:<30} | {row['time']:<12} | {row['status']:<10}")
+    print("="*85)
+    print(f" Total Files Processed : {len(table_data) - skipped_count}")
+    print(f" Total Files Skipped   : {skipped_count}")
+    print(f" Total Time Taken      : {total_elapsed_time:.2f} seconds")
+    print("="*85 + "\n")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
