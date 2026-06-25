@@ -1,0 +1,702 @@
+Sub GenerateDailyReport()
+    ' Software Version 1.4.1
+    ' developed by DSU11425
+
+    Dim wsData As Worksheet, wsReport As Worksheet
+    Dim lastRow As Long, reportRow As Long, lastReportRow As Long
+    Dim pickerDict As Object
+    Dim pickerName As Variant
+    Dim tableRange As Range
+    Dim rawDate As String, formattedDate As String
+    Dim summaryRow As Long, modifiedRow As Long
+    Dim i As Long, startDataRow As Long
+    Dim amtDiff As Double
+    Dim cellI As Variant, cellJ As Variant
+    Dim numI As Double, numJ As Double
+
+    Dim currentSuccess As Long
+    Dim maxTGSuccess As Long, maxTGRow As Long
+    Dim maxNonTGSuccess As Long, maxNonTGRow As Long
+
+    ' === LAYOUT CONSTANTS ===
+    ' Column A = width 11
+    ' Column B = width 1
+    ' Column C = PICKER (Summary)
+    ' Column D = CANCELLED (Summary)
+    ' Column E = SUCCESS (Summary)
+    ' Column F = PICKED UP (Summary)
+    ' Column G = spacer (width 1) - NO BORDERS, NO STYLES
+    ' Column H = spacer (width 11) - NO BORDERS, NO STYLES
+    ' Column I = OVERLAP button (Mod table) - width 12
+    ' Mod Table: C=PICKER, D=ORDER ID, E+F=REASON(merged), I=OVERLAP button
+    ' Borders: C, D, E, F, I columns have borders. G and H have NO borders.
+    
+    Const COL_START As Long = 3   ' Starts at C (index 3)
+    Const ROW_START As Long = 5   ' row 5
+
+    Set wsData = ActiveSheet
+
+    lastRow = wsData.Cells(wsData.Rows.Count, "A").End(xlUp).Row
+    If lastRow <= 1 Then
+        MsgBox "The active sheet seems to be empty or has no data rows. Please open the correct file first!", vbCritical, "Error"
+        Exit Sub
+    End If
+
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+
+    ' --- Clean & format columns I and J on source sheet ---
+    For i = 2 To lastRow
+        cellI = wsData.Cells(i, 9).Value
+        If Not IsNumeric(cellI) And cellI <> "" Then
+            cellI = Replace(cellI, "AED", "")
+            cellI = Trim(cellI)
+            If IsNumeric(cellI) Then wsData.Cells(i, 9).Value = CDbl(cellI)
+        End If
+        wsData.Cells(i, 9).NumberFormat = "0.00"
+
+        cellJ = wsData.Cells(i, 10).Value
+        If Not IsNumeric(cellJ) And cellJ <> "" Then
+            cellJ = Replace(cellJ, "AED", "")
+            cellJ = Trim(cellJ)
+            If IsNumeric(cellJ) Then wsData.Cells(i, 10).Value = CDbl(cellJ)
+        End If
+        wsData.Cells(i, 10).NumberFormat = "0.00"
+    Next i
+
+    rawDate = wsData.Range("D2").Value
+    If InStr(rawDate, " ") > 0 Then
+        formattedDate = Split(rawDate, " ")(0)
+    Else
+        formattedDate = rawDate
+    End If
+
+    ' --- Delete existing Daily Report sheet and recreate ---
+    On Error Resume Next
+    Set wsReport = Sheets("Daily Report")
+    If Not wsReport Is Nothing Then wsReport.Delete
+    On Error GoTo 0
+
+    Set wsReport = Worksheets.Add(Before:=Worksheets(1))
+    wsReport.Name = "Daily Report"
+
+    ActiveWindow.DisplayGridlines = False
+
+    With wsReport
+        ' === SET COLUMN WIDTHS ===
+        .Columns("A").ColumnWidth = 11
+        .Columns("B").ColumnWidth = 1
+        .Columns("C").AutoFit
+        .Columns("C").ColumnWidth = .Columns("C").ColumnWidth + 3
+        .Columns("D").ColumnWidth = 14
+        .Columns("E").ColumnWidth = 20
+        .Columns("F").ColumnWidth = 14
+        .Columns("G").ColumnWidth = 1
+        .Columns("H").ColumnWidth = 11
+        .Columns("I").ColumnWidth = 12
+        
+        ' === ROW 1 - NORMAL HEIGHT ===
+        .Rows("1").RowHeight = 15
+
+        ' =========================================================
+        ' PICKER SUMMARY TABLE — starts at C5
+        ' C=PICKER  D=CANCELLED  E=SUCCESS  F=PICKED UP
+        ' =========================================================
+        Dim hdrRow As Long
+        hdrRow = ROW_START  ' row 5
+
+        .Cells(hdrRow, COL_START).Value = "PICKER"
+        .Cells(hdrRow, COL_START + 1).Value = "CANCELLED"
+        .Cells(hdrRow, COL_START + 2).Value = "SUCCESS"
+        .Cells(hdrRow, COL_START + 3).Value = "PICKED UP"
+
+        With .Range(.Cells(hdrRow, COL_START), .Cells(hdrRow, COL_START + 3))
+            .Interior.Color = RGB(214, 227, 242)
+            .Font.Bold = True
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+        End With
+
+        ' Build picker dictionary
+        Set pickerDict = CreateObject("Scripting.Dictionary")
+        For reportRow = 2 To lastRow
+            pickerName = wsData.Cells(reportRow, 7).Value
+            If pickerName <> "" And pickerName <> "Picker" And pickerName <> "PICKER" _
+               And Not pickerDict.Exists(pickerName) Then
+                pickerDict.Add pickerName, ""
+            End If
+        Next reportRow
+
+        ' Write picker data rows — start at hdrRow+1
+        reportRow = hdrRow + 1
+        For Each pickerName In pickerDict.Keys
+            .Cells(reportRow, COL_START).Value = pickerName
+            .Cells(reportRow, COL_START + 1).Formula = _
+                "=COUNTIFS('" & wsData.Name & "'!G:G,""" & pickerName & """,'" & wsData.Name & "'!C:C,""CANCELLED"")"
+            .Cells(reportRow, COL_START + 2).Formula = _
+                "=COUNTIFS('" & wsData.Name & "'!G:G,""" & pickerName & """,'" & wsData.Name & "'!C:C,""PICKED_UP"")"
+            .Cells(reportRow, COL_START + 3).Formula = _
+                "=SUM(" & .Cells(reportRow, COL_START + 1).Address(False, False) & ":" & _
+                .Cells(reportRow, COL_START + 2).Address(False, False) & ")"
+            reportRow = reportRow + 1
+        Next pickerName
+
+        lastReportRow = reportRow - 1
+
+        ' Sort by PICKED UP descending
+        Set tableRange = .Range(.Cells(hdrRow + 1, COL_START), .Cells(lastReportRow, COL_START + 3))
+        .Sort.SortFields.Clear
+        .Sort.SortFields.Add _
+            Key:=.Range(.Cells(hdrRow + 1, COL_START + 3), .Cells(lastReportRow, COL_START + 3)), _
+            SortOn:=xlSortOnValues, Order:=xlDescending, DataOption:=xlSortNormal
+        With .Sort
+            .SetRange tableRange
+            .Header = xlNo
+            .MatchCase = False
+            .Orientation = xlTopToBottom
+            .SortMethod = xlPinYin
+            .Apply
+        End With
+
+        ' Top TG / non-TG highlights
+        maxTGSuccess = -1: maxTGRow = 0
+        maxNonTGSuccess = -1: maxNonTGRow = 0
+
+        For reportRow = hdrRow + 1 To lastReportRow
+            pickerName = .Cells(reportRow, COL_START).Value
+            currentSuccess = .Cells(reportRow, COL_START + 2).Value
+
+            If Left(Trim(pickerName), 2) = "TG" Then
+                If currentSuccess > maxTGSuccess Then
+                    maxTGSuccess = currentSuccess
+                    maxTGRow = reportRow
+                End If
+            Else
+                If currentSuccess > maxNonTGSuccess Then
+                    maxNonTGSuccess = currentSuccess
+                    maxNonTGRow = reportRow
+                End If
+            End If
+
+            If .Cells(reportRow, COL_START + 1).Value = 0 Then .Cells(reportRow, COL_START + 1).Value = ""
+            If .Cells(reportRow, COL_START + 2).Value = 0 Then .Cells(reportRow, COL_START + 2).Value = ""
+            .Range(.Cells(reportRow, COL_START), .Cells(reportRow, COL_START + 3)).Font.Name = "Calibri"
+            .Range(.Cells(reportRow, COL_START), .Cells(reportRow, COL_START + 3)).Font.Size = 11
+        Next reportRow
+
+        If maxTGRow > 0 Then
+            .Range(.Cells(maxTGRow, COL_START), .Cells(maxTGRow, COL_START + 3)).Interior.Color = RGB(204, 229, 255)
+        End If
+        If maxNonTGRow > 0 Then
+            .Range(.Cells(maxNonTGRow, COL_START), .Cells(maxNonTGRow, COL_START + 3)).Interior.Color = RGB(255, 224, 178)
+        End If
+
+        ' Borders for summary table (C to F only)
+        With .Range(.Cells(hdrRow, COL_START), .Cells(lastReportRow + 1, COL_START + 3))
+            .Borders(xlInsideHorizontal).LineStyle = xlContinuous
+            .Borders(xlInsideHorizontal).Weight = xlThin
+            .Borders(xlInsideHorizontal).Color = RGB(180, 180, 180)
+            .Borders(xlInsideVertical).LineStyle = xlContinuous
+            .Borders(xlInsideVertical).Weight = xlThin
+            .Borders(xlInsideVertical).Color = RGB(180, 180, 180)
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeLeft).Weight = xlThin
+            .Borders(xlEdgeLeft).Color = RGB(120, 120, 120)
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).Weight = xlThin
+            .Borders(xlEdgeRight).Color = RGB(120, 120, 120)
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeTop).Weight = xlThin
+            .Borders(xlEdgeTop).Color = RGB(120, 120, 120)
+            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+            .Borders(xlEdgeBottom).Weight = xlThin
+            .Borders(xlEdgeBottom).Color = RGB(120, 120, 120)
+        End With
+
+        ' Grand Total row
+        reportRow = lastReportRow + 1
+        .Cells(reportRow, COL_START).Value = "Grand Total"
+        .Cells(reportRow, COL_START + 1).Formula = _
+            "=SUM(" & .Cells(hdrRow + 1, COL_START + 1).Address(False, False) & ":" & _
+            .Cells(reportRow - 1, COL_START + 1).Address(False, False) & ")"
+        .Cells(reportRow, COL_START + 2).Formula = _
+            "=SUM(" & .Cells(hdrRow + 1, COL_START + 2).Address(False, False) & ":" & _
+            .Cells(reportRow - 1, COL_START + 2).Address(False, False) & ")"
+        .Cells(reportRow, COL_START + 3).Formula = _
+            "=SUM(" & .Cells(hdrRow + 1, COL_START + 3).Address(False, False) & ":" & _
+            .Cells(reportRow - 1, COL_START + 3).Address(False, False) & ")"
+
+        With .Range(.Cells(reportRow, COL_START), .Cells(reportRow, COL_START + 3))
+            .Font.Bold = True
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+            .Interior.Color = RGB(214, 227, 242)
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeTop).Weight = xlThin
+            .Borders(xlEdgeBottom).LineStyle = xlDouble
+        End With
+
+        ' =========================================================
+        ' MODIFIED ORDERS TABLE
+        ' C=PICKER, D=ORDER ID, E+F=REASON(merged), I=OVERLAP button
+        ' G and H columns have NO BORDERS
+        ' C, D, E, F, I columns HAVE BORDERS
+        ' =========================================================
+        modifiedRow = reportRow + 3
+
+        ' Section title
+        .Cells(modifiedRow, COL_START).Value = "Modified Orders List"
+        With .Cells(modifiedRow, COL_START).Font
+            .Bold = True
+            .Size = 12
+            .Name = "Calibri"
+        End With
+
+        ' Header row
+        modifiedRow = modifiedRow + 1
+        Dim modHdrRow As Long
+        modHdrRow = modifiedRow
+
+        .Cells(modHdrRow, COL_START).Value = "PICKER"           ' C
+        .Cells(modHdrRow, COL_START + 1).Value = "ORDER ID"     ' D
+        ' E+F merged = REASON header
+        .Range(.Cells(modHdrRow, COL_START + 2), .Cells(modHdrRow, COL_START + 3)).Merge
+        .Cells(modHdrRow, COL_START + 2).Value = "REASON"       ' E (merged E:F)
+        .Cells(modHdrRow, COL_START + 6).Value = "OVERLAP"      ' I
+
+        ' Apply styles to C, D, E+F, I only (skip G and H)
+        ' Style for C (PICKER)
+        With .Range(.Cells(modHdrRow, COL_START), .Cells(modHdrRow, COL_START))
+            .Font.Bold = True
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+            .Interior.Color = RGB(230, 240, 250)
+            .HorizontalAlignment = xlCenter
+        End With
+        
+        ' Style for D (ORDER ID)
+        With .Range(.Cells(modHdrRow, COL_START + 1), .Cells(modHdrRow, COL_START + 1))
+            .Font.Bold = True
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+            .Interior.Color = RGB(230, 240, 250)
+            .HorizontalAlignment = xlCenter
+        End With
+        
+        ' Style for E+F merged (REASON)
+        With .Range(.Cells(modHdrRow, COL_START + 2), .Cells(modHdrRow, COL_START + 3))
+            .Font.Bold = True
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+            .Interior.Color = RGB(230, 240, 250)
+            .HorizontalAlignment = xlCenter
+        End With
+        
+        ' NO STYLES for G (COL_START+4) - skip
+        ' NO STYLES for H (COL_START+5) - skip
+        
+        ' Style for I (OVERLAP)
+        With .Range(.Cells(modHdrRow, COL_START + 6), .Cells(modHdrRow, COL_START + 6))
+            .Font.Bold = True
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+            .Interior.Color = RGB(230, 240, 250)
+            .HorizontalAlignment = xlCenter
+        End With
+
+        ' Add borders to header row for C, D, E, F, I only (skip G and H)
+        ' F is COL_START+3, I is COL_START+6
+        
+        ' Header - Left border for C
+        .Cells(modHdrRow, COL_START).Borders(xlEdgeLeft).LineStyle = xlContinuous
+        .Cells(modHdrRow, COL_START).Borders(xlEdgeLeft).Weight = xlThin
+        .Cells(modHdrRow, COL_START).Borders(xlEdgeLeft).Color = RGB(140, 140, 140)
+        
+        ' Header - Right border for C (between C and D)
+        .Cells(modHdrRow, COL_START).Borders(xlEdgeRight).LineStyle = xlContinuous
+        .Cells(modHdrRow, COL_START).Borders(xlEdgeRight).Weight = xlThin
+        .Cells(modHdrRow, COL_START).Borders(xlEdgeRight).Color = RGB(200, 200, 200)
+        
+        ' Header - Right border for D (between D and E)
+        .Cells(modHdrRow, COL_START + 1).Borders(xlEdgeRight).LineStyle = xlContinuous
+        .Cells(modHdrRow, COL_START + 1).Borders(xlEdgeRight).Weight = xlThin
+        .Cells(modHdrRow, COL_START + 1).Borders(xlEdgeRight).Color = RGB(200, 200, 200)
+        
+        ' Header - Right border for E (between E and F) - E is merged with F, so use E
+        .Cells(modHdrRow, COL_START + 2).Borders(xlEdgeRight).LineStyle = xlContinuous
+        .Cells(modHdrRow, COL_START + 2).Borders(xlEdgeRight).Weight = xlThin
+        .Cells(modHdrRow, COL_START + 2).Borders(xlEdgeRight).Color = RGB(200, 200, 200)
+        
+        ' Header - Right border for F (between F and G) - THIS IS THE F RIGHT BORDER
+        .Cells(modHdrRow, COL_START + 3).Borders(xlEdgeRight).LineStyle = xlContinuous
+        .Cells(modHdrRow, COL_START + 3).Borders(xlEdgeRight).Weight = xlThin
+        .Cells(modHdrRow, COL_START + 3).Borders(xlEdgeRight).Color = RGB(140, 140, 140)
+        
+        ' NO BORDER between G and H (skip)
+        ' NO BORDER between H and I (skip)
+        
+        ' Header - Right border for I (right edge of table)
+        .Cells(modHdrRow, COL_START + 6).Borders(xlEdgeRight).LineStyle = xlContinuous
+        .Cells(modHdrRow, COL_START + 6).Borders(xlEdgeRight).Weight = xlThin
+        .Cells(modHdrRow, COL_START + 6).Borders(xlEdgeRight).Color = RGB(140, 140, 140)
+        
+        ' Header - Left border for I (between H and I) - NO BORDER (skip because H has no border)
+        ' Header - Bottom border for C, D, E, F, I
+        Dim headerCols As Variant
+        headerCols = Array(COL_START, COL_START + 1, COL_START + 2, COL_START + 3, COL_START + 6)
+        Dim colIdx As Variant
+        For Each colIdx In headerCols
+            With .Cells(modHdrRow, colIdx)
+                .Borders(xlEdgeBottom).LineStyle = xlContinuous
+                .Borders(xlEdgeBottom).Weight = xlThin
+                .Borders(xlEdgeBottom).Color = RGB(180, 180, 180)
+            End With
+        Next colIdx
+        
+        ' Header - Top border for C, D, E, F, I
+        For Each colIdx In headerCols
+            With .Cells(modHdrRow, colIdx)
+                .Borders(xlEdgeTop).LineStyle = xlContinuous
+                .Borders(xlEdgeTop).Weight = xlThin
+                .Borders(xlEdgeTop).Color = RGB(140, 140, 140)
+            End With
+        Next colIdx
+
+        startDataRow = modHdrRow + 1
+        modifiedRow = modHdrRow
+
+        ' Declare button vars outside loop
+        Dim btnTop As Double, btnLeft As Double
+        Dim btnWidth As Double, btnHeight As Double
+        Dim btn As Object
+        Dim btnCell As Range
+
+        ' Loop: collect modification rows
+        For i = 2 To lastRow
+            If wsData.Cells(i, 3).Value = "PICKED_UP" Then
+                numI = wsData.Cells(i, 9).Value
+                numJ = wsData.Cells(i, 10).Value
+                amtDiff = Abs(numJ - numI)
+
+                If amtDiff >= 1# Then
+                    modifiedRow = modifiedRow + 1
+
+                    ' C — PICKER
+                    With .Cells(modifiedRow, COL_START)
+                        .Value = wsData.Cells(i, 7).Value
+                        .Font.Name = "Calibri"
+                        .Font.Size = 10
+                        .HorizontalAlignment = xlCenter
+                        .VerticalAlignment = xlCenter
+                    End With
+
+                    ' D — ORDER ID
+                    With .Cells(modifiedRow, COL_START + 1)
+                        .Value = "'" & wsData.Cells(i, 1).Value
+                        .Font.Name = "Calibri"
+                        .Font.Size = 10
+                        .HorizontalAlignment = xlCenter
+                        .VerticalAlignment = xlCenter
+                    End With
+
+                    ' E+F merged — REASON
+                    .Range(.Cells(modifiedRow, COL_START + 2), .Cells(modifiedRow, COL_START + 3)).Merge
+                    With .Cells(modifiedRow, COL_START + 2)
+                        .Value = "Not Found"
+                        .Font.Name = "Calibri"
+                        .Font.Size = 10
+                        .Font.Bold = True
+                        .Font.Color = RGB(180, 0, 0)
+                        .HorizontalAlignment = xlCenter
+                        .VerticalAlignment = xlCenter
+                        .Interior.Color = RGB(255, 235, 235)
+                    End With
+
+                    ' G column - NO STYLES, NO BORDERS (skip)
+                    ' H column - NO STYLES, NO BORDERS (skip)
+                    
+                    ' I — OVERLAP Button
+                    Set btnCell = .Cells(modifiedRow, COL_START + 6)  ' column I
+                    btnTop = btnCell.Top + 2
+                    btnLeft = btnCell.Left + 2
+                    btnWidth = btnCell.Width - 1
+                    btnHeight = btnCell.Height - 1
+
+                    Set btn = wsReport.Buttons.Add(btnLeft, btnTop, btnWidth, btnHeight)
+                    With btn
+                        .Caption = "Overlap"
+                        .Font.Name = "Calibri"
+                        .Font.Size = 9
+                        .Name = "btnOL_R" & modifiedRow & "C" & (COL_START + 2)
+                        .OnAction = "ToggleReasonButton"
+                    End With
+                    
+                    ' Row height for all columns
+                    .Range(.Cells(modifiedRow, COL_START), .Cells(modifiedRow, COL_START + 6)).RowHeight = 22
+                    
+                    ' Add borders to data row for C, D, E, F, I only (skip G and H)
+                    
+                    ' Data - Left border for C
+                    .Cells(modifiedRow, COL_START).Borders(xlEdgeLeft).LineStyle = xlContinuous
+                    .Cells(modifiedRow, COL_START).Borders(xlEdgeLeft).Weight = xlThin
+                    .Cells(modifiedRow, COL_START).Borders(xlEdgeLeft).Color = RGB(140, 140, 140)
+                    
+                    ' Data - Right border for C (between C and D)
+                    .Cells(modifiedRow, COL_START).Borders(xlEdgeRight).LineStyle = xlContinuous
+                    .Cells(modifiedRow, COL_START).Borders(xlEdgeRight).Weight = xlThin
+                    .Cells(modifiedRow, COL_START).Borders(xlEdgeRight).Color = RGB(200, 200, 200)
+                    
+                    ' Data - Right border for D (between D and E)
+                    .Cells(modifiedRow, COL_START + 1).Borders(xlEdgeRight).LineStyle = xlContinuous
+                    .Cells(modifiedRow, COL_START + 1).Borders(xlEdgeRight).Weight = xlThin
+                    .Cells(modifiedRow, COL_START + 1).Borders(xlEdgeRight).Color = RGB(200, 200, 200)
+                    
+                    ' Data - Right border for E (between E and F)
+                    .Cells(modifiedRow, COL_START + 2).Borders(xlEdgeRight).LineStyle = xlContinuous
+                    .Cells(modifiedRow, COL_START + 2).Borders(xlEdgeRight).Weight = xlThin
+                    .Cells(modifiedRow, COL_START + 2).Borders(xlEdgeRight).Color = RGB(200, 200, 200)
+                    
+                    ' Data - Right border for F (between F and G) - F RIGHT BORDER
+                    .Cells(modifiedRow, COL_START + 3).Borders(xlEdgeRight).LineStyle = xlContinuous
+                    .Cells(modifiedRow, COL_START + 3).Borders(xlEdgeRight).Weight = xlThin
+                    .Cells(modifiedRow, COL_START + 3).Borders(xlEdgeRight).Color = RGB(140, 140, 140)
+                    
+                    ' NO BORDER between G and H (skip)
+                    ' NO BORDER between H and I (skip)
+                    
+                    ' Data - Left border for I
+                    .Cells(modifiedRow, COL_START + 6).Borders(xlEdgeLeft).LineStyle = xlContinuous
+                    .Cells(modifiedRow, COL_START + 6).Borders(xlEdgeLeft).Weight = xlThin
+                    .Cells(modifiedRow, COL_START + 6).Borders(xlEdgeLeft).Color = RGB(140, 140, 140)
+                    
+                    ' Data - Right border for I (right edge of table)
+                    .Cells(modifiedRow, COL_START + 6).Borders(xlEdgeRight).LineStyle = xlContinuous
+                    .Cells(modifiedRow, COL_START + 6).Borders(xlEdgeRight).Weight = xlThin
+                    .Cells(modifiedRow, COL_START + 6).Borders(xlEdgeRight).Color = RGB(140, 140, 140)
+                    
+                    ' Data - Bottom border for C, D, E, F, I
+                    Dim dataCols As Variant
+                    dataCols = Array(COL_START, COL_START + 1, COL_START + 2, COL_START + 3, COL_START + 6)
+                    Dim dCol As Variant
+                    For Each dCol In dataCols
+                        With .Cells(modifiedRow, dCol)
+                            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+                            .Borders(xlEdgeBottom).Weight = xlThin
+                            .Borders(xlEdgeBottom).Color = RGB(220, 220, 220)
+                        End With
+                    Next dCol
+
+                End If
+            End If
+        Next i
+
+        ' If no modification rows — show placeholder
+        If modifiedRow < startDataRow Then
+            .Range(.Cells(startDataRow, COL_START), .Cells(startDataRow, COL_START + 6)).Merge
+            .Cells(startDataRow, COL_START).Value = "No modifications recorded today."
+            .Cells(startDataRow, COL_START).Font.Italic = True
+            modifiedRow = startDataRow
+        End If
+
+        ' =========================================================
+        ' SUMMARY / WHATSAPP MESSAGE BLOCK
+        ' =========================================================
+        summaryRow = modifiedRow + 3
+
+        ' Store the modification table data range address in a named range
+        Dim modDataAddr As String
+        If modifiedRow >= startDataRow Then
+            modDataAddr = wsReport.Name & "!" & _
+                .Cells(startDataRow, COL_START + 2).Address & ":" & _
+                .Cells(modifiedRow, COL_START + 2).Address
+        End If
+
+        .Cells(summaryRow, COL_START).Value = "Good morning team,"
+        .Cells(summaryRow + 2, COL_START).Value = "Daily sales report " & formattedDate
+
+        .Cells(summaryRow + 3, COL_START).Value = "Orders:"
+        .Cells(summaryRow + 3, COL_START + 1).Formula = _
+            "=SUM(" & .Cells(hdrRow + 1, COL_START + 2).Address(False, False) & ":" & _
+            .Cells(lastReportRow, COL_START + 2).Address(False, False) & ")"
+
+        .Cells(summaryRow + 4, COL_START).Value = "Cancelled:"
+        .Cells(summaryRow + 4, COL_START + 1).Formula = _
+            "=SUM(" & .Cells(hdrRow + 1, COL_START + 1).Address(False, False) & ":" & _
+            .Cells(lastReportRow, COL_START + 1).Address(False, False) & ")"
+
+        .Cells(summaryRow + 5, COL_START).Value = "Sales :"
+        .Cells(summaryRow + 5, COL_START + 1).Formula = _
+            "=SUMIFS('" & wsData.Name & "'!J:J,'" & wsData.Name & "'!C:C,""PICKED_UP"")"
+        .Cells(summaryRow + 5, COL_START + 1).NumberFormat = "0.00"
+
+        .Cells(summaryRow + 6, COL_START).Value = "Average:"
+        .Cells(summaryRow + 6, COL_START + 1).Formula = _
+            "=AVERAGEIFS('" & wsData.Name & "'!J:J,'" & wsData.Name & "'!C:C,""PICKED_UP"")"
+        .Cells(summaryRow + 6, COL_START + 1).NumberFormat = "0.00"
+
+        ' Modification count
+        Dim modCount As Long
+        modCount = 0
+        If modifiedRow >= startDataRow Then modCount = modifiedRow - startDataRow + 1
+
+        .Cells(summaryRow + 7, COL_START).Value = "Modification:"
+        .Cells(summaryRow + 7, COL_START + 1).Value = modCount
+        If modCount > 0 Then
+            .Cells(summaryRow + 7, COL_START + 2).Value = "(" & modCount & " Not Found)"
+        Else
+            .Cells(summaryRow + 7, COL_START + 2).Value = ""
+        End If
+
+        ' Style the overlap-label cell
+        With .Cells(summaryRow + 7, COL_START + 2)
+            .Font.Name = "Calibri"
+            .Font.Size = 11
+            .Font.Italic = True
+            .Font.Color = RGB(180, 80, 0)
+            .HorizontalAlignment = xlLeft
+        End With
+
+        ' Store row numbers in hidden cells
+        On Error Resume Next
+        wsReport.Parent.Names("DR_ReasonStart").Delete
+        wsReport.Parent.Names("DR_ReasonEnd").Delete
+        wsReport.Parent.Names("DR_SummaryLabelCell").Delete
+        On Error GoTo 0
+
+        If modifiedRow >= startDataRow Then
+            wsReport.Parent.Names.Add _
+                Name:="DR_ReasonStart", _
+                RefersTo:=wsReport.Cells(startDataRow, COL_START + 2)
+            wsReport.Parent.Names.Add _
+                Name:="DR_ReasonEnd", _
+                RefersTo:=wsReport.Cells(modifiedRow, COL_START + 2)
+        End If
+        wsReport.Parent.Names.Add _
+            Name:="DR_SummaryLabelCell", _
+            RefersTo:=wsReport.Cells(summaryRow + 7, COL_START + 2)
+
+        ' Font / alignment for summary block
+        With .Range(.Cells(summaryRow, COL_START), .Cells(summaryRow + 7, COL_START + 1)).Font
+            .Name = "Calibri"
+            .Size = 11
+            .Bold = False
+        End With
+        .Cells(summaryRow + 2, COL_START).Font.Bold = True
+
+        ' Alignment
+        .Columns("C:F").HorizontalAlignment = xlCenter
+        .Range(.Cells(summaryRow, COL_START), .Cells(summaryRow + 7, COL_START)).HorizontalAlignment = xlLeft
+        .Range(.Cells(summaryRow + 3, COL_START + 1), .Cells(summaryRow + 7, COL_START + 1)).HorizontalAlignment = xlLeft
+
+        ' === FINAL COLUMN WIDTHS ===
+        .Columns("A").ColumnWidth = 11
+        .Columns("B").ColumnWidth = 1
+        .Columns("C").AutoFit           ' PICKER column
+        .Columns("C").ColumnWidth = .Columns("C").ColumnWidth + 3
+        .Columns("D").ColumnWidth = 14
+        .Columns("E").ColumnWidth = 14
+        .Columns("F").ColumnWidth = 14
+        .Columns("G").ColumnWidth = 1
+        .Columns("H").ColumnWidth = 11
+        .Columns("I").ColumnWidth = 12
+
+    End With
+
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+    ' MsgBox "Daily Report generated successfully!", vbInformation, "Done"
+End Sub
+
+' =============================================================
+' TOGGLE HANDLER — called by every Overlap button click
+' =============================================================
+Sub ToggleReasonButton()
+    Dim ws As Worksheet
+    Dim btnName As String
+    Dim parsed As String
+    Dim cPos As Long
+    Dim targetRow As Long, targetCol As Long
+    Dim reasonCell As Range
+
+    Set ws = ActiveSheet
+    btnName = Application.Caller
+
+    ' Parse row & col encoded in button name: btnOL_R{row}C{col}
+    parsed = Mid(btnName, Len("btnOL_R") + 1)
+    cPos = InStr(parsed, "C")
+    targetRow = CLng(Left(parsed, cPos - 1))
+    targetCol = CLng(Mid(parsed, cPos + 1))
+
+    Set reasonCell = ws.Cells(targetRow, targetCol)
+
+    If reasonCell.Value = "Not Found" Then
+        With reasonCell
+            .Value = "Overlap"
+            .Font.Color = RGB(180, 80, 0)
+            .Interior.Color = RGB(255, 243, 205)
+        End With
+    Else
+        With reasonCell
+            .Value = "Not Found"
+            .Font.Color = RGB(180, 0, 0)
+            .Interior.Color = RGB(255, 235, 235)
+        End With
+    End If
+
+    Call UpdateModificationSummary(ws)
+End Sub
+
+' =============================================================
+' Recalculates the overlap/notfound summary label
+' =============================================================
+Sub UpdateModificationSummary(ws As Worksheet)
+    Dim reasonStart As Range, reasonEnd As Range, labelCell As Range
+    Dim reasonRange As Range
+    Dim c As Range
+    Dim overlapCount As Long, notFoundCount As Long, total As Long
+    Dim labelText As String
+
+    On Error Resume Next
+    Set reasonStart = ws.Parent.Names("DR_ReasonStart").RefersToRange
+    Set reasonEnd = ws.Parent.Names("DR_ReasonEnd").RefersToRange
+    Set labelCell = ws.Parent.Names("DR_SummaryLabelCell").RefersToRange
+    On Error GoTo 0
+
+    If reasonStart Is Nothing Or reasonEnd Is Nothing Or labelCell Is Nothing Then Exit Sub
+
+    Set reasonRange = ws.Range(reasonStart, reasonEnd)
+
+    overlapCount = 0
+    notFoundCount = 0
+    total = 0
+
+    For Each c In reasonRange
+        If c.MergeCells Then
+            If c.Address = c.MergeArea.Cells(1, 1).Address Then
+                total = total + 1
+                Select Case Trim(c.Value)
+                    Case "Overlap":   overlapCount = overlapCount + 1
+                    Case "Not Found": notFoundCount = notFoundCount + 1
+                End Select
+            End If
+        Else
+            total = total + 1
+            Select Case Trim(c.Value)
+                Case "Overlap":   overlapCount = overlapCount + 1
+                Case "Not Found": notFoundCount = notFoundCount + 1
+            End Select
+        End If
+    Next c
+
+    If total = 0 Then
+        labelText = ""
+    ElseIf overlapCount = 0 Then
+        labelText = "(" & notFoundCount & " Not Found)"
+    ElseIf notFoundCount = 0 Then
+        labelText = "(" & overlapCount & " Overlap)"
+    Else
+        labelText = "(" & overlapCount & " Overlap, " & notFoundCount & " Not Found)"
+    End If
+
+    labelCell.Value = labelText
+End Sub
