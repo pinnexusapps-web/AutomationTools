@@ -310,10 +310,10 @@ Sub GenerateDailyReport()
                     End With
 
                     Set btnCell = .Cells(modifiedRow, COL_START + 6)
-                    btnTop = btnCell.Top + 2
+                    btnTop = btnCell.Top + 3
                     btnLeft = btnCell.Left + 3
-                    btnWidth = btnCell.Width - 6
-                    btnHeight = btnCell.Height - 4
+                    btnWidth = btnCell.Width - 3
+                    btnHeight = btnCell.Height - 3
 
                     Set btn = wsReport.Buttons.Add(btnLeft, btnTop, btnWidth, btnHeight)
                     With btn
@@ -485,7 +485,6 @@ Sub GenerateDailyReport()
 
     Application.ScreenUpdating = True
     Application.DisplayAlerts = True
-    MsgBox "Daily Report generated successfully!", vbInformation, "Done"
 End Sub
 
 ' =============================================================
