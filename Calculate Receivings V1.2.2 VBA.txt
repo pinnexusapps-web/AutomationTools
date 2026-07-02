@@ -81,11 +81,11 @@ FindSKULabel:
     rColLetter = Split(wsMain.Cells(1, skuCol + 16).Address, "$")(1)
     
     wsMain.Range(qColLetter & (skuRow + 1) & ":" & qColLetter & lastRow).Formula = _
-        "=1.05 * " & pColLetter & (skuRow + 1) & " * VLOOKUP(" & skuColLetter & (skuRow + 1) & ", '" & wsData.Name & "'!$K:$AA, 17, 0)"
+        "=1.05 * " & pColLetter & (skuRow + 1) & " * VLOOKUP(" & skuColLetter & (skuRow + 1) & ", '" & wsData.Name & "'!$L:$AB, 17, 0)"
     
     wsMain.Cells(skuRow, rColLetter).Value = "Barcode"
     wsMain.Range(rColLetter & (skuRow + 1) & ":" & rColLetter & lastRow).Formula = _
-        "=VLOOKUP(" & skuColLetter & (skuRow + 1) & ", '" & wsData.Name & "'!$K:$AA, 5, 0)"
+        "=VLOOKUP(" & skuColLetter & (skuRow + 1) & ", '" & wsData.Name & "'!$L:$AB, 5, 0)"
     
     wsMain.Cells(lastRow + 2, pColLetter).Value = "Total SUM:"
     wsMain.Cells(lastRow + 2, qColLetter).Formula = "=SUM(" & qColLetter & (skuRow + 1) & ":" & qColLetter & lastRow & ")"
