@@ -1,0 +1,158 @@
+Option Explicit
+
+Sub GenerateActivePickerSummary()
+
+    Dim ws As Worksheet
+    Set ws = ActiveSheet
+    ' Software Version 1.0
+    ' developed by DSU11425
+
+    Dim lastDataRow As Long, r As Long
+
+    lastDataRow = 0
+    For r = 3 To 2000
+        If Trim$(CStr(ws.Cells(r, 1).Value))   _
+           And UCase$(Trim$(CStr(ws.Cells(r, 1).Value)))  EMPLPYEE ID _
+           And Trim$(CStr(ws.Cells(r, 3).Value))   Then
+            lastDataRow = r
+        End If
+    Next r
+
+    If lastDataRow = 0 Then
+        MsgBox Employee data hoyaganna baruna. Sheet layout eka check karanna., vbExclamation
+        Exit Sub
+    End If
+    
+    Dim summaryStart As Long
+    summaryStart = lastDataRow + 2
+
+    Dim periods(1 To 15, 1 To 4) As Variant
+    periods(1, 1) = Morning 8 to 10    periods(1, 2) = 0800 - 0959h  periods(1, 3) = 8  periods(1, 4) = 10
+    periods(2, 1) = Morning 10 to 12   periods(2, 2) = 1000 - 1159h  periods(2, 3) = 10 periods(2, 4) = 12
+    periods(3, 1) = Afternoon 12 to 2  periods(3, 2) = 1200 - 1359h  periods(3, 3) = 12 periods(3, 4) = 14
+    periods(4, 1) = Afternoon 2 to 4   periods(4, 2) = 1400 - 1559h  periods(4, 3) = 14 periods(4, 4) = 16
+    periods(5, 1) = Evening 4 to 5     periods(5, 2) = 1600 - 1659h  periods(5, 3) = 16 periods(5, 4) = 17
+    periods(6, 1) = Evening 5 to 6     periods(6, 2) = 1700 - 1759h  periods(6, 3) = 17 periods(6, 4) = 18
+    periods(7, 1) = Evening 6 to 7     periods(7, 2) = 1800 - 1859h  periods(7, 3) = 18 periods(7, 4) = 19
+    periods(8, 1) = Evening 7 to 8     periods(8, 2) = 1900 - 1959h  periods(8, 3) = 19 periods(8, 4) = 20
+    periods(9, 1) = Evening 8 to 9     periods(9, 2) = 2000 - 2059h  periods(9, 3) = 20 periods(9, 4) = 21
+    periods(10, 1) = Evening 9 to 10   periods(10, 2) = 2100 - 2159h periods(10, 3) = 21 periods(10, 4) = 22
+    periods(11, 1) = Evening 10 to 11  periods(11, 2) = 2200 - 2259h periods(11, 3) = 22 periods(11, 4) = 23
+    periods(12, 1) = Evening 11 to 12  periods(12, 2) = 2300 - 2359h periods(12, 3) = 23 periods(12, 4) = 24
+    periods(13, 1) = Mid night 12 to 2 periods(13, 2) = 0000 - 0159h periods(13, 3) = 0  periods(13, 4) = 2
+    periods(14, 1) = Night 2 to 5 AM   periods(14, 2) = 0200 - 0459h periods(14, 3) = 2  periods(14, 4) = 5
+    periods(15, 1) = Night 5 to 8 AM   periods(15, 2) = 0500 - 0759h periods(15, 3) = 5  periods(15, 4) = 8
+
+    ws.Range(ws.Cells(summaryStart, 1), ws.Cells(summaryStart + 40, 10)).ClearContents
+
+    Dim p As Long, dayCol As Long
+    Dim pickerCount As Long, offCount As Long
+    Dim shiftText As String, posText As String
+    Dim startHr As Double, endHr As Double
+    Dim isOff As Boolean, parsedOK As Boolean
+
+    For p = 1 To 15
+        ws.Cells(summaryStart + p - 1, 2).Value = periods(p, 1)
+        ws.Cells(summaryStart + p - 1, 3).Value = periods(p, 2)
+
+        For dayCol = 4 To 10   ' D=Monday ... J=Sunday
+            pickerCount = 0
+            For r = 3 To lastDataRow
+                posText = CStr(ws.Cells(r, 3).Value)
+                If IsPicker(posText) Then
+                    shiftText = CStr(ws.Cells(r, dayCol).Value)
+                    parsedOK = ParseShift(shiftText, startHr, endHr, isOff)
+                    If parsedOK And Not isOff Then
+                        If ShiftOverlapsPeriod(startHr, endHr, CDbl(periods(p, 3)), CDbl(periods(p, 4))) Then
+                            pickerCount = pickerCount + 1
+                        End If
+                    End If
+                End If
+            Next r
+            ws.Cells(summaryStart + p - 1, dayCol).Value = pickerCount
+        Next dayCol
+    Next p
+
+    Dim offRow As Long
+    offRow = summaryStart + 15
+    ws.Cells(offRow, 2).Value = off
+    ws.Cells(offRow, 3).Value = OFF
+
+    For dayCol = 4 To 10
+        offCount = 0
+        For r = 3 To lastDataRow
+            posText = CStr(ws.Cells(r, 3).Value)
+            If IsPicker(posText) Then
+                shiftText = CStr(ws.Cells(r, dayCol).Value)
+                parsedOK = ParseShift(shiftText, startHr, endHr, isOff)
+                If parsedOK And isOff Then offCount = offCount + 1
+            End If
+        Next r
+        ws.Cells(offRow, dayCol).Value = offCount
+    Next dayCol
+
+    MsgBox Summary generate una Row  & summaryStart &  to  & offRow, vbInformation
+
+End Sub
+
+Private Function IsPicker(posText As String) As Boolean
+    IsPicker = (InStr(1, UCase$(Trim$(posText)), PICKER)  0)
+End Function
+
+Private Function ParseShift(ByVal shiftText As String, ByRef startHr As Double, _
+                             ByRef endHr As Double, ByRef isOff As Boolean) As Boolean
+    Dim txt As String
+    txt = Trim$(shiftText)
+    isOff = False
+    startHr = 0 endHr = 0
+
+    If txt =  Then
+        ParseShift = False
+        Exit Function
+    End If
+
+    If UCase$(txt) = OFF Then
+        isOff = True
+        ParseShift = True
+        Exit Function
+    End If
+
+    Dim re As Object, mc As Object
+    Set re = CreateObject(VBScript.RegExp)
+    re.Global = True
+    re.IgnoreCase = True
+    re.Pattern = (d{1,2})s([AaPp][Mm])
+
+    Set mc = re.Execute(txt)
+    If mc.Count  2 Then
+        ParseShift = False
+        Exit Function
+    End If
+
+    startHr = ToHour24(mc(0).SubMatches(0), mc(0).SubMatches(1))
+    endHr = ToHour24(mc(1).SubMatches(0), mc(1).SubMatches(1))
+
+    If endHr = startHr Then endHr = endHr + 24   ' overnight shift
+
+    ParseShift = True
+End Function
+
+Private Function ToHour24(hourStr As String, ampm As String) As Double
+    Dim h As Double
+    h = CDbl(hourStr)
+    If UCase$(ampm) = AM Then
+        If h = 12 Then h = 0
+    Else
+        If h  12 Then h = h + 12
+    End If
+    ToHour24 = h
+End Function
+
+Private Function ShiftOverlapsPeriod(sStart As Double, sEnd As Double, _
+                                      pStart As Double, pEnd As Double) As Boolean
+    Dim overlapSameDay As Boolean, overlapNextDay As Boolean
+    overlapSameDay = (sStart  pEnd) And (pStart  sEnd)
+    overlapNextDay = (sStart  pEnd + 24) And (pStart + 24  sEnd)
+    ShiftOverlapsPeriod = overlapSameDay Or overlapNextDay
+End Function
+
