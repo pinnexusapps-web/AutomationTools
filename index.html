@@ -264,6 +264,12 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
         <div><span class="badge">VBA &middot; Excel</span></div>
       </div>
       <div class="tool-card animate-card">
+        <i class="fas fa-calendar-week" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+        <h3>Generate Active Picker Summery</h3>
+        <p>Active Pickers in selected time period &middot; exports clean schedule</p>
+        <div><span class="badge">VBA &middot; Excel</span></div>
+      </div>
+      <div class="tool-card animate-card">
         <i class="fas fa-file-pdf" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
         <h3>PDF Auto Rename</h3>
         <p>Scans PDFs via OCR &middot; extracts CN / PO number &middot; renames files automatically</p>
@@ -287,8 +293,9 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
       <button class="tab-btn active" data-tab="tab1">Calculate Receivings</button>
       <button class="tab-btn" data-tab="tab2">Generate Daily Report</button>
       <button class="tab-btn" data-tab="tab3">Generate Bio Time</button>
-      <button class="tab-btn" data-tab="tab4">PDF Auto Rename</button>
-      <button class="tab-btn" data-tab="tab5">QR Forge</button>
+      <button class="tab-btn" data-tab="tab4">Generate Active Picker Summery</button>
+      <button class="tab-btn" data-tab="tab5">PDF Auto Rename</button>
+      <button class="tab-btn" data-tab="tab6">QR Forge</button>
     </div>
 
     <!-- Tab 1 -->
@@ -455,6 +462,58 @@ End Sub</code></pre>
       <div class="script-card">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
           <div>
+            <h3 style="font-weight: 500; color: #fff;">Generate Active Picker Summery <span class="badge">v1.0</span></h3>
+            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Active Pickers in selected time period &middot; exports clean schedule</p>
+          </div>
+          <a href="Generate Active Picker Summery V1.0 VBA.txt" class="btn-outline" download><i class="fas fa-download"></i> Download .txt</a>
+        </div>
+        <pre><code>' Generate Active Picker Summery V1.0 VBA.txt
+Sub GenerateActivePickerSummary()
+
+    Dim ws As Worksheet
+    Set ws = ActiveSheet
+    ' Software Version 1.0
+    ' developed by DSU11425
+
+    Dim lastDataRow As Long, r As Long
+
+    If lastDataRow = 0 Then
+        MsgBox "Cant find the Employees", vbExclamation
+        Exit Sub
+    End If
+    
+    Dim summaryStart As Long
+    summaryStart = lastDataRow + 2
+
+    Dim periods(1 To 15, 1 To 4) As Variant
+    periods(1, 1) = "Morning 8 to 10":    periods(1, 2) = "0800 - 0959h":  periods(1, 3) = 8:  periods(1, 4) = 10
+    
+          ' ... full logic (Download the .txt)
+
+    AdvancedShiftParser = prefix &amp; " " &amp; Format(displayHour, "00") &amp; " (" &amp; Format(duration, "00") &amp; ")"
+End Sub</code></pre>
+        <div class="video-placeholder">
+          <!-- REPLACE: change VIDEO_ID_TAB3 to your YouTube video ID for Generate Bio Time -->
+          <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
+            <iframe
+              src="https://www.youtube.com/embed/VIDEO_ID_TAB4"
+              title="Working Guide: Generate Active Picker Summery"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              style="position:absolute; top:0; left:0; width:100%; height:100%;">
+            </iframe>
+          </div>
+          <div class="video-caption"><i class="fas fa-play-circle"></i> Working guide: Generate Bio Time</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5 -->
+    <div id="tab5" class="tab-content">
+      <div class="script-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
             <h3 style="font-weight: 500; color: #fff;">PDF Auto Rename <span class="badge">v1.0</span></h3>
             <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">OCR scans every PDF in a folder &middot; extracts CN / PO number &middot; renames automatically</p>
           </div>
@@ -561,8 +620,8 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
       </div>
     </div>
 
-    <!-- Tab 5 -->
-    <div id="tab5" class="tab-content">
+    <!-- Tab 6 -->
+    <div id="tab6" class="tab-content">
       <div class="script-card">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
           <div>
