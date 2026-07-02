@@ -83,7 +83,7 @@ FindSKULabel:
     qColLetter = Split(wsMain.Cells(1, skuCol + 15).Address, "$")(1)
     
     wsMain.Range(qColLetter & (skuRow + 1) & ":" & qColLetter & lastRow).Formula = _
-        "=1.05 * " & pColLetter & (skuRow + 1) & " * VLOOKUP(" & skuColLetter & (skuRow + 1) & ", '" & wsData.Name & "'!$K:$AA, 17, 0)"
+        "=1.05 * " & pColLetter & (skuRow + 1) & " * VLOOKUP(" & skuColLetter & (skuRow + 1) & ", '" & wsData.Name & "'!$L:$AB, 17, 0)"
     
     With wsMain.Range(qColLetter & (skuRow + 1) & ":" & qColLetter & lastRow)
         .Value = .Value
