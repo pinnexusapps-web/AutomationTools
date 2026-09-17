@@ -1,14 +1,9 @@
-Attribute VB_Name = "SkuFilterDashboard"
+Attribute VB_Name = "CCDashboard"
 '==================================================================
 ' SKU FILTER DASHBOARD
+' developed by DSU11425
+' Software Version 1.0.2
 '------------------------------------------------------------------
-' Sheet 1 = product list   (headers in row 1)
-' Sheet 2 = sku / location_name  (XXX-YY-ZZZ)
-' Sheet names are read by POSITION, never by name.
-'
-' Run  BuildDashboard  once after every new data import.
-' Then pick parameters and press the "APPLY FILTER" button.
-'==================================================================
 Option Explicit
 
 Private Const DASH      As String = "Dashboard"
@@ -20,9 +15,7 @@ Private Const R_COL     As Long = 6          ' results start in column F
 Private Const MAX_LIST  As Long = 5000       ' max distinct values per dropdown
 
 '------------------------------------------------------------------
-' 1. BUILD / REBUILD THE DASHBOARD
-'------------------------------------------------------------------
-Public Sub BuildDashboard()
+Public Sub Build_CC_Dashboard()
     Dim wsP As Worksheet, wsL As Worksheet, wsD As Worksheet, wsL2 As Worksheet
     Dim dat As Variant, loc As Variant
     Dim nCols As Long, i As Long, r As Long, listCol As Long
@@ -156,8 +149,6 @@ EH:
 End Sub
 
 '------------------------------------------------------------------
-' 2. APPLY THE FILTERS
-'------------------------------------------------------------------
 Public Sub ApplyFilters()
     Dim wsP As Worksheet, wsL As Worksheet, wsD As Worksheet
     Dim dat As Variant, loc As Variant
@@ -247,8 +238,6 @@ EH:
 End Sub
 
 '------------------------------------------------------------------
-' 3. RESET
-'------------------------------------------------------------------
 Public Sub ResetFilters()
     Dim wsD As Worksheet, i As Long, lastP As Long
     Set wsD = SheetOrNothing(DASH)
@@ -266,8 +255,6 @@ Public Sub ResetFilters()
     wsD.Cells(3, R_COL).Value = "Result: not run yet"
 End Sub
 
-'==================================================================
-' HELPERS
 '==================================================================
 Private Function ResolveDataSheets(ByRef wsP As Worksheet, ByRef wsL As Worksheet) As Boolean
     Dim ws As Worksheet, col As New Collection, i As Long
