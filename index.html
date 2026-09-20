@@ -218,7 +218,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
         </p>
 
         <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 2rem;" class="hero-cta-row">
-          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">4 VBA + 1 Python + 1 Android</span>
+          <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">5 VBA + 1 Python + 1 Android</span>
           <span class="badge" style="background:rgba(255,255,255,0.06); color:#fff;">v2.0</span>
         </div>
 
@@ -243,7 +243,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
 <!-- Feature Cards Overview -->
 <section style="padding: 4rem 0 4rem;" class="features-section">
   <div class="container">
-    <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Six tools, <span style="color:#64748b;">one workflow.</span></h2>
+    <h2 style="margin-bottom: 2.5rem; font-size: 2rem;" class="sec-title">Eight tools, <span style="color:#64748b;">one workflow.</span></h2>
     <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.8rem;">
       <div class="tool-card animate-card">
         <i class="fas fa-calculator" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
@@ -287,6 +287,12 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
         <p>Generate &amp; scan QR codes on Android &middot; batch export &middot; offline &middot; no ads</p>
         <div><span class="badge">Android &middot; APK</span></div>
       </div>
+      <div class="tool-card animate-card">
+        <i class="fas fa-filter" style="font-size: 1.5rem; color:#fff; margin-bottom: 1.5rem;"></i>
+        <h3>SKU Filter Dashboard</h3>
+        <p>Every product column + location (XXX-YY-ZZZ) as filters &middot; multi-select dropdowns &middot; VLOOKUP stock</p>
+        <div><span class="badge">VBA &middot; Excel</span></div>
+      </div>
   </div>
 </section>
 
@@ -303,6 +309,7 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
       <button class="tab-btn" data-tab="tab5">Generate Bulk Roaster Schedule</button>
       <button class="tab-btn" data-tab="tab6">PDF Auto Rename</button>
       <button class="tab-btn" data-tab="tab7">QR Forge</button>
+      <button class="tab-btn" data-tab="tab8">SKU Filter Dashboard</button>
     </div>
 
     <!-- Tab 1 -->
@@ -840,6 +847,77 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- Tab 8 -->
+    <div id="tab8" class="tab-content">
+      <div class="script-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-weight: 500; color: #fff;">SKU Filter Dashboard <span class="badge">v1.0</span></h3>
+            <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Multi-parameter SKU filter &middot; every product column + location (XXX-YY-ZZZ) combinations &middot; multi-select dropdowns &middot; VLOOKUP live stock &middot; A-Z sort by location</p>
+          </div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <a href="SkuFilterDashboard.bas" class="btn-outline" download><i class="fas fa-download"></i> SkuFilterDashboard.bas</a>
+            <a href="MultiSelectHandler.cls" class="btn-outline" download><i class="fas fa-download"></i> MultiSelectHandler.cls</a>
+          </div>
+        </div>
+        <pre><code>' SkuFilterDashboard.bas — SKU Filter Dashboard v1.2.0
+Sub Build_CC_Dashboard()
+    ' Reads the product-list sheet and the location sheet by POSITION,
+    ' never by name — so a dynamically renamed export still works.
+    If Not ResolveDataSheets(wsP, wsL) Then
+        MsgBox "Could not find the two data sheets.", vbExclamation
+        Exit Sub
+    End If
+
+    ' One dashboard row per product column: text columns get a dropdown
+    ' of their real distinct values; numeric columns get Min/Max boxes.
+    ' Location gets four parameters: full XXX-YY-ZZZ, and each of the
+    ' three sections separately, so any combination can be filtered.
+
+    ' ... full logic (Download the .bas)
+End Sub
+
+Sub ApplyFilters()
+    ' ANDs every parameter row, matches against the product list,
+    ' writes matching SKUs sorted A-Z by Location, then adds a live
+    ' VLOOKUP formula for stock-on-hand next to each result.
+    ' ... full logic (Download the .bas)
+End Sub</code></pre>
+
+        <!-- Setup steps -->
+        <div style="margin-top: 2rem;">
+          <h3 style="font-weight:400; color:#fff; font-size:1.1rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-check-square" style="color:#64748b;"></i> Setup <span style="color:#64748b; font-size:0.85rem; font-weight:300;">(one-time)</span>
+          </h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:1rem;">
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">01 &nbsp; Download both files</span>
+              <span style="font-size:0.82rem; color:#64748b;">Download <strong style="color:#e2e8f0;">SkuFilterDashboard.bas</strong> and <strong style="color:#e2e8f0;">MultiSelectHandler.cls</strong> — both are needed</span>
+            </div>
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">02 &nbsp; Import into PERSONAL.XLSB</span>
+              <span style="font-size:0.82rem; color:#64748b;">Alt+F11 → select <strong style="color:#e2e8f0;">VBAProject (PERSONAL.XLSB)</strong> → File → Import File → pick both files, one at a time</span>
+            </div>
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">03 &nbsp; Run BuildDashboard</span>
+              <span style="font-size:0.82rem; color:#64748b;">Open your product-list workbook (keep it the active window) → Alt+F8 → run <strong style="color:#e2e8f0;">BuildDashboard</strong></span>
+            </div>
+            <div class="step" style="border-top:none; border:1px solid rgba(255,255,255,0.05);">
+              <span style="font-weight:500; color:#fff; font-size:1rem; display:block; margin-bottom:0.4rem;">04 &nbsp; Filter &amp; export</span>
+              <span style="font-size:0.82rem; color:#64748b;">Pick values from the dropdowns (click again to remove, multi-select supported) → <strong style="color:#e2e8f0;">APPLY FILTER</strong> → matching SKUs list out, sorted A-Z by location, with live stock</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.2rem; padding:1rem 1.2rem; background:rgba(255,255,255,0.02); border-radius:0.8rem; border:1px solid rgba(255,255,255,0.04);">
+          <span style="font-size:0.78rem; color:#475569; display:flex; align-items:flex-start; gap:8px;">
+            <i class="fas fa-info-circle" style="margin-top:2px; flex-shrink:0;"></i>
+            Works on any product list whose sheet name changes on every export — sheets are matched by position, not by name. Data sheet needs no macros itself, so it can stay a plain .xlsx.
+          </span>
+        </div>
       </div>
     </div>
 
