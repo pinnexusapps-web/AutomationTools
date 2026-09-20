@@ -1,14 +1,6 @@
 Attribute VB_Name = "SkuFilterDashboard"
-'==================================================================
-' SKU FILTER DASHBOARD
-'------------------------------------------------------------------
-' Sheet 1 = product list   (headers in row 1)
-' Sheet 2 = sku / location_name  (XXX-YY-ZZZ)
-' Sheet names are read by POSITION, never by name.
-'
-' Run  BuildDashboard  once after every new data import.
-' Then pick parameters and press the "APPLY FILTER" button.
-'==================================================================
+    ' Software Version 1.1
+    ' developed by DSU11425
 Option Explicit
 
 Private gMultiSelect As MultiSelectHandler
