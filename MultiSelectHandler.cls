@@ -1,24 +1,7 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-END
-Attribute VB_Name = "MultiSelectHandler"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = False
-Attribute VB_PredeclaredId = False
-Attribute VB_Exposed = False
-'==================================================================
-' MULTI-SELECT HANDLER
-'------------------------------------------------------------------
-' Turns the ordinary in-cell dropdowns on the Dashboard sheet into
-' multi-select lists: picking a value ADDS it to the cell (joined
-' with "; "); picking a value that's already there REMOVES it;
-' picking "(All)" clears the row back to "(All)".
-'
-' Hooked up by calling SkuFilterDashboard.EnableMultiSelect (this
-' happens automatically at the end of BuildDashboard).
-'==================================================================
 Option Explicit
+
+    ' Software Version 1.1
+    ' developed by DSU11425
 
 Public WithEvents App As Application
 
