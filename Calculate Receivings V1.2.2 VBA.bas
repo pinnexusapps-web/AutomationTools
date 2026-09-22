@@ -1,5 +1,5 @@
 Attribute VB_Name = "CalculateReceivings"
-Private Sub CalculateReceivings()
+Sub CalculateReceivings()
     Dim wsMain As Worksheet
     Dim wsData As Worksheet
     Dim lastRow As Long
