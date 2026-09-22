@@ -1,4 +1,5 @@
-Sub CalculateReceivings_1_5_3()
+Attribute VB_Name = "CalculateReceivings_V1_5"
+Sub CalculateReceivings()
     Dim wsMain As Worksheet
     Dim wsData As Worksheet
     Dim lastRow As Long
