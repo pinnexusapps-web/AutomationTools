@@ -1,4 +1,4 @@
-Attribute VB_Name = "CalculateReceivings"
+Attribute VB_Name = "CalculateReceivings_V1_2"
 Sub CalculateReceivings()
     Dim wsMain As Worksheet
     Dim wsData As Worksheet
