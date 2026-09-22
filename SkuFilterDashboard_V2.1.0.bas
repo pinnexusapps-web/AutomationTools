@@ -15,7 +15,7 @@ Private Const MAX_LIST  As Long = 5000       ' max distinct values per dropdown
     ' developed by DSU11425
     ' Software Version 2.1.0
 
-Public Sub BuildDashboard()
+Public Sub Build_CC_Dashboard()
     Dim wsP As Worksheet, wsL As Worksheet, wsD As Worksheet, wsL2 As Worksheet
     Dim dat As Variant, loc As Variant
     Dim nCols As Long, i As Long, r As Long, listCol As Long
