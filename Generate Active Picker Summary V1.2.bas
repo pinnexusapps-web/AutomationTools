@@ -1,6 +1,10 @@
+Attribute VB_Name = "GenerateAPS_V1_2"
 Option Explicit
 
 Sub GenerateActivePickerSummary()
+
+    ' Software Version 1.2
+    ' developed by DSU11425
 
     Dim ws As Worksheet
     Set ws = ActiveSheet
