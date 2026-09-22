@@ -14,7 +14,7 @@ Private Const P_ROW1    As Long = 6          ' first parameter row
 Private Const R_COL     As Long = 6          ' results start in column F
 Private Const MAX_LIST  As Long = 5000       ' max distinct values per dropdown
 
-Public Sub BuildDashboard()
+Public Sub Build_CC_Dashboard()
     Dim wsP As Worksheet, wsL As Worksheet, wsD As Worksheet, wsL2 As Worksheet
     Dim dat As Variant, loc As Variant
     Dim nCols As Long, i As Long, r As Long, listCol As Long
