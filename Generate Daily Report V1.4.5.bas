@@ -1,3 +1,4 @@
+Attribute VB_Name = "GenerateDailyReport_V1_4"
 Sub GenerateDailyReport()
     ' Software Version 1.4.5
     ' developed by DSU11425
