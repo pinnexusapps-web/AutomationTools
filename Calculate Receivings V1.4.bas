@@ -1,4 +1,5 @@
-Sub CalculateReceivings_1_3_3()
+Attribute VB_Name = "CalculateReceivings_V1_4"
+Sub CalculateReceivings()
     Dim wsMain As Worksheet
     Dim wsData As Worksheet
     Dim lastRow As Long
@@ -12,7 +13,7 @@ Sub CalculateReceivings_1_3_3()
     Dim tblRange As Range
 
     ' developed by DSU11425
-    ' Software Version 1.3.3
+    ' Software Version 1.4.0
 
     On Error Resume Next
     Set wsMain = ActiveWorkbook.Sheets("Sheet1")
