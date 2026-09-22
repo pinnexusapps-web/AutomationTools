@@ -1,4 +1,5 @@
-Sub GenerateRoasterBulkRoaster_1_0()
+Attribute VB_Name = "GenerateRoaster_V1_0"
+Sub GenerateRoaster()
     Dim wsSchedule As Worksheet
     Dim wsRoaster As Worksheet
     Dim lastRowSched As Long, targetRow As Long
@@ -8,9 +9,9 @@ Sub GenerateRoasterBulkRoaster_1_0()
     Dim startDateObj As Date, endDateObj As Date
     Dim startingPoint As String
     
-    ' ==========================================
-    ' CONFIGURATION: Starting Point ID hardcoded here
-    ' ==========================================
+    ' Software Version 1.1
+    ' developed by DSU11425
+
     startingPoint = "Falaj_Hazza" ' <<<<< EDIT HERE
     
     Set wsSchedule = ActiveSheet
