@@ -25,6 +25,9 @@ body { font-family: 'Inter', sans-serif; background: #030304; color: #e2e8f0; li
 
 .btn-outline { border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.01); padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: 400; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); display: inline-flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; color: #f1f5f9; font-size: 0.85rem; }
 .btn-outline:hover { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.06); color: #fff; }
+.version-select { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; border-radius: 30px; padding: 0.5rem 1rem; font-size: 0.8rem; font-family: 'Inter', sans-serif; font-weight: 300; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; }
+.version-select:hover, .version-select:focus { border-color: rgba(255,255,255,0.25); }
+.version-select option { background: #0a0a0c; color: #e2e8f0; }
 
 /* ── NEW: Hero download button ── */
 .btn-hero-dl {
@@ -317,10 +320,19 @@ h1, h2, h3 { font-weight: 400; letter-spacing: -0.02em; }
       <div class="script-card">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h3 style="font-weight: 500; color: #fff;">Calculate Receivings <span class="badge">v1.2.2</span></h3>
+            <h3 style="font-weight: 500; color: #fff;">Calculate Receivings <span class="badge">v1.5.3</span></h3>
             <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">VLOOKUP &middot; cost &middot; Tax multiplier &middot; auto-clean columns &middot; final total</p>
           </div>
-          <a href="Calculate Receivings V1.2.2.bas" class="btn-outline" download><i class="fas fa-download"></i> Download .bas</a>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+            <select class="version-select" onchange="document.getElementById('dl-tab1').href=this.value">
+              <option value="Calculate Receivings V1.5.3.bas">v1.5.3</option>
+              <option value="Calculate Receivings V1.4.bas">v1.4</option>
+              <option value="Calculate Receivings V1.3.1.bas">v1.3.1</option>
+              <option value="Calculate Receivings V1.2.2.bas">v1.2.2</option>
+              <option value="Calculate Receivings V1.2.1.bas">v1.2.1</option>
+            </select>
+            <a id="dl-tab1" href="Calculate Receivings V1.5.3.bas" class="btn-outline" download><i class="fas fa-download"></i> Download .bas</a>
+          </div>
         </div>
         <pre><code>' Calculate Receivings V1.2.2.bas
 
@@ -377,7 +389,13 @@ End Sub</code></pre>
             <h3 style="font-weight: 500; color: #fff;">Generate Daily Report <span class="badge">v1.2</span></h3>
             <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Picker &middot; success/cancel counts &middot; top Inhouse/Suplier &middot; modified orders flag</p>
           </div>
-          <a href="Generate Daily Report V1.4.5.bas" class="btn-outline" download><i class="fas fa-download"></i> Download .bas</a>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+            <select class="version-select" onchange="document.getElementById('dl-tab2').href=this.value">
+              <option value="Generate Daily Report V1.4.5.bas">v1.4.5</option>
+              <option value="Generate Daily Report V1.2.bas">v1.2</option>
+            </select>
+            <a id="dl-tab2" href="Generate Daily Report V1.4.5.bas" class="btn-outline" download><i class="fas fa-download"></i> Download .bas</a>
+          </div>
         </div>
         <pre><code>' Generate Daily Report V1.2.bas
 Sub GenerateDailyReport()
@@ -479,7 +497,13 @@ End Sub</code></pre>
             <h3 style="font-weight: 500; color: #fff;">Generate Active Picker Summary <span class="badge">v1.2</span></h3>
             <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Active Pickers in selected time period &middot; exports clean schedule</p>
           </div>
-          <a href="Generate Active Picker Summary V1.2.bas" class="btn-outline" download><i class="fas fa-download"></i> Download .bas</a>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+            <select class="version-select" onchange="document.getElementById('dl-tab4').href=this.value">
+              <option value="Generate Active Picker Summary V1.2.bas">v1.2</option>
+              <option value="Generate Active Picker Summary V1.0.bas">v1.0</option>
+            </select>
+            <a id="dl-tab4" href="Generate Active Picker Summary V1.2.bas" class="btn-outline" download><i class="fas fa-download"></i> Download .bas</a>
+          </div>
         </div>
         <pre><code>' Generate Active Picker Summary V1.2.bas
 Sub GenerateActivePickerSummary()
@@ -859,8 +883,17 @@ process_and_rename_pdfs(sys.argv[1] if len(sys.argv) > 1 else "./")</code></pre>
             <p style="margin-top: 0.25rem; color: #94a3b8; font-size: 0.95rem;">Multi-parameter SKU filter &middot; every product column + location (XXX-YY-ZZZ) combinations &middot; multi-select dropdowns &middot; VLOOKUP live stock &middot; A-Z sort by location</p>
           </div>
           <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-            <a href="SkuFilterDashboard_v2.1.0.bas" class="btn-outline" download><i class="fas fa-download"></i> Download .bas</a>
-            <a href="MultiSelectHandler_v1.2.1.cls" class="btn-outline" download><i class="fas fa-download"></i> Download .cls</a>
+            <select class="version-select" onchange="document.getElementById('dl-tab8-bas').href=this.value">
+              <option value="SkuFilterDashboard_V2.1.0.bas">v2.1.0</option>
+              <option value="SkuFilterDashboard_v1.2.1.bas">v1.2.1</option>
+              <option value="SkuFilterDashboard.bas">v1.0</option>
+            </select>
+            <a id="dl-tab8-bas" href="SkuFilterDashboard_V2.1.0.bas" class="btn-outline" download><i class="fas fa-download"></i> Download .bas</a>
+            <select class="version-select" onchange="document.getElementById('dl-tab8-cls').href=this.value">
+              <option value="MultiSelectHandler_v1.2.1.cls">v1.2.1</option>
+              <option value="MultiSelectHandler.cls">v1.0</option>
+            </select>
+            <a id="dl-tab8-cls" href="MultiSelectHandler_v1.2.1.cls" class="btn-outline" download><i class="fas fa-download"></i> Download .cls</a>
           </div>
         </div>
         <pre><code>' SkuFilterDashboard.bas — SKU Filter Dashboard v2.1
