@@ -1,3 +1,4 @@
+Attribute VB_Name = "GenerateAPS_V1_0"
 Option Explicit
 
 Sub GenerateActivePickerSummary()
