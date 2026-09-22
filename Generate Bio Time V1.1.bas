@@ -1,3 +1,4 @@
+Attribute VB_Name = "GenerateBioTime_V1_1"
 Sub GenerateBioTime()
     ' Software Version 1.1
     ' developed by DSU11425
