@@ -1,4 +1,4 @@
-Attribute VB_Name = "MultiSelectHandler_v1_2"
+Attribute VB_Name = "MultiSelectHandler"
 Option Explicit
 
 Public WithEvents App As Application
