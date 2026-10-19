@@ -1,4 +1,4 @@
-Attribute VB_Name = "CalculateReceivings_V1_2"
+Attribute VB_Name = "CalculateReceivings_V1_2_3"
 Sub CalculateReceivings()
     Dim wsMain As Worksheet
     Dim wsData As Worksheet
@@ -12,7 +12,7 @@ Sub CalculateReceivings()
     Dim tblRange As Range
     
     ' developed by DSU11425
-    ' Software Version 1.2.2
+    ' Software Version 1.2.3
     
     On Error Resume Next
     Set wsMain = ActiveWorkbook.Sheets("Sheet1")
